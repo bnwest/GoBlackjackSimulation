@@ -1,4 +1,27 @@
-"""Blsckjsck simulation."""
+"""
+Blackjack simulation.
+
+Learn to play blackjack:
+https://bicyclecards.com/how-to-play/blackjack
+
+The House Edge and the Basic Strategy of Blackjack 
+https://www.shs-conferences.org/articles/shsconf/pdf/2022/18/shsconf_icprss2022_03038.pdf
+
+Blackjack - Wikipedia
+https://en.wikipedia.org/wiki/Blackjack
+https://en.wikipedia.org/wiki/Blackjack#Basic_strategy
+
+6 decks, Dealer hits on soft 17, BJ pays 3 to 2
+https://blog.mbitcasino.io/wp-content/uploads/2024/04/chart01_6decks.jpg
+6 decks, Dealer stands on soft 17, BJ pays 3 to 2
+https://blog.mbitcasino.io/wp-content/uploads/2024/04/chart03_6decks.jpg
+
+Central Las Vegas Strip Blackjack Survey 2024
+https://vegasadvantage.com/las-vegas-blackjack/central-las-vegas-strip-blackjack/
+
+Las Vegas Blackjack Guide
+https://vegasadvantage.com/las-vegas-blackjack-guide/
+"""
 
 from enum import StrEnum
 import random
@@ -6,6 +29,20 @@ import pdb
 
 # seed the random number generator to make game play 100% reproducible:
 random.seed(0xDEADBEEF)
+random.seed(42)  # hit, stand, split
+random.seed(43)  # double, hit, hit
+random.seed(45)  # double, stand, surrender
+random.seed(48)  # stand, hit , surrender
+random.seed(56)  # dealer and player blackjack
+random.seed(59)  # double, stand, stand (player blackjack)
+random.seed(60)  # surrender, hit, double
+random.seed(66)  # hit, split (double, hit), stand
+random.seed(69)  # 2.1.1 6, 6, 2, A (H15), 3 (H18), A - should not have hit the H18
+random.seed(74)  # dealer: A, 8 hits (S19) 2, hits (S21) 6, hits (H17) 9
+random.seed(81)  # delaer: A, 4, 4, hits (S19) 6, hits (H15) 8
+random.seed(123)  # boom
+
+random.seed(300)
 
 #
 # House Rules
@@ -13,10 +50,19 @@ random.seed(0xDEADBEEF)
 
 
 class HouseRules:
+    # Hit/Stand on a soft 17 and 3:2 black jack payouts
+    # are what casinos advetize wrt their BJ tables:
+    # 1. 6/8 decks in shoe
+    # 2. 3:2 blackjack payout
+    # 3. Hit/Stand on a soft 17
+    # 4. Re-splitting Aces
+    # 5. Surrender
+
     DECKS_IN_SHOE: int = 6
     FORCE_RESHUFFLE: int = ((52 * DECKS_IN_SHOE) * 3) / 4
 
-    # True => Must stand after Ace split -- stand on the Ace plus the one card dealt after split
+    # True => Must stand after the Ace split (stand on the Ace plus the one card dealt after split)
+    # True => no double down after the Ace split, no splitting Aces after the Ace split
     NO_MORE_CARDS_AFTER_SPLITTING_ACES: bool = True
 
     # [9, 10, 11] aka range(9, 12) => "Reno Rules"
@@ -30,12 +76,16 @@ class HouseRules:
     # rank match like K-K always can split, values match allows K-10 split
     SPLIT_ON_VALUE_MATCH: bool = True
 
+    # Hit on soft 17 (6/8 decks) is more common on low bet tables.
     DEALER_HITS_HARD_ON: bool = 16  # or less
     DEALER_HITS_SOFT_ON: bool = 17  # or less
 
     # 1.5 => 3 to 2 payout, 1.2 => 6 to 5 payout
+    # 6 to 5 is more common in two deck games
     NATURAL_BLACKJACK_PAYOUT: float = 1.5
 
+    # Usually 8 deck game, no Ace re-splitting, 50-100 minimum bet ...
+    # Setting True here since I am a high roller ;) and want to shake out the code.
     SURRENDER_ALLOWED: bool = True
 
 
@@ -183,15 +233,25 @@ def display_shoe(shoe: list[Card]) -> None:
 #
 
 
+class HandOutcome(StrEnum):
+    STAND = "stand"
+    BUST = "bust"
+    SURRENDER = "surrender"
+    DEALER_BLACKJACK = "dealer-blackjack"
+    IN_PLAY = "in-play"
+
+
 class PlayerHand:
     cards: list[Card]
     from_split: bool
     bet: int
+    outcome: HandOutcome
 
     def __init__(self, bet: int = 2, from_split: bool = False):
         self.cards = []
         self.from_split = from_split
         self.bet = bet
+        self.outcome = HandOutcome.IN_PLAY
 
     @property
     def aces_count(self) -> int:
@@ -267,10 +327,24 @@ class PlayerHand:
     def add_card(self, card: Card):
         self.cards.append(card)
 
+    @property
+    def is_hand_over(self) -> bool:
+        if self.outcome == HandOutcome.STAND:
+            return True
+        elif self.outcome == HandOutcome.BUST:
+            return True
+        elif self.outcome == HandOutcome.SURRENDER:
+            return True
+        elif self.outcome == HandOutcome.DEALER_BLACKJACK:
+            return True
+        else:  # HandOutcome.IN_PLAY
+            return False
+
 
 class DealerHand(PlayerHand):
     def __init__(self):
         self.cards = []
+        self.outcome = HandOutcome.IN_PLAY
 
     @property
     def is_natural(self) -> bool:
@@ -294,20 +368,25 @@ class PlayerMasterHand:
         self.hands.append(PlayerHand(bet=bet))
         self.num_hands += 1
 
-    def split_hand(self, hand_index):
+    def split_hand(self, hand_index: int, cards_to_add: tuple):
         # there are two in the hand of the same value
         # or rank depending of the house rules.
-        card1 = self.hands[hand_index].cards[0:1]
-        card2 = self.hands[hand_index].cards[1:2]
+        card1 = self.hands[hand_index].cards[0]
+        card2 = self.hands[hand_index].cards[1]
 
         old_player_hand = self.hands[hand_index]
-        old_player_hand.cards = [card1]
+        old_player_hand.cards = [card1, cards_to_add[0]]
         old_player_hand.from_split = True
+        old_player_hand.outcome = HandOutcome.IN_PLAY
 
-        new_player_hand = PlayerHand(from_split=True)
-        new_player_hand.cards = [card2]
-        self.hands.append(PlayerHand)
+        new_player_hand = PlayerHand(bet=old_player_hand.bet, from_split=True)
+        new_player_hand.cards = [card2, cards_to_add[1]]
+        new_player_hand.outcome = HandOutcome.IN_PLAY
+        self.hands.append(new_player_hand)
+
+        new_hand_index: int = self.num_hands
         self.num_hands += 1
+        return new_hand_index
 
     def can_split(self, hand_index) -> bool:
         hand: PlayerHand = self.hands[hand_index]
@@ -731,7 +810,7 @@ class BasicStrategy:
             else:
                 pair_rank = player_card1.rank
 
-            decision: str = PAIRS_DECISION[player_card1.rank][dealer_top_card]
+            decision: str = PAIRS_DECISION[player_card1.rank][dealer_top_card.rank]
 
             player_decision = convert_to_player_decision(
                 decision=decision, player_hand=player_hand
@@ -743,7 +822,7 @@ class BasicStrategy:
 
         if use_soft_total:
             soft_total: int = player_hand.soft_count
-            decision: str = SOFT_TOTAL_DECISION[soft_total][dealer_top_card]
+            decision: str = SOFT_TOTAL_DECISION[soft_total][dealer_top_card.rank]
             player_decision = convert_to_player_decision(
                 decision=decision, player_hand=player_hand
             )
@@ -857,13 +936,29 @@ class BlackJack:
             f"    hole card: {dealer_hole_card.rank.value}{dealer_hole_card.suite.value}."
         )
 
+        #
+        # 1. Does Dealer have a natural?
+        # 1.1. Is the delaer top card A, 10, J, Q, K?
+        # 1.2. Do players want Insurance?
+        #
+
         if dealer.hand.is_natural:
             # a real simulation would have to take care of Insurance, which is a sucker's bet,
             # so we just assume that no player will ask for insurance.
             # two cases:
             #     1. player has a natural and their bet is pushed
             #     2. player loses
-            pass
+
+            dealer.hand.outcome = HandOutcome.DEALER_BLACKJACK
+
+            for p, player in enumerate(self.players):
+                for mh, master_hand in enumerate(player.master_hands):
+                    hand_index: int = 0
+                    while hand_index < master_hand.num_hands:
+                        hand: PlayerHand = master_hand.hands[hand_index]
+                        hand.outcome = HandOutcome.STAND
+                        hand_index += 1
+
         else:
             for p, player in enumerate(self.players):
                 print(f"player {p+1} - {player.name}:")
@@ -877,20 +972,193 @@ class BlackJack:
                             num_split_hands < HouseRules.SPLITS_PER_HAND
                         )
 
-                        decision: PlayerDecision = BasicStrategy.determine_play(
-                            dealer_top_card=dealer_top_card,
-                            player_hand=hand,
-                            hand_allows_more_splits=is_split_possible,
-                        )
+                        #
+                        # 2. Player decides each hand via Basic Strategy
+                        #
 
-                        print(
-                            f"""    hand {mh+1}.{hand_index+1}: decision: {decision.value}"""
-                        )
+                        while True:
+                            decision: PlayerDecision = BasicStrategy.determine_play(
+                                dealer_top_card=dealer_top_card,
+                                player_hand=hand,
+                                hand_allows_more_splits=is_split_possible,
+                            )
+                            print(
+                                f"""    hand {mh+1}.{hand_index+1}: decision: {decision.value}"""
+                            )
+
+                            if decision == PlayerDecision.STAND:
+                                hand.outcome = HandOutcome.STAND
+                                print(f"""    stand total {hand.count}""")
+                                break
+
+                            elif decision == PlayerDecision.SURRENDER:
+                                hand.outcome = HandOutcome.SURRENDER
+                                hand.bet = int(hand.bet / 2)
+                                break
+
+                            elif decision == PlayerDecision.DOUBLE:
+                                card = self.get_card_from_shoe()
+                                hand.add_card(card)
+                                hand.bet *= 2
+                                hand.outcome = HandOutcome.STAND
+                                print(
+                                    f"""    hand {mh+1}.{hand_index+1}: double down: {card.rank.value}{card.suite.value}, total {hand.count}"""
+                                )
+                                break
+
+                            elif decision == PlayerDecision.HIT:
+                                card = self.get_card_from_shoe()
+                                hand.add_card(card)
+                                hand_total: int = hand.count
+                                print(
+                                    f"""    hand {mh+1}.{hand_index+1}: hit: {card.rank.value}{card.suite.value}, total {hand.count}"""
+                                )
+                                if hand_total > 21:
+                                    hand.outcome = HandOutcome.BUST
+                                    print(f"""    hand {mh+1}.{hand_index+1}: bust""")
+                                    break
+                                else:
+                                    hand.outcome = HandOutcome.IN_PLAY
+
+                            elif decision == PlayerDecision.SPLIT:
+                                card1: Card = self.get_card_from_shoe()
+                                card2: Card = self.get_card_from_shoe()
+                                new_hand_index: int
+                                new_hand_index = master_hand.split_hand(
+                                    hand_index, cards_to_add=(card1, card2)
+                                )
+                                print(
+                                    f"""    hand {mh+1}.{hand_index+1}: split, adding cards: {card1.rank.value}{card1.suite.value}, {card2.rank.value}{card2.suite.value}"""
+                                )
+                                print(f"""    hand {mh+1}.{hand_index+1}:""")
+                                print(
+                                    f"""        Card 1: {master_hand.hands[hand_index].cards[0].rank.value}{master_hand.hands[hand_index].cards[0].suite.value}"""
+                                )
+                                print(
+                                    f"""        Card 2: {master_hand.hands[hand_index].cards[1].rank.value}{master_hand.hands[hand_index].cards[1].suite.value}"""
+                                )
+                                print(f"""    hand {mh+1}.{new_hand_index+1}:""")
+                                print(
+                                    f"""        Card 1: {master_hand.hands[new_hand_index].cards[0].rank.value}{master_hand.hands[new_hand_index].cards[0].suite.value}"""
+                                )
+                                print(
+                                    f"""        Card 2: {master_hand.hands[new_hand_index].cards[1].rank.value}{master_hand.hands[new_hand_index].cards[1].suite.value}"""
+                                )
+
+                            else:
+                                print("FTW")
+                                break
+
+                        hand_index += 1
+
+        #
+        # Dealer finishes their hand
+        #
+
+        dealer_done: bool = dealer.hand.outcome == HandOutcome.DEALER_BLACKJACK
+        print("dealer:")
+        print(
+            f"    top  card: {dealer_top_card.rank.value}{dealer_top_card.suite.value}."
+        )
+        print(
+            f"    hole card: {dealer_hole_card.rank.value}{dealer_hole_card.suite.value}."
+        )
+        while not dealer_done:
+            use_soft_count: bool = dealer.hand.aces_count > 0
+            if (
+                use_soft_count
+                and dealer.hand.soft_count <= HouseRules.DEALER_HITS_SOFT_ON
+            ):
+                card = self.get_card_from_shoe()
+                dealer.hand.add_card(card)
+                print(
+                    f"""    add: {card.rank.value}{card.suite.value}, total {dealer.hand.count}"""
+                )
+            elif dealer.hand.hard_count <= HouseRules.DEALER_HITS_HARD_ON:
+                card = self.get_card_from_shoe()
+                dealer.hand.add_card(card)
+                print(
+                    f"""    add: {card.rank.value}{card.suite.value}, total {dealer.hand.count}"""
+                )
+            else:
+                dealer.hand.outcome = HandOutcome.STAND
+                dealer_done = True
+                continue
+
+            if dealer.hand.count > 21:
+                dealer.hand.outcome = HandOutcome.BUST
+                dealer_done = True
+            else:
+                dealer_done = False
+
+        print(f"""    outcome: {dealer.hand.outcome}, total {dealer.hand.count}""")
+
+        #
+        # Settle hands
+        #
+
+        print("SETTLE HANDS")
+        if dealer.hand.outcome == HandOutcome.DEALER_BLACKJACK:
+            for p, player in enumerate(self.players):
+                print(f"player {p+1} - {player.name}:")
+                for mh, master_hand in enumerate(player.master_hands):
+                    hand_index: int = 0
+                    while hand_index < master_hand.num_hands:
+                        hand: PlayerHand = master_hand.hands[hand_index]
+                        if hand.is_natural:
+                            # player neither wins or loses, bet is pushed.
+                            print(
+                                f"""    hand {mh+1}.{hand_index+1}: push, both player and dealer had naturals"""
+                            )
+                        else:
+                            print(f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}""")
 
                         hand_index += 1
 
 
-pdb.set_trace()
+        else:
+            for p, player in enumerate(self.players):
+                print(f"player {p+1} - {player.name}:")
+                for mh, master_hand in enumerate(player.master_hands):
+                    hand_index: int = 0
+                    while hand_index < master_hand.num_hands:
+                        hand: PlayerHand = master_hand.hands[hand_index]
+                        if hand.outcome == HandOutcome.BUST:
+                            print(
+                                f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}, player bust"""
+                            )
+                        elif hand.outcome == HandOutcome.SURRENDER:
+                            print(
+                                f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}, player surrender"""
+                            )
+                        else:
+                            # player has a non-bust, non-surrender hand
+                            if hand.is_natural:
+                                print(
+                                    f"""    hand {mh+1}.{hand_index+1}: won {int(hand.bet * HouseRules.NATURAL_BLACKJACK_PAYOUT)} with natural"""
+                                )
+                            elif dealer.hand.outcome == HandOutcome.BUST:
+                                print(
+                                    f"""    hand {mh+1}.{hand_index+1}: won {hand.bet}, dealer bust"""
+                                )
+                            else:
+                                if hand.count < dealer.hand.count:
+                                    print(
+                                        f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}, dealer total { dealer.hand.count}, player total {hand.count}."""
+                                    )
+                                elif hand.count > dealer.hand.count:
+                                    print(
+                                        f"""    hand {mh+1}.{hand_index+1}: won {hand.bet}, dealer total { dealer.hand.count},  player total {hand.count}."""
+                                    )
+                                else:
+                                    print(
+                                        f"""    hand {mh+1}.{hand_index+1}: push"""
+                                    )
+
+                        hand_index += 1
+
+
+# pdb.set_trace()
 
 bj = BlackJack()
 bj.play_game()
