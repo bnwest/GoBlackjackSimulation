@@ -37,10 +37,6 @@ random.seed(56)  # dealer and player blackjack
 random.seed(59)  # double, stand, stand (player blackjack)
 random.seed(60)  # surrender, hit, double
 random.seed(66)  # hit, split (double, hit), stand
-random.seed(69)  # 2.1.1 6, 6, 2, A (H15), 3 (H18), A - should not have hit the H18
-random.seed(74)  # dealer: A, 8 hits (S19) 2, hits (S21) 6, hits (H17) 9
-random.seed(81)  # delaer: A, 4, 4, hits (S19) 6, hits (H15) 8
-random.seed(123)  # boom
 
 random.seed(300)
 
@@ -55,7 +51,7 @@ class HouseRules:
     # 1. 6/8 decks in shoe
     # 2. 3:2 blackjack payout
     # 3. Hit/Stand on a soft 17
-    # 4. Re-splitting Aces
+    # 4. Re-splitting Aces (exceptionally rare)
     # 5. Surrender
 
     DECKS_IN_SHOE: int = 6
@@ -68,6 +64,7 @@ class HouseRules:
     # [9, 10, 11] aka range(9, 12) => "Reno Rules"
     DOUBLE_DOWN_ON_TOTAL: list[int] = [i for i in range(1, 22)]
 
+    # Does not apply tp Aces if NO_MORE_CARDS_AFTER_SPLITTING_ACES is true
     DOUBLE_DOWN_AFTER_SPLIT: bool = True
 
     # 3 => turn one hand into no more than 4 hands
@@ -479,6 +476,10 @@ NO = "no-decision"
 def convert_to_player_decision(
     decision: str, player_hand: PlayerHand
 ) -> PlayerDecision:
+    """
+    Decision sometimes return Xy, which translates to do X if allowed else do y.
+    Determine the X or the y here.
+    """
     is_first_decision: bool = len(player_hand.cards) == 2
     is_first_postsplit_decision: bool = is_first_decision and player_hand.from_split
 
@@ -586,6 +587,8 @@ RANK_TO_INDEX = {
 
 # Use "fmt: skip" to force black to leave these table alone.
 # Use NO since we live in a zero index world.
+# Only use the SP decision from this table.  The other decisions mirror exactly
+# what the hard/soft total decision tables yield.
 _PAIRS_DECISION = [
     # 0   A   2   3   4   5   6   7   8   9  10   J   Q   K
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],  # fmt: skip
@@ -644,6 +647,8 @@ def create_pairs_decision() -> dict[CardRank, str]:
 
 PAIRS_DECISION: dict[CardRank, str] = create_pairs_decision()
 
+# Expect to use the soft total decision table for: (A,A) and (A,2),
+# which is the only way to get to hard totals 2 and 3.
 _HARD_TOTAL_DECISION = [
     # 0   A   2   3   4   5   6   7   8   9  10   J   Q   K
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],  # fmt: skip
@@ -654,7 +659,7 @@ _HARD_TOTAL_DECISION = [
     # hard total: 3  x  dealer top card
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],  # fmt: skip
     # hard total: 4  x  dealer top card
-    [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],  # fmt: skip
+    [NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H],  # fmt: skip
     # hard total: 5  x  dealer top card
     [NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H],  # fmt: skip
     # hard total: 6  x  dealer top card
@@ -818,7 +823,7 @@ class BasicStrategy:
             if player_decision == PlayerDecision.SPLIT:
                 return PlayerDecision.SPLIT
 
-        use_soft_total: bool = player_hand.aces_count > 0
+        use_soft_total: bool = player_hand.hard_count < player_hand.soft_count <= 21
 
         if use_soft_total:
             soft_total: int = player_hand.soft_count
@@ -988,7 +993,9 @@ class BlackJack:
 
                             if decision == PlayerDecision.STAND:
                                 hand.outcome = HandOutcome.STAND
-                                print(f"""    stand total {hand.count}""")
+                                print(
+                                    f"""    stand total H{hand.hard_count} S{hand.soft_count}"""
+                                )
                                 break
 
                             elif decision == PlayerDecision.SURRENDER:
@@ -1002,7 +1009,7 @@ class BlackJack:
                                 hand.bet *= 2
                                 hand.outcome = HandOutcome.STAND
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: double down: {card.rank.value}{card.suite.value}, total {hand.count}"""
+                                    f"""    hand {mh+1}.{hand_index+1}: double down: {card.rank.value}{card.suite.value}, total H{hand.hard_count} S{hand.soft_count}"""
                                 )
                                 break
 
@@ -1011,7 +1018,7 @@ class BlackJack:
                                 hand.add_card(card)
                                 hand_total: int = hand.count
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: hit: {card.rank.value}{card.suite.value}, total {hand.count}"""
+                                    f"""    hand {mh+1}.{hand_index+1}: hit: {card.rank.value}{card.suite.value}, total H{hand.hard_count} S{hand.soft_count}"""
                                 )
                                 if hand_total > 21:
                                     hand.outcome = HandOutcome.BUST
@@ -1064,17 +1071,22 @@ class BlackJack:
             f"    hole card: {dealer_hole_card.rank.value}{dealer_hole_card.suite.value}."
         )
         while not dealer_done:
-            use_soft_count: bool = dealer.hand.aces_count > 0
-            if (
-                use_soft_count
-                and dealer.hand.soft_count <= HouseRules.DEALER_HITS_SOFT_ON
-            ):
+            hard_count: int = dealer.hand.hard_count
+            soft_count: int = dealer.hand.soft_count
+
+            use_soft_count: bool
+            if hard_count < soft_count <= 21:
+                use_soft_count = True
+            else:
+                use_soft_count = False
+
+            if use_soft_count and soft_count <= HouseRules.DEALER_HITS_SOFT_ON:
                 card = self.get_card_from_shoe()
                 dealer.hand.add_card(card)
                 print(
                     f"""    add: {card.rank.value}{card.suite.value}, total {dealer.hand.count}"""
                 )
-            elif dealer.hand.hard_count <= HouseRules.DEALER_HITS_HARD_ON:
+            elif not use_soft_count and hard_count <= HouseRules.DEALER_HITS_HARD_ON:
                 card = self.get_card_from_shoe()
                 dealer.hand.add_card(card)
                 print(
@@ -1111,10 +1123,11 @@ class BlackJack:
                                 f"""    hand {mh+1}.{hand_index+1}: push, both player and dealer had naturals"""
                             )
                         else:
-                            print(f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}""")
+                            print(
+                                f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}"""
+                            )
 
                         hand_index += 1
-
 
         else:
             for p, player in enumerate(self.players):
@@ -1151,9 +1164,7 @@ class BlackJack:
                                         f"""    hand {mh+1}.{hand_index+1}: won {hand.bet}, dealer total { dealer.hand.count},  player total {hand.count}."""
                                     )
                                 else:
-                                    print(
-                                        f"""    hand {mh+1}.{hand_index+1}: push"""
-                                    )
+                                    print(f"""    hand {mh+1}.{hand_index+1}: push""")
 
                         hand_index += 1
 
