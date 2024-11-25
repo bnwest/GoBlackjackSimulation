@@ -38,7 +38,7 @@ random.seed(59)  # double, stand, stand (player blackjack)
 random.seed(60)  # surrender, hit, double
 random.seed(66)  # hit, split (double, hit), stand
 
-random.seed(300)
+random.seed(0xDEADBEEF)
 
 #
 # House Rules
@@ -352,7 +352,7 @@ class DealerHand(PlayerHand):
 
 
 class PlayerMasterHand:
-    HAND_LIMIT: int = HouseRules.SPLITS_PER_HAND
+    HAND_LIMIT: int = HouseRules.SPLITS_PER_HAND + 1
 
     hands: list[PlayerHand]
     num_hands: int
@@ -421,7 +421,8 @@ class Player:
         for each hand that they want. Each of these original hands
         will be considered a "master" hand.
         """
-        self.hands = []
+        self.master_hands = []
+        self.num_of_hands = 0
         for bet in bets:
             # starts with one hand per bet
             player_master_hand: PlayerMasterHand = create_player_master_hand()
@@ -669,9 +670,9 @@ _HARD_TOTAL_DECISION = [
     # hard total: 8  x  dealer top card
     [NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H],  # fmt: skip
     # hard total: 9  x  dealer top card
-    [NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H],  # fmt: skip
-    # hard total: 10  x  dealer top card
     [NO,  H,  H, Dh, Dh, Dh, Dh,  H,  H,  H,  H,  H,  H,  H],  # fmt: skip
+    # hard total: 10  x  dealer top card
+    [NO,  H, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh,  H,  H,  H,  H],  # fmt: skip
     # hard total: 11  x  dealer top card
     [NO, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh],  # fmt: skip
     # hard total: 12  x  dealer top card
@@ -788,7 +789,9 @@ SOFT_TOTAL_DECISION: list[dict[CardRank, str]] = create_soft_total_decision()
 class BasicStrategy:
     @staticmethod
     def determine_play(
-        dealer_top_card: Card, player_hand: PlayerHand, hand_allows_more_splits: bool
+        dealer_top_card: Card,
+        player_hand: PlayerHand,
+        hand_allows_more_splits: bool,
     ) -> PlayerDecision:
         is_first_decision: bool = len(player_hand.cards) == 2
         is_first_postsplit_decision: bool = is_first_decision and player_hand.from_split
@@ -891,6 +894,8 @@ class BlackJack:
 
         card: Card
 
+        print("\nDEAL HANDS")
+
         # deal Player1, Player2, Dealer
         # where players may have more than one hand to start
         for _ in range(2):
@@ -912,35 +917,11 @@ class BlackJack:
         dealer_top_card: Card = dealer.top_card
         dealer_hole_card: Card = dealer.hole_card
 
-        # ready to rumble
-        print(f"player 1 - {player1.name}:")
-        for i in range(player1.num_of_hands):
-            print(f"    hand {i+1}:")
-            player_master_hands: PlayerMasterHand = player1.master_hands[i]
-            for j in range(len(player_master_hands.hands)):
-                print(f"    hand {i+1}.{j+1}:")
-                for k in range(len(player_master_hands.hands[j].cards)):
-                    card = player_master_hands.hands[j].cards[k]
-                    print(f"        card {k+1}: {card.rank.value}{card.suite.value}")
-
-        print(f"player 2 - {player2.name}:")
-        for i in range(player2.num_of_hands):
-            print(f"    hand {i+1}:")
-            player_master_hands: PlayerMasterHand = player2.master_hands[i]
-            for j in range(len(player_master_hands.hands)):
-                print(f"    hand {i+1}.{j+1}:")
-                for k in range(len(player_master_hands.hands[j].cards)):
-                    card = player_master_hands.hands[j].cards[k]
-                    print(f"        card {k+1}: {card.rank.value}{card.suite.value}")
-
-        print("dealer:")
         print(
-            f"    top  card: {dealer_top_card.rank.value}{dealer_top_card.suite.value}."
-        )
-        print(
-            f"    hole card: {dealer_hole_card.rank.value}{dealer_hole_card.suite.value}."
+            f"dealer top card: {dealer_top_card.rank.value}{dealer_top_card.suite.value}."
         )
 
+        print("PLAY HANDS")
         #
         # 1. Does Dealer have a natural?
         # 1.1. Is the delaer top card A, 10, J, Q, K?
@@ -972,9 +953,13 @@ class BlackJack:
                     while hand_index < master_hand.num_hands:
                         hand: PlayerHand = master_hand.hands[hand_index]
 
-                        num_split_hands: int = len(master_hand.hands)
+                        print(f"    hand {mh+1}.{hand_index+1}:")
+                        for card_index, card in enumerate(hand.cards):
+                            print(f"""        Card {card_index+1}: {card.rank.value}{card.suite.value}""")
+
+                        num_hands: int = len(master_hand.hands)
                         is_split_possible: bool = (
-                            num_split_hands < HouseRules.SPLITS_PER_HAND
+                            num_hands < PlayerMasterHand.HAND_LIMIT
                         )
 
                         #
@@ -988,13 +973,13 @@ class BlackJack:
                                 hand_allows_more_splits=is_split_possible,
                             )
                             print(
-                                f"""    hand {mh+1}.{hand_index+1}: decision: {decision.value}"""
+                                f"""        decision: {decision.value}"""
                             )
 
                             if decision == PlayerDecision.STAND:
                                 hand.outcome = HandOutcome.STAND
                                 print(
-                                    f"""    stand total H{hand.hard_count} S{hand.soft_count}"""
+                                    f"""        stand total H{hand.hard_count} S{hand.soft_count}"""
                                 )
                                 break
 
@@ -1009,7 +994,7 @@ class BlackJack:
                                 hand.bet *= 2
                                 hand.outcome = HandOutcome.STAND
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: double down: {card.rank.value}{card.suite.value}, total H{hand.hard_count} S{hand.soft_count}"""
+                                    f"""        double down: {card.rank.value}{card.suite.value}, total H{hand.hard_count} S{hand.soft_count}"""
                                 )
                                 break
 
@@ -1018,11 +1003,11 @@ class BlackJack:
                                 hand.add_card(card)
                                 hand_total: int = hand.count
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: hit: {card.rank.value}{card.suite.value}, total H{hand.hard_count} S{hand.soft_count}"""
+                                    f"""        hit: {card.rank.value}{card.suite.value}, total H{hand.hard_count} S{hand.soft_count}"""
                                 )
                                 if hand_total > 21:
                                     hand.outcome = HandOutcome.BUST
-                                    print(f"""    hand {mh+1}.{hand_index+1}: bust""")
+                                    print(f"""        bust""")
                                     break
                                 else:
                                     hand.outcome = HandOutcome.IN_PLAY
@@ -1035,21 +1020,7 @@ class BlackJack:
                                     hand_index, cards_to_add=(card1, card2)
                                 )
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: split, adding cards: {card1.rank.value}{card1.suite.value}, {card2.rank.value}{card2.suite.value}"""
-                                )
-                                print(f"""    hand {mh+1}.{hand_index+1}:""")
-                                print(
-                                    f"""        Card 1: {master_hand.hands[hand_index].cards[0].rank.value}{master_hand.hands[hand_index].cards[0].suite.value}"""
-                                )
-                                print(
-                                    f"""        Card 2: {master_hand.hands[hand_index].cards[1].rank.value}{master_hand.hands[hand_index].cards[1].suite.value}"""
-                                )
-                                print(f"""    hand {mh+1}.{new_hand_index+1}:""")
-                                print(
-                                    f"""        Card 1: {master_hand.hands[new_hand_index].cards[0].rank.value}{master_hand.hands[new_hand_index].cards[0].suite.value}"""
-                                )
-                                print(
-                                    f"""        Card 2: {master_hand.hands[new_hand_index].cards[1].rank.value}{master_hand.hands[new_hand_index].cards[1].suite.value}"""
+                                    f"""        split, adding cards: {card1.rank.value}{card1.suite.value}, {card2.rank.value}{card2.suite.value}"""
                                 )
 
                             else:
@@ -1172,7 +1143,9 @@ class BlackJack:
 # pdb.set_trace()
 
 bj = BlackJack()
-bj.play_game()
+
+for i in range(10):
+    bj.play_game()
 
 # exit(0xDEADBEEF)
 
