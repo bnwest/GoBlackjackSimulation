@@ -4,9 +4,14 @@ import (
 	"testing"
 
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
+	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
 
 	"github.com/stretchr/testify/assert"
 )
+
+// For a unit test to be recognized as such, the name 
+// of the test function should start with a prefix “Test”
+// and should take *testing. T as its only parameter.
 
 func TestCardSuite(t *testing.T) {
 
@@ -102,4 +107,88 @@ func TestCardRank(t *testing.T) {
 		    assert.Equal(t, rank, cards.CardRank(i), "card rank enum is expected int")
 		}
 	}
+}
+
+func TestCardRankValue(t *testing.T) {
+	for i := cards.ACE; i <= cards.NINE; i++ {
+        assert.Equal(t, int(i), cards.CardRankValue[i], "card rank value be an int 1..10.")
+	}
+	for i := cards.TEN; i <= cards.KING; i++ {
+		assert.Equal(t, 10, cards.CardRankValue[i], "card rank value be an int 1..10.")
+	}
+}
+
+func TestUnshuffledDeck(t *testing.T) {
+	hearts_count := 0
+	diamonds_count := 0
+	spades_count := 0
+	clubs_count := 0
+
+	rank_counts := map[cards.CardRank]int {
+		cards.ACE: 0,
+		cards.TWO: 0,
+		cards.THREE: 0,
+		cards.FOUR: 0,
+		cards.FIVE: 0,
+		cards.SIX: 0,
+		cards.SEVEN: 0,
+		cards.EIGHT: 0,
+		cards.NINE: 0,
+		cards.TEN: 0,
+		cards.JACK: 0,
+		cards.QUEEN: 0,
+		cards.KING: 0,
+	}
+
+	for i := 0; i < len(cards.UNSHUFFLED_DECK); i++ {
+		var card cards.Card = cards.UNSHUFFLED_DECK[i]
+		if card.Suite == cards.HEARTS {
+			hearts_count++
+		} else if card.Suite == cards.DIAMONDS {
+			diamonds_count++
+		} else if card.Suite == cards.SPADES {
+			spades_count++
+		} else if card.Suite == cards.CLUBS {
+			clubs_count++
+		}
+		rank_counts[card.Rank]++
+	}
+
+	assert.Equal(t, hearts_count,   13, "deck must 13 cards from each suite")
+	assert.Equal(t, diamonds_count, 13, "deck must 13 cards from each suite")
+	assert.Equal(t, spades_count,   13, "deck must 13 cards from each suite")
+	assert.Equal(t, clubs_count,    13, "deck must 13 cards from each suite")
+
+	for rank := cards.ACE; rank <= cards.KING; rank++ {
+        assert.Equal(t, rank_counts[rank], 4, "deck must have four of each rank")
+	}
+}
+
+func TestCreateShoe(t *testing.T) {
+	shoe := cards.CreateShoe()
+	assert.Equal(
+		t, 
+		len(shoe), 
+		rules.HOUSE_RULES.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK), 
+		"shoe must have the correctnumber of cards",
+	)
+}
+
+
+func TestDisplayShoe(t *testing.T) {
+	shoe := cards.CreateShoe()
+	assert.Equal(
+		t, 
+		len(shoe), 
+		rules.HOUSE_RULES.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK), 
+		"shoe must have the correct number of cards",
+	)
+	cards.ShuffleShoe(shoe)
+	assert.Equal(
+		t, 
+		len(shoe), 
+		rules.HOUSE_RULES.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK), 
+		"shoe must have the correct number of cards",
+	)
+	// cards.DisplayShoe(shoe)
 }

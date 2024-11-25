@@ -74,8 +74,8 @@ class HouseRules:
     SPLIT_ON_VALUE_MATCH: bool = True
 
     # Hit on soft 17 (6/8 decks) is more common on low bet tables.
-    DEALER_HITS_HARD_ON: bool = 16  # or less
-    DEALER_HITS_SOFT_ON: bool = 17  # or less
+    DEALER_HITS_HARD_ON: int = 16  # or less
+    DEALER_HITS_SOFT_ON: int = 17  # or less
 
     # 1.5 => 3 to 2 payout, 1.2 => 6 to 5 payout
     # 6 to 5 is more common in two deck games
