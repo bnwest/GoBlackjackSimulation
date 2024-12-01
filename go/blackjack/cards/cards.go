@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"slices"
 
-	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
+	house_rules "github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
 )
 
 // enums are not first calss citizens in Go.
@@ -142,7 +142,7 @@ var UNSHUFFLED_DECK = []Card {
 
 func CreateShoe() []Card {
     var shoe []Card = []Card{}
-	switch rules.HOUSE_RULES.DECKS_IN_SHOE {
+	switch house_rules.DECKS_IN_SHOE {
 	case 1:
 		shoe = UNSHUFFLED_DECK
 	case 2:

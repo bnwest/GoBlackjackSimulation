@@ -7,6 +7,8 @@
 // must have the prefix "Test"
 // 5. The ":=" declaration + assignment operator does not take a type, FTW.
 // 6. ":=" and "=" are maddenly different
+// 7. Go has no "set" aggregate type.
+// 8. Go does not support constant arrays, maps or slices.
 
 package main
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
-	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
+	house_rules "github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -169,7 +169,7 @@ func TestCreateShoe(t *testing.T) {
 	assert.Equal(
 		t, 
 		len(shoe), 
-		rules.HOUSE_RULES.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK), 
+		house_rules.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK),
 		"shoe must have the correctnumber of cards",
 	)
 }
@@ -180,14 +180,14 @@ func TestDisplayShoe(t *testing.T) {
 	assert.Equal(
 		t, 
 		len(shoe), 
-		rules.HOUSE_RULES.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK), 
+		house_rules.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK),
 		"shoe must have the correct number of cards",
 	)
 	cards.ShuffleShoe(shoe)
 	assert.Equal(
 		t, 
 		len(shoe), 
-		rules.HOUSE_RULES.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK), 
+		house_rules.DECKS_IN_SHOE * len(cards.UNSHUFFLED_DECK),
 		"shoe must have the correct number of cards",
 	)
 	// cards.DisplayShoe(shoe)
