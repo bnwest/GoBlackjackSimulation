@@ -467,7 +467,7 @@ H = "hit"
 Dh = "double-down-if-allowed-or-hit"
 Ds = "double-down-if-allowed-or-stand"
 SP = "split"
-# U => Surrender, in a world of too many Ss
+# U => Surrender, in a world of too many S words
 Uh = "surrender-if-allowed-or-hit"
 Us = "surrender-if-allowed-or-stand"
 Usp = "surrender-if-allowed-or-split"
@@ -622,7 +622,7 @@ _PAIRS_DECISION = [
 ]
 
 
-def create_pairs_decision() -> dict[CardRank, str]:
+def create_pairs_decision() -> dict[CardRank, dict[CardRank, str]]:
     """
     Turn the _PAIRS_DECISION table into a rank based dictiopnary:
         PAIRS_DECISION: dict[CardRank, str] = {
@@ -631,7 +631,7 @@ def create_pairs_decision() -> dict[CardRank, str]:
             }, ...
         }
     """
-    decisions: dict[CardRank, str] = {}
+    decisions: dict[CardRank, dict[CardRank, str]] = {}
 
     for player_pair_card_rank in CardRank:
         decisions[player_pair_card_rank] = {}
@@ -761,7 +761,7 @@ _SOFT_TOTAL_DECISION = [
     [NO,  S,  S,  S,  S,  S, Ds,  S,  S,  S,  S,  S,  S,  S],  # fmt: skip
     # soft total: 20 (A, 9)  x  dealer top card
     [NO,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S],  # fmt: skip
-    # soft total: 20 (A, 9)  x  dealer top card
+    # soft total: 21 (A, 10)  x  dealer top card
     [NO,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S],  # fmt: skip
 ]
 
