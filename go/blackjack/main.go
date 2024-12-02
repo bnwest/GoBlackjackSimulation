@@ -7,8 +7,11 @@
 // must have the prefix "Test"
 // 5. The ":=" declaration + assignment operator does not take a type, FTW.
 // 6. ":=" and "=" are maddenly different
+// 6.1 ":=" only works in a function context
 // 7. Go has no "set" aggregate type.
 // 8. Go does not support constant arrays, maps or slices.
+// 9. Methods are added outside the struct ... aka a receiver functionAddCard() is a receiver function.
+// 10. Tuple type has no intrinsic support ... workaround is to define then use struct
 
 package main
 

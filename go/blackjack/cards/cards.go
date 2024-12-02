@@ -19,7 +19,7 @@ const (
 	CLUBS
 )
 
-var CardSuiteValue = map[CardSuite]string {
+var CardSuiteValue = map[CardSuite]string{
 	HEARTS:   "♥️", // aka U+2665 + U+fe0f
 	DIAMONDS: "♦️", // aka U+2666 + U+fe0f
 	SPADES:   "♠️", // aka U+2660 + U+fe0f
@@ -44,44 +44,44 @@ const (
 	KING
 )
 
-var CardRankValue = map[CardRank]int {
-    ACE:    1,
-    TWO:    2,
-    THREE:  3,
-    FOUR:   4,
-    FIVE:   5,
-    SIX:    6,
-    SEVEN:  7,
-    EIGHT:  8,
-    NINE:   9,
-    TEN:   10,
-    JACK:  10,
-    QUEEN: 10,
-    KING:  10,
+var CardRankValue = map[CardRank]int{
+	ACE:   1,
+	TWO:   2,
+	THREE: 3,
+	FOUR:  4,
+	FIVE:  5,
+	SIX:   6,
+	SEVEN: 7,
+	EIGHT: 8,
+	NINE:  9,
+	TEN:   10,
+	JACK:  10,
+	QUEEN: 10,
+	KING:  10,
 }
 
-var CardRankString = map[CardRank]string {
-    ACE:    "A",
-    TWO:    "2",
-    THREE:  "3",
-    FOUR:   "4",
-    FIVE:   "5",
-    SIX:    "6",
-    SEVEN:  "7",
-    EIGHT:  "8",
-    NINE:   "9",
-    TEN:   "10",
-    JACK:  "J",
-    QUEEN: "Q",
-    KING:  "K",
+var CardRankString = map[CardRank]string{
+	ACE:   "A",
+	TWO:   "2",
+	THREE: "3",
+	FOUR:  "4",
+	FIVE:  "5",
+	SIX:   "6",
+	SEVEN: "7",
+	EIGHT: "8",
+	NINE:  "9",
+	TEN:   "10",
+	JACK:  "J",
+	QUEEN: "Q",
+	KING:  "K",
 }
 
 type Card struct {
 	Suite CardSuite
-	Rank CardRank
+	Rank  CardRank
 }
 
-var UNSHUFFLED_DECK = []Card {
+var UNSHUFFLED_DECK = []Card{
 	// HEARTS
 	Card{Suite: HEARTS, Rank: ACE},
 	Card{Suite: HEARTS, Rank: TWO},
@@ -141,7 +141,7 @@ var UNSHUFFLED_DECK = []Card {
 }
 
 func CreateShoe() []Card {
-    var shoe []Card = []Card{}
+	var shoe []Card = []Card{}
 	switch house_rules.DECKS_IN_SHOE {
 	case 1:
 		shoe = UNSHUFFLED_DECK
@@ -162,13 +162,13 @@ func CreateShoe() []Card {
 	default:
 		shoe = UNSHUFFLED_DECK
 	}
-    return shoe
+	return shoe
 }
 
 func ShuffleShoe(shoe []Card) {
 	for i := 0; i < len(shoe); i++ {
 		rand.Shuffle(
-			len(shoe), 
+			len(shoe),
 			func(i, j int) {
 				shoe[i], shoe[j] = shoe[j], shoe[i]
 			},
@@ -182,3 +182,4 @@ func DisplayShoe(shoe []Card) {
 		fmt.Printf("%v%v\n", CardRankString[card.Rank], CardSuiteValue[card.Suite])
 	}
 }
+ 

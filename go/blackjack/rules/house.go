@@ -8,7 +8,8 @@ const DECKS_IN_SHOE int = 6
 const FORCE_RESHUFFLE int = ((52 * DECKS_IN_SHOE) * 3) / 4
 
 // True => Must stand after the Ace split (stand on the Ace plus the one card dealt after split)
-// True => no double down after the Ace split, no splitting Aces after the Ace split
+// True => no double down after the Ace split, 
+// True => no splitting Aces after the Ace split
 const NO_MORE_CARDS_AFTER_SPLITTING_ACES bool = true
 
 // [9, 10, 11] aka range(9, 12) => "Reno Rules"
