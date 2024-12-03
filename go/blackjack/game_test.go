@@ -429,9 +429,12 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		// have a card pair to split to the first hand
 		master_hand.Hands[0].Cards = []cards.Card{card1, card2}
 
+		//
+		// SPLIT #1:
 		// hand[0] [A♥️, A♠️]
 		// splits into 
 		// hand[0] [A♥️, A♦️] and hand[1] [A♠️, A♣️]
+		//
 
 		// create two new cards to add second to each split hand
 		new_card1 := cards.Card{Suite: cards.DIAMONDS, Rank: cards.CardRank(i)}
@@ -439,14 +442,18 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		cards_to_add := [2]cards.Card{new_card1, new_card2}
 
 		hand_index := 0
+		assert.Equal(t, true, master_hand.CanSplit(hand_index), "Hand should be split-able")
 
 		new_hand_index := master_hand.SplitHand(hand_index, cards_to_add)
 		assert.Equal(t, 2, master_hand.Num_Hands(), "Master Hand should now have 2 hands")
 		assert.Equal(t, 1, new_hand_index, "New split hand got added as expected")
 
+		//
+		// SPLIT #2:
 		// hand[0] [A♥️, A♦️]
 		// splits into
 		// hand[0] [A♥️, A♣️] and hand[2] [A♦️, A♠️]
+		//
 
 		// create two new cards to add second to each split hand
 		new_card1 = cards.Card{Suite: cards.CLUBS, Rank: cards.CardRank(i)}
@@ -454,14 +461,18 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		cards_to_add = [2]cards.Card{new_card1, new_card2}
 
 		hand_index = 0
+		assert.Equal(t, true, master_hand.CanSplit(hand_index), "Hand should be split-able")
 
 		new_hand_index = master_hand.SplitHand(hand_index, cards_to_add)
 		assert.Equal(t, 3, master_hand.Num_Hands(), "Master Hand should now have 2 hands")
 		assert.Equal(t, 2, new_hand_index, "New split hand got added as expected")
 
+		//
+		// SPLIT #3:
 		// hand[1] [A♠️, A♣️]
 		// splits into
 		// hand[1] [A♠️, A♦️] and hand[3] [A♣️, A♥️]
+		//
 
 		// create two new cards to add second to each split hand
 		new_card1 = cards.Card{Suite: cards.DIAMONDS, Rank: cards.CardRank(i)}
@@ -469,10 +480,25 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		cards_to_add = [2]cards.Card{new_card1, new_card2}
 
 		hand_index = 1
+		assert.Equal(t, true, master_hand.CanSplit(hand_index), "Hand should be split-able")
 
 		new_hand_index = master_hand.SplitHand(hand_index, cards_to_add)
 		assert.Equal(t, 4, master_hand.Num_Hands(), "Master Hand should now have 2 hands")
 		assert.Equal(t, 3, new_hand_index, "New split hand got added as expected")
+
+		//
+		// A master should only be able to be split 3 times
+		// => a single master hand can turn into no more than four hands
+		//
+
+		assert.Equal(t, false, master_hand.CanSplit(0), "Hand should not be split-able")
+		assert.Equal(t, false, master_hand.CanSplit(1), "Hand should not be split-able")
+		assert.Equal(t, false, master_hand.CanSplit(2), "Hand should not be split-able")
+		assert.Equal(t, false, master_hand.CanSplit(3), "Hand should not be split-able")
+
+		//
+		// Verify that thee four hand in the master hands have the expected cards.
+		//
 
 		// master_hand.Hands[0]  [A♥️, A♣️]
 		assert.Equalf(

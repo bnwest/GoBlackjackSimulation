@@ -287,7 +287,7 @@ func (self *PlayerMasterHand) AddStartHand(bet int) {
 	self.Hands = append(self.Hands, *player_hand)
 }
 
-func (self *PlayerMasterHand) dump_hands(preface string) {
+func (self *PlayerMasterHand) log_hands(preface string) {
 	fmt.Printf("%v: MasterHand\n", preface)
 	for i := 0; i < len(self.Hands); i++ {
 		hand := self.Hands[i]
@@ -308,7 +308,7 @@ func (self *PlayerMasterHand) SplitHand(
 	hand_index int,
 	cards_to_add [2]cards.Card,
 ) int {
-	// self.dump_hands("before")
+	// self.log_hands("before")
 
 	// there are two in the hand of the same value
 	// or rank depending of the house rules.
@@ -328,7 +328,19 @@ func (self *PlayerMasterHand) SplitHand(
 	new_hand_index := self.Num_Hands()
 	self.Hands = append(self.Hands, *new_player_hand)
 
-	// self.dump_hands("after")
+	// self.log_hands("after")
 
 	return new_hand_index
+}
+
+func (self *PlayerMasterHand) CanSplit(hand_index int) bool {
+	if self.Num_Hands() < self.HANDS_LIMIT {
+		// master hand allows
+		hand := &self.Hands[hand_index]
+		if hand.CanSplit() {
+			// individual hand allows
+			return true
+		}
+	}
+	return false
 }
