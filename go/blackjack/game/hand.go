@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
 	house_rules "github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
 )
@@ -46,13 +48,17 @@ func CreatePlayerHand(from_split bool, bet int) *PlayerHand {
 // (self PlayerHand) uses a copy of the object,
 //     all updates are made to the copy
 
+func (self *PlayerHand) Num_Cards() int {
+	return len(self.Cards)
+}
+
 func (self *PlayerHand) AddCard(card cards.Card) {
 	self.Cards = append(self.Cards, card)
 }
 
 func (self *PlayerHand) AcesCount() int {
 	count := 0
-	for i := 0; i < len(self.Cards); i++ {
+	for i := 0; i < self.Num_Cards(); i++ {
 		card := self.Cards[i]
 		if card.Rank == cards.ACE {
 			count++
@@ -63,7 +69,7 @@ func (self *PlayerHand) AcesCount() int {
 
 func (self *PlayerHand) HardCount() int {
 	hard_count := 0
-	for i := 0; i < len(self.Cards); i++ {
+	for i := 0; i < self.Num_Cards(); i++ {
 		card := self.Cards[i]
 		hard_count += cards.CardRankValue[card.Rank]
 	}
@@ -77,7 +83,7 @@ func (self *PlayerHand) SoftCount() int {
 	// and the soft count has become the hard count.
 	soft_count := 0
 	aces_count := 0
-	for i := 0; i < len(self.Cards); i++ {
+	for i := 0; i < self.Num_Cards(); i++ {
 		card := self.Cards[i]
 		if card.Rank == cards.ACE {
 			soft_count += 11
@@ -105,7 +111,7 @@ func (self *PlayerHand) Count() int {
 
 func (self *PlayerHand) IsNatural() bool {
 	if !self.FromSplit {
-		if len(self.Cards) == 2 {
+		if self.Num_Cards() == 2 {
 			if self.SoftCount() == 21 {
 				return true
 			}
@@ -118,16 +124,12 @@ func (self *PlayerHand) IsBust() bool {
 	return self.Count() > 21
 }
 
-func (self *PlayerHand) CardCount() int {
-	return len(self.Cards)
-}
-
 func (self *PlayerHand) CanSplit() bool {
 	// there are other split house rules that will be applied
 	// at a higher abstraction level ... like splitting aces 
 	// after a split ...like limiting the number of splits 
 	// from the original (aka "master") hand.
-	if self.CardCount() == 2 {
+	if self.Num_Cards() == 2 {
 		card1 := self.Cards[0]
 		card2 := self.Cards[1]
 		if house_rules.SPLIT_ON_VALUE_MATCH {
@@ -185,7 +187,7 @@ func (self *DealerHand) AddCard(card cards.Card) {
 
 func (self *DealerHand) HardCount() int {
 	hard_count := 0
-	for i := 0; i < len(self.Cards); i++ {
+	for i := 0; i < self.Num_Cards(); i++ {
 		card := self.Cards[i]
 		hard_count += cards.CardRankValue[card.Rank]
 	}
@@ -199,7 +201,7 @@ func (self *DealerHand) SoftCount() int {
 	// and the soft count has become the hard count.
 	soft_count := 0
 	aces_count := 0
-	for i := 0; i < len(self.Cards); i++ {
+	for i := 0; i < self.Num_Cards(); i++ {
 		card := self.Cards[i]
 		if card.Rank == cards.ACE {
 			soft_count += 11
@@ -226,7 +228,7 @@ func (self *DealerHand) Count() int {
 }
 
 func (self *DealerHand) IsNatural() bool {
-	if len(self.Cards) == 2 {
+	if self.Num_Cards() == 2 {
 		if self.SoftCount() == 21 {
 			return true
 		}
@@ -238,7 +240,7 @@ func (self *DealerHand) IsBust() bool {
 	return self.Count() > 21
 }
 
-func (self *DealerHand) CardCount() int {
+func (self *DealerHand) Num_Cards() int {
 	return len(self.Cards)
 }
 
@@ -255,4 +257,78 @@ func (self *DealerHand) IsHandOver() bool {
 	default:
 		return false
 	}
+}
+
+//
+// PlayerMasterHand
+//
+
+type PlayerMasterHand struct {
+	HANDS_LIMIT int
+	Hands []PlayerHand
+}
+
+// factory
+func CreatePlayerMasterHand() *PlayerMasterHand {
+    master_hand := PlayerMasterHand{
+		Hands: []PlayerHand{},
+		HANDS_LIMIT: house_rules.SPLITS_PER_HAND + 1,
+	}
+	return &master_hand
+}
+
+func (self *PlayerMasterHand) Num_Hands() int {
+	return len(self.Hands)
+}
+
+func (self *PlayerMasterHand) AddStartHand(bet int) {
+	const from_split bool = false
+	player_hand := CreatePlayerHand(from_split, bet)
+	self.Hands = append(self.Hands, *player_hand)
+}
+
+func (self *PlayerMasterHand) dump_hands(preface string) {
+	fmt.Printf("%v: MasterHand\n", preface)
+	for i := 0; i < len(self.Hands); i++ {
+		hand := self.Hands[i]
+		fmt.Printf("    Hand %v\n", i+1)
+		for j := 0; j < len(hand.Cards); j++ {
+			card := hand.Cards[j]
+			fmt.Printf(
+				"        Card %v: %v%v\n", 
+				j+1,
+				cards.CardRankString[card.Rank],
+				cards.CardSuiteValue[card.Suite],
+			)
+		}
+	}
+}
+
+func (self *PlayerMasterHand) SplitHand(
+	hand_index int,
+	cards_to_add [2]cards.Card,
+) int {
+	// self.dump_hands("before")
+
+	// there are two in the hand of the same value
+	// or rank depending of the house rules.
+	card1 := self.Hands[hand_index].Cards[0]
+	card2 := self.Hands[hand_index].Cards[1]
+
+	// use reference to modify the Hands array in place
+	old_player_hand := &self.Hands[hand_index]
+	old_player_hand.Cards = []cards.Card{card1, cards_to_add[0]}
+	old_player_hand.FromSplit = true
+	old_player_hand.OutCome = HandOutcome(IN_PLAY)
+
+	new_player_hand := CreatePlayerHand(true, old_player_hand.Bet)
+	new_player_hand.Cards = []cards.Card{card2, cards_to_add[1]}
+	new_player_hand.OutCome = HandOutcome(IN_PLAY)
+
+	new_hand_index := self.Num_Hands()
+	self.Hands = append(self.Hands, *new_player_hand)
+
+	// self.dump_hands("after")
+
+	return new_hand_index
 }
