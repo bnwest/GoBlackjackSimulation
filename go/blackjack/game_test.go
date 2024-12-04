@@ -669,3 +669,35 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		)
 	}
 }
+
+func TestCreatePlayer(t *testing.T) {
+	dealer := game.CreateDealer()
+	player1 := game.CreatePlayer("John")
+	player2 := game.CreatePlayer("Jane")
+
+	player1.SetGameBets([]int{2})
+	player2.SetGameBets([]int{2, 2})
+
+	assert.Equal(t, 1, player1.Num_Master_Hands(), "player 1 should 1 master hand")
+	assert.Equal(t, 2, player2.Num_Master_Hands(), "player 2 should 2 master hand")
+
+	// deal opening hand
+
+	card := cards.Card{Suite: cards.SPADES, Rank: cards.ACE}
+
+	for i := 0; i < 2; i++ {
+		for j := 0; j < player1.Num_Master_Hands(); j++ {
+			player1.PlayerMasterHands[j].Hands[0].AddCard(card)
+		}
+		for j := 0; j < player2.Num_Master_Hands(); j++ {
+			player2.PlayerMasterHands[j].Hands[0].AddCard(card)
+		}
+		dealer.DealerHand.AddCard(card)
+	}
+
+	assert.Equal(t, 2, player1.PlayerMasterHands[0].Hands[0].Num_Cards(), "Player 1 should have 2 cards in hand")
+	assert.Equal(t, 2, player2.PlayerMasterHands[0].Hands[0].Num_Cards(), "Player 2.1 should have 2 cards in hand")
+	assert.Equal(t, 2, player2.PlayerMasterHands[1].Hands[0].Num_Cards(), "Player 2.2 should have 2 cards in hand")
+
+	assert.Equal(t, 2, dealer.DealerHand.Num_Cards(), "Dealer should have 2 cards in hand")
+}
