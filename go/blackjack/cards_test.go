@@ -25,15 +25,15 @@ func TestCardSuite(t *testing.T) {
 	assert.Equal(t, spades,   cards.CardSuite(2), "card suite enum should be int")
 	assert.Equal(t, clubs,    cards.CardSuite(3), "card suite enum should be int")
 
-    assert.NotEqual(t, cards.CardSuiteValue[hearts],   "hearts",   "card suite string should match")
-    assert.NotEqual(t, cards.CardSuiteValue[diamonds], "diamonds", "card suite string should match")
-    assert.NotEqual(t, cards.CardSuiteValue[spades],   "spades",   "card suite string should match")
-    assert.NotEqual(t, cards.CardSuiteValue[clubs],    "clubs",    "card suite string should match")
+	assert.NotEqual(t, cards.CardSuiteValue[hearts],   "hearts",   "card suite string should match")
+	assert.NotEqual(t, cards.CardSuiteValue[diamonds], "diamonds", "card suite string should match")
+	assert.NotEqual(t, cards.CardSuiteValue[spades],   "spades",   "card suite string should match")
+	assert.NotEqual(t, cards.CardSuiteValue[clubs],    "clubs",    "card suite string should match")
 
-    assert.Equal(t, cards.CardSuiteValue[hearts],   "♥️",   "card suite string should match")
-    assert.Equal(t, cards.CardSuiteValue[diamonds], "♦️", "card suite string should match")
-    assert.Equal(t, cards.CardSuiteValue[spades],   "♠️",   "card suite string should match")
-    assert.Equal(t, cards.CardSuiteValue[clubs],    "♣️",    "card suite string should match")
+	assert.Equal(t, cards.CardSuiteValue[hearts],   "♥️", "card suite string should match")
+	assert.Equal(t, cards.CardSuiteValue[diamonds], "♦️", "card suite string should match")
+	assert.Equal(t, cards.CardSuiteValue[spades],   "♠️", "card suite string should match")
+	assert.Equal(t, cards.CardSuiteValue[clubs],    "♣️",  "card suite string should match")
 }
 
 func TestCardRank(t *testing.T) {
@@ -103,15 +103,15 @@ func TestCardRank(t *testing.T) {
 		// and a boolean value that reports whether the assertion succeeded.
 		rank, ok := maybe_rank.(cards.CardRank)
 		if ok {
-		    assert.Equal(t, int(rank), i, "card rank enum is expected int")
-		    assert.Equal(t, rank, cards.CardRank(i), "card rank enum is expected int")
+			assert.Equal(t, int(rank), i, "card rank enum is expected int")
+			assert.Equal(t, rank, cards.CardRank(i), "card rank enum is expected int")
 		}
 	}
 }
 
 func TestCardRankValue(t *testing.T) {
 	for i := cards.ACE; i <= cards.NINE; i++ {
-        assert.Equal(t, int(i), cards.CardRankValue[i], "card rank value be an int 1..10.")
+		assert.Equal(t, int(i), cards.CardRankValue[i], "card rank value be an int 1..10.")
 	}
 	for i := cards.TEN; i <= cards.KING; i++ {
 		assert.Equal(t, 10, cards.CardRankValue[i], "card rank value be an int 1..10.")
@@ -157,10 +157,10 @@ func TestUnshuffledDeck(t *testing.T) {
 	assert.Equal(t, hearts_count,   13, "deck must 13 cards from each suite")
 	assert.Equal(t, diamonds_count, 13, "deck must 13 cards from each suite")
 	assert.Equal(t, spades_count,   13, "deck must 13 cards from each suite")
-	assert.Equal(t, clubs_count,    13, "deck must 13 cards from each suite")
+	assert.Equal(t, clubs_count,	13, "deck must 13 cards from each suite")
 
 	for rank := cards.ACE; rank <= cards.KING; rank++ {
-        assert.Equal(t, rank_counts[rank], 4, "deck must have four of each rank")
+		assert.Equal(t, rank_counts[rank], 4, "deck must have four of each rank")
 	}
 }
 

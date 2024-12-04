@@ -12,6 +12,7 @@
 // 8. Go does not support constant arrays, maps or slices.
 // 9. Methods are added outside the struct ... aka a receiver functionAddCard() is a receiver function.
 // 10. Tuple type has no intrinsic support ... workaround is to define then use struct
+// 11. gofmt is not configurable, no way to disable formatting for a block of code
 
 package main
 

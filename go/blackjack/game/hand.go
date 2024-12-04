@@ -10,11 +10,11 @@ import (
 type HandOutcome string
 
 const (
-    STAND HandOutcome            = "stand"
-    BUST HandOutcome             = "bust"
-    SURRENDER HandOutcome        = "surrender"
-    DEALER_BLACKJACK HandOutcome = "dealer-blackjack"
-    IN_PLAY HandOutcome          = "in-play"
+	STAND HandOutcome            = "stand"
+	BUST HandOutcome             = "bust"
+	SURRENDER HandOutcome        = "surrender"
+	DEALER_BLACKJACK HandOutcome = "dealer-blackjack"
+	IN_PLAY HandOutcome          = "in-play"
 )
 
 //
@@ -30,7 +30,7 @@ type PlayerHand struct {
 
 // factory
 func CreatePlayerHand(from_split bool, bet int) *PlayerHand {
-    hand := PlayerHand{
+	hand := PlayerHand{
 		Cards: []cards.Card{},
 		FromSplit: from_split,
 		Bet: bet,
@@ -89,10 +89,10 @@ func (self *PlayerHand) SoftCount() int {
 			soft_count += 11
 			aces_count++
 		} else {
-    		soft_count += cards.CardRankValue[card.Rank]
+			soft_count += cards.CardRankValue[card.Rank]
 		}
 	}
-    if soft_count > 21 {
+	if soft_count > 21 {
 		for i := 0; i < aces_count; i++ {
 			soft_count -= 10
 			if soft_count <= 21 {
@@ -173,7 +173,7 @@ type DealerHand struct {
 
 // factory
 func CreateDealerHand() *DealerHand {
-    hand := DealerHand{
+	hand := DealerHand{
 		Cards: []cards.Card{},
 		OutCome: HandOutcome(IN_PLAY),
 	}
@@ -207,10 +207,10 @@ func (self *DealerHand) SoftCount() int {
 			soft_count += 11
 			aces_count++
 		} else {
-    		soft_count += cards.CardRankValue[card.Rank]
+			soft_count += cards.CardRankValue[card.Rank]
 		}
 	}
-    if soft_count > 21 {
+	if soft_count > 21 {
 		for i := 0; i < aces_count; i++ {
 			soft_count -= 10
 			if soft_count <= 21 {
@@ -270,7 +270,7 @@ type PlayerMasterHand struct {
 
 // factory
 func CreatePlayerMasterHand() *PlayerMasterHand {
-    master_hand := PlayerMasterHand{
+	master_hand := PlayerMasterHand{
 		Hands: []PlayerHand{},
 		HANDS_LIMIT: house_rules.SPLITS_PER_HAND + 1,
 	}
@@ -322,7 +322,7 @@ func (self *PlayerMasterHand) SplitHand(
 	old_player_hand.OutCome = HandOutcome(IN_PLAY)
 
 	new_player_hand := CreatePlayerHand(true, old_player_hand.Bet)
-	new_player_hand.Cards = []cards.Card{card2, cards_to_add[1]}
+		new_player_hand.Cards = []cards.Card{card2, cards_to_add[1]}
 	new_player_hand.OutCome = HandOutcome(IN_PLAY)
 
 	new_hand_index := self.Num_Hands()

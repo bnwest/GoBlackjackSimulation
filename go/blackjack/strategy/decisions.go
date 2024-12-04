@@ -3,11 +3,11 @@ package strategy
 type Decision string
 
 const (
-	S   Decision = "stand"
-	H   Decision = "hit"
-	Dh  Decision = "double-down-if-allowed-or-hit"
-	Ds  Decision = "double-down-if-allowed-or-stand"
-	SP  Decision = "split"
+	S  Decision = "stand"
+	H  Decision = "hit"
+	Dh Decision = "double-down-if-allowed-or-hit"
+	Ds Decision = "double-down-if-allowed-or-stand"
+	SP Decision = "split"
 	// U => Surrender, in a world of too many S words
 	Uh  Decision = "surrender-if-allowed-or-hit"
 	Us  Decision = "surrender-if-allowed-or-stand"
@@ -24,15 +24,14 @@ func IsValidDecision(decision Decision) bool {
 	return false
 }
 
-
 type PlayerDecision string
 
 const (
-    STAND     PlayerDecision = "stand"
-    HIT       PlayerDecision = "hit"
-    DOUBLE    PlayerDecision = "double-down"
-    SPLIT     PlayerDecision = "split"
-    SURRENDER PlayerDecision = "surrender"
+	STAND     PlayerDecision = "stand"
+	HIT       PlayerDecision = "hit"
+	DOUBLE    PlayerDecision = "double-down"
+	SPLIT     PlayerDecision = "split"
+	SURRENDER PlayerDecision = "surrender"
 )
 
 func IsValidPlayerDecision(player_decision PlayerDecision) bool {
