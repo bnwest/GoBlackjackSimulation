@@ -413,7 +413,8 @@ func dump_hands(intro string, expected []cards.Card, actual []cards.Card) {
 }
 
 func TestPlayerMasterHandSplitHand(t *testing.T) {
-	master_hand := game.CreatePlayerMasterHand()
+	var master_hand *game.PlayerMasterHand
+	master_hand = game.CreatePlayerMasterHand()
 
 	bet := 2
 	master_hand.AddStartHand(bet)
@@ -421,7 +422,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 	// add pair to start hand in the master hand
 	for i := cards.ACE; i <= cards.KING; i++ {
 		// reset master hand back to have just a single hand
-		master_hand.Hands = []game.PlayerHand{master_hand.Hands[0]}
+		master_hand.Hands = []*game.PlayerHand{master_hand.Hands[0]}
 
 		card1 := cards.Card{Suite: cards.HEARTS, Rank: cards.CardRank(i)}
 		card2 := cards.Card{Suite: cards.SPADES, Rank: cards.CardRank(i)}
@@ -678,8 +679,8 @@ func TestCreatePlayer(t *testing.T) {
 	player1.SetGameBets([]int{2})
 	player2.SetGameBets([]int{2, 2})
 
-	assert.Equal(t, 1, player1.Num_Master_Hands(), "player 1 should 1 master hand")
-	assert.Equal(t, 2, player2.Num_Master_Hands(), "player 2 should 2 master hand")
+	assert.Equal(t, 1, player1.Num_Master_Hands(), "player 1 should have 1 master hand")
+	assert.Equal(t, 2, player2.Num_Master_Hands(), "player 2 should have 2 master hand")
 
 	// deal opening hand
 
@@ -700,4 +701,27 @@ func TestCreatePlayer(t *testing.T) {
 	assert.Equal(t, 2, player2.PlayerMasterHands[1].Hands[0].Num_Cards(), "Player 2.2 should have 2 cards in hand")
 
 	assert.Equal(t, 2, dealer.DealerHand.Num_Cards(), "Dealer should have 2 cards in hand")
+}
+
+func TestBlackJackGameStart(t *testing.T) {
+	blackjack := game.CreateBlackJack()
+
+	var player1 *game.Player = game.CreatePlayer("John")
+	var player2 *game.Player = game.CreatePlayer("Jane")
+
+	blackjack.SetPlayersForGame([]*game.Player{player1, player2})
+
+	player1.SetGameBets([]int{2})
+	player2.SetGameBets([]int{2, 2})
+
+	assert.Equal(t, 1, player1.Num_Master_Hands(), "player 1 should have 1 master hand")
+	assert.Equal(t, 2, player2.Num_Master_Hands(), "player 2 should have 2 master hand")
+
+	assert.Equal(t, 1, blackjack.Players[0].Num_Master_Hands(), "player 1 should have 1 master hand")
+	assert.Equal(t, 2, blackjack.Players[1].Num_Master_Hands(), "player 2 should have 2 master hand")
+}
+
+func TestBlackJackPlayGame(t *testing.T) {
+	blackjack := game.CreateBlackJack()
+	blackjack.PlayGame()
 }
