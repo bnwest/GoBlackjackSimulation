@@ -11,19 +11,19 @@ import (
 type PlayerHandInterface interface {
 	HardCount() int
 	SoftCount() int
-	Num_Cards() int
+	NumCards() int
 	IsFromSplit() bool
 	GetCard(cardIndex int) cards.Card
 }
 
-func convert_to_player_decision(
+func convertToPlayerDecision(
 	decision Decision,
 	player_hand PlayerHandInterface,
 ) PlayerDecision {
 	// Decision sometimes return Xy, which translates to do X if allowed else do y.
 	// Determine the X or the y here.
 
-	is_first_decision := player_hand.Num_Cards() == 2
+	is_first_decision := player_hand.NumCards() == 2
 	is_first_postsplit_decision := is_first_decision && player_hand.IsFromSplit()
 
 	var player_decision PlayerDecision
@@ -98,7 +98,7 @@ func convert_to_player_decision(
 			nonsurrender_decision = PlayerDecision(SPLIT)
 		default:
 			// should never get here
-			panic("convert_to_player_decision() ran into a little trouble in town.")
+			panic("convertToPlayerDecision() ran into a little trouble in town.")
 		}
 
 		surrender_can_be_played := is_first_decision && !is_first_postsplit_decision && house_rules.SURRENDER_ALLOWED
@@ -117,7 +117,7 @@ func DetermineBasicStrategyPlay(
 	player_hand PlayerHandInterface,
 	hand_allows_more_splits bool,
 ) PlayerDecision {
-	// is_first_decision := player_hand.Num_Cards() == 2
+	// is_first_decision := player_hand.NumCards() == 2
 	// is_first_postsplit_decision := is_first_decision && player_hand.FromSplit
 
 	player_card1 := player_hand.GetCard(0)
@@ -145,7 +145,7 @@ func DetermineBasicStrategyPlay(
 		}
 
 		decision = GetPairSplitDecision(pair_rank, dealer_top_card.Rank)
-		player_decision = convert_to_player_decision(decision, player_hand)
+		player_decision = convertToPlayerDecision(decision, player_hand)
 		if player_decision == PlayerDecision(SPLIT) {
 			return PlayerDecision(SPLIT)
 		}
@@ -157,12 +157,12 @@ func DetermineBasicStrategyPlay(
 
 	if use_soft_total {
 		decision = GetSoftTotalDecision(soft_count, dealer_top_card.Rank)
-		player_decision = convert_to_player_decision(decision, player_hand)
+		player_decision = convertToPlayerDecision(decision, player_hand)
 		return player_decision
 
 	} else {
 		decision = GetHardTotalDecision(hard_count, dealer_top_card.Rank)
-		player_decision = convert_to_player_decision(decision, player_hand)
+		player_decision = convertToPlayerDecision(decision, player_hand)
 		return player_decision
 	}
 

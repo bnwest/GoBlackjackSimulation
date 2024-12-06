@@ -8,7 +8,7 @@ import (
 // Only use the SP decision from this table.  The other decisions mirror exactly
 // what the hard/soft total decision tables yield.
 
-var pairs_decisions = [14][14]Decision{
+var pairsDecisions = [14][14]Decision{
 	//0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 	{NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
 	// player pair card: Ace  x  dealer top card
@@ -40,7 +40,7 @@ var pairs_decisions = [14][14]Decision{
 	//0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 }
 
-func create_pair_decisions() map[cards.CardRank]map[cards.CardRank]Decision {
+func createPairDecisions() map[cards.CardRank]map[cards.CardRank]Decision {
 	// Convert 2D array into a map of a map of Decisions.
 	// decisions = {
 	//     cards.ACE: {cards.ACE: S, ...}, ...
@@ -64,7 +64,7 @@ func create_pair_decisions() map[cards.CardRank]map[cards.CardRank]Decision {
 		var player_pair_rank cards.CardRank =  cards.CardRank(i)
 		for j := cards.ACE; j <= cards.KING; j++ {
 			var dealer_top_card_rank cards.CardRank = cards.CardRank(j)
-			decisions[player_pair_rank][dealer_top_card_rank] = pairs_decisions[i][j]
+			decisions[player_pair_rank][dealer_top_card_rank] = pairsDecisions[i][j]
 		}
 	}
 
@@ -72,7 +72,7 @@ func create_pair_decisions() map[cards.CardRank]map[cards.CardRank]Decision {
 }
 
 // not exported
-var _PAIR_DECISIONS map[cards.CardRank]map[cards.CardRank]Decision = create_pair_decisions()
+var _PAIR_DECISIONS map[cards.CardRank]map[cards.CardRank]Decision = createPairDecisions()
 
 func GetPairSplitDecision(
 	player_pair_rank cards.CardRank,

@@ -26,11 +26,11 @@ func CreatePlayer(name string) *Player {
 	return &player
 }
 
-func (self *Player) Num_Master_Hands() int {
+func (self *Player) NumMasterHands() int {
 	return len(self.PlayerMasterHands)
 }
 
-func (self *Player) Game_Reset() {
+func (self *Player) GameReset() {
 	self.PlayerMasterHands = []*PlayerMasterHand{}
 }
 
@@ -40,7 +40,7 @@ func (self *Player) SetGameBets(bets []int) {
 	// will be considered a "master" hand.
 	// the number of bets is the number of master hands the player
 	// wants for this game.
-	self.Game_Reset()
+	self.GameReset()
 
 	for i := 0; i < len(bets); i++ {
 		bet := bets[i]
@@ -69,7 +69,7 @@ func CreateDealer() *Dealer {
 	return &dealer
 }
 
-func (self *Dealer) Game_Reset() {
+func (self *Dealer) GameReset() {
 	self.DealerHand = *CreateDealerHand()
 }
 

@@ -17,45 +17,45 @@ var hard_total_decision = [22][14]Decision{
 	// 3  x  dealer top card
 	{NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
 	// 4  x  dealer top card
-	{NO, H, H, H, H, H, H, H, H, H, H, H, H, H},
+	{NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H},
 	// 5  x  dealer top card
-	{NO, H, H, H, H, H, H, H, H, H, H, H, H, H},
+	{NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H},
 	// 6  x  dealer top card
-	{NO, H, H, H, H, H, H, H, H, H, H, H, H, H},
+	{NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H},
 	// 7  x  dealer top card
-	{NO, H, H, H, H, H, H, H, H, H, H, H, H, H},
+	{NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H},
 	// 8  x  dealer top card
-	{NO, H, H, H, H, H, H, H, H, H, H, H, H, H},
+	{NO,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H},
 	// 9  x  dealer top card
-	{NO, H, H, Dh, Dh, Dh, Dh, H, H, H, H, H, H, H},
+	{NO,  H,  H, Dh, Dh, Dh, Dh,  H,  H,  H,  H,  H,  H,  H},
 	// 10  x  dealer top card
-	{NO, H, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, H, H, H, H},
+	{NO,  H, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh,  H,  H,  H,  H},
 	// 11  x  dealer top card
 	{NO, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh},
 	// 12  x  dealer top card
-	{NO, H, H, H, S, S, S, H, H, H, H, H, H, H},
+	{NO,  H,  H,  H,  S,  S,  S,  H,  H,  H,  H,  H,  H,  H},
 	// 13  x  dealer top card
-	{NO, H, S, S, S, S, S, H, H, H, H, H, H, H},
+	{NO,  H,  S,  S,  S,  S,  S,  H,  H,  H,  H,  H,  H,  H},
 	// 14  x  dealer top card
-	{NO, H, S, S, S, S, S, H, H, H, H, H, H, H},
+	{NO,  H,  S,  S,  S,  S,  S,  H,  H,  H,  H,  H,  H,  H},
 	// 15  x  dealer top card
-	{NO, Uh, S, S, S, S, S, H, H, H, Uh, Uh, Uh, Uh},
+	{NO, Uh,  S,  S,  S,  S,  S,  H,  H,  H, Uh, Uh, Uh, Uh},
 	// 16  x  dealer top card
-	{NO, Uh, S, S, S, S, S, H, H, Uh, Uh, Uh, Uh, Uh},
+	{NO, Uh,  S,  S,  S,  S,  S,  H,  H, Uh, Uh, Uh, Uh, Uh},
 	// 17  x  dealer top card
-	{NO, Us, S, S, S, S, S, S, S, S, S, S, S, S},
+	{NO, Us,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S},
 	// 18  x  dealer top card
-	{NO, S, S, S, S, S, S, S, S, S, S, S, S, S},
+	{NO,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S},
 	// 19  x  dealer top card
-	{NO, S, S, S, S, S, S, S, S, S, S, S, S, S},
+	{NO,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S},
 	// 20  x  dealer top card
-	{NO, S, S, S, S, S, S, S, S, S, S, S, S, S},
+	{NO,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S},
 	// 21  x  dealer top card
-	{NO, S, S, S, S, S, S, S, S, S, S, S, S, S},
+	{NO,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S},
 	//0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 }
 
-func create_hard_total_decisions() [22]map[cards.CardRank]Decision {
+func createHardTotalDecisions() [22]map[cards.CardRank]Decision {
 	// Convert 2D array of Decisions into a list of maps:
 	// decisions = {
 	//     0: {cards.ACE: NO, ..,}, ...
@@ -79,7 +79,7 @@ func create_hard_total_decisions() [22]map[cards.CardRank]Decision {
 }
 
 // not exported
-var _HARD_TOTAL_DECISIONS [22]map[cards.CardRank]Decision = create_hard_total_decisions()
+var _HARD_TOTAL_DECISIONS [22]map[cards.CardRank]Decision = createHardTotalDecisions()
 
 func GetHardTotalDecision(player_total int, dealer_top_card cards.CardRank) Decision {
 	decision := _HARD_TOTAL_DECISIONS[player_total][dealer_top_card]

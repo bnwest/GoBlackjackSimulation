@@ -4,7 +4,7 @@ import (
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
 )
 
-var soft_total_decision = [22][14]Decision{
+var softTotalDecision = [22][14]Decision{
 	//0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 	{NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
 	// soft total: 1  x  dealer top card
@@ -52,7 +52,7 @@ var soft_total_decision = [22][14]Decision{
 	//0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 }
 
-func create_soft_total_decisions() [22]map[cards.CardRank]Decision {
+func createSoftTotalDecisions() [22]map[cards.CardRank]Decision {
 	// Convert 2D array of Decisions into a list of maps:
 	// decisions = {
 	//     0: {cards.ACE: NO, ..,}, ...
@@ -68,7 +68,7 @@ func create_soft_total_decisions() [22]map[cards.CardRank]Decision {
 		total := i
 		for j := cards.ACE; j <= cards.KING; j++ {
 			dealer_top_card := cards.CardRank(j)
-			decisions[total][dealer_top_card] = soft_total_decision[total][dealer_top_card]
+			decisions[total][dealer_top_card] = softTotalDecision[total][dealer_top_card]
 		}
 	}
 
@@ -76,7 +76,7 @@ func create_soft_total_decisions() [22]map[cards.CardRank]Decision {
 }
 
 // not exported
-var _SOFT_TOTAL_DECISIONS [22]map[cards.CardRank]Decision = create_soft_total_decisions()
+var _SOFT_TOTAL_DECISIONS [22]map[cards.CardRank]Decision = createSoftTotalDecisions()
 
 func GetSoftTotalDecision(player_total int, dealer_top_card cards.CardRank) Decision {
 	decision := _SOFT_TOTAL_DECISIONS[player_total][dealer_top_card]

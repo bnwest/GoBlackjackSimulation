@@ -27,7 +27,7 @@ func TestPlayerHandAddCard(t *testing.T) {
 	for i := cards.ACE; i <= cards.KING; i++ {
 		card := cards.Card{
 			Suite: cards.CardSuite(cards.HEARTS),
-			Rank: cards.CardRank(i),
+			Rank:  cards.CardRank(i),
 		}
 		hand.AddCard(card)
 	}
@@ -44,7 +44,7 @@ func TestPlayerHandAcesCount(t *testing.T) {
 	for i := cards.TWO; i <= cards.KING; i++ {
 		card := cards.Card{
 			Suite: cards.CardSuite(cards.HEARTS),
-			Rank: cards.CardRank(i),
+			Rank:  cards.CardRank(i),
 		}
 		hand.AddCard(card)
 		assert.Equal(t, 0, hand.AcesCount(), "Hand should not have an Ace")
@@ -52,7 +52,7 @@ func TestPlayerHandAcesCount(t *testing.T) {
 
 	card := cards.Card{
 		Suite: cards.CardSuite(cards.HEARTS),
-		Rank: cards.CardRank(cards.CardRank(cards.ACE)),
+		Rank:  cards.CardRank(cards.CardRank(cards.ACE)),
 	}
 	hand.AddCard(card)
 
@@ -60,7 +60,7 @@ func TestPlayerHandAcesCount(t *testing.T) {
 
 	card = cards.Card{
 		Suite: cards.CardSuite(cards.DIAMONDS),
-		Rank: cards.CardRank(cards.CardRank(cards.ACE)),
+		Rank:  cards.CardRank(cards.CardRank(cards.ACE)),
 	}
 	hand.AddCard(card)
 
@@ -78,7 +78,7 @@ func TestPlayerHandHardCount(t *testing.T) {
 			hard_count := hand.HardCount()
 			assert.Condition(
 				t,
-				func() (success bool) { return 2 <= hard_count && hard_count <= 20},
+				func() (success bool) { return 2 <= hard_count && hard_count <= 20 },
 				"Hard Count can exceed 20",
 			)
 		}
@@ -96,7 +96,7 @@ func TestPlayerHandSoftCount(t *testing.T) {
 			soft_count := hand.SoftCount()
 			assert.Condition(
 				t,
-				func() (success bool) { return 4 <= soft_count && soft_count <= 21},
+				func() (success bool) { return 4 <= soft_count && soft_count <= 21 },
 				"Soft Count can exceed 21",
 			)
 		}
@@ -111,10 +111,9 @@ func TestPlayerHandIsNatural(t *testing.T) {
 		for j := cards.ACE; j <= cards.KING; j++ {
 			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
-			is_natural_expected := (
-				(card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
+			is_natural_expected := ((card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
 				(card2.Rank == cards.ACE && cards.CardRankValue[card1.Rank] == 10))
-			assert.Equalf(t, 
+			assert.Equalf(t,
 				is_natural_expected,
 				hand.IsNatural(),
 				"IsNatural() for cards[%v %v] did not return expect %v",
@@ -134,33 +133,33 @@ func TestPlayerHandIsBust(t *testing.T) {
 	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 
 	hand.Cards = []cards.Card{card1, card2}
-    assert.Equal(t, false, hand.IsBust(), "Unexpected bust")
+	assert.Equal(t, false, hand.IsBust(), "Unexpected bust")
 
 	hand.Cards = []cards.Card{card1, card2, card3}
-    assert.Equal(t, true, hand.IsBust(), "Expected bust")
+	assert.Equal(t, true, hand.IsBust(), "Expected bust")
 
 	card1 = cards.Card{Rank: cards.CardRank(cards.ACE), Suite: cards.HEARTS}
 	card2 = cards.Card{Rank: cards.CardRank(cards.TEN), Suite: cards.HEARTS}
 
 	hand.Cards = []cards.Card{card1, card2}
-    assert.Equal(t, false, hand.IsBust(), "Natural can not be a bust")
+	assert.Equal(t, false, hand.IsBust(), "Natural can not be a bust")
 }
 
 func TestPlayerHandCardCount(t *testing.T) {
 	hand := game.CreatePlayerHand(false, 100)
-	assert.Equal(t, 0, hand.Num_Cards(), "Empty hand should have zero card count")
+	assert.Equal(t, 0, hand.NumCards(), "Empty hand should have zero card count")
 
 	card1 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1}
-	assert.Equal(t, 1, hand.Num_Cards(), "Hand should have a card count of 1")
+	assert.Equal(t, 1, hand.NumCards(), "Hand should have a card count of 1")
 
 	card2 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2}
-	assert.Equal(t, 2, hand.Num_Cards(), "Hand should have a card count of 2")
+	assert.Equal(t, 2, hand.NumCards(), "Hand should have a card count of 2")
 
 	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2, card3}
-	assert.Equal(t, 3, hand.Num_Cards(), "Hand should have a card count of 3")
+	assert.Equal(t, 3, hand.NumCards(), "Hand should have a card count of 3")
 }
 
 func TestPlayerHandIsHandOver(t *testing.T) {
@@ -232,7 +231,7 @@ func TestDealerHandAddCard(t *testing.T) {
 	for i := cards.ACE; i <= cards.KING; i++ {
 		card := cards.Card{
 			Suite: cards.CardSuite(cards.HEARTS),
-			Rank: cards.CardRank(i),
+			Rank:  cards.CardRank(i),
 		}
 		hand.AddCard(card)
 	}
@@ -251,7 +250,7 @@ func TestDealerrHandHardCount(t *testing.T) {
 			hard_count := hand.HardCount()
 			assert.Condition(
 				t,
-				func() (success bool) { return 2 <= hard_count && hard_count <= 20},
+				func() (success bool) { return 2 <= hard_count && hard_count <= 20 },
 				"Hard Count can exceed 20",
 			)
 		}
@@ -269,7 +268,7 @@ func TestDealerHandSoftCount(t *testing.T) {
 			soft_count := hand.SoftCount()
 			assert.Condition(
 				t,
-				func() (success bool) { return 4 <= soft_count && soft_count <= 21},
+				func() (success bool) { return 4 <= soft_count && soft_count <= 21 },
 				"Soft Count can exceed 21",
 			)
 		}
@@ -284,10 +283,9 @@ func TestDealerHandIsNatural(t *testing.T) {
 		for j := cards.ACE; j <= cards.KING; j++ {
 			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
-			is_natural_expected := (
-				(card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
+			is_natural_expected := ((card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
 				(card2.Rank == cards.ACE && cards.CardRankValue[card1.Rank] == 10))
-			assert.Equalf(t, 
+			assert.Equalf(t,
 				is_natural_expected,
 				hand.IsNatural(),
 				"IsNatural() for cards[%v %v] did not return expect %v",
@@ -307,33 +305,33 @@ func TestDealerHandIsBust(t *testing.T) {
 	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 
 	hand.Cards = []cards.Card{card1, card2}
-    assert.Equal(t, false, hand.IsBust(), "Unexpected bust")
+	assert.Equal(t, false, hand.IsBust(), "Unexpected bust")
 
 	hand.Cards = []cards.Card{card1, card2, card3}
-    assert.Equal(t, true, hand.IsBust(), "Expected bust")
+	assert.Equal(t, true, hand.IsBust(), "Expected bust")
 
 	card1 = cards.Card{Rank: cards.CardRank(cards.ACE), Suite: cards.HEARTS}
 	card2 = cards.Card{Rank: cards.CardRank(cards.TEN), Suite: cards.HEARTS}
 
 	hand.Cards = []cards.Card{card1, card2}
-    assert.Equal(t, false, hand.IsBust(), "Natural can not be a bust")
+	assert.Equal(t, false, hand.IsBust(), "Natural can not be a bust")
 }
 
 func TestDealerHandCardCount(t *testing.T) {
 	hand := game.CreateDealerHand()
-	assert.Equal(t, 0, hand.Num_Cards(), "Empty hand should have zero card count")
+	assert.Equal(t, 0, hand.NumCards(), "Empty hand should have zero card count")
 
 	card1 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1}
-	assert.Equal(t, 1, hand.Num_Cards(), "Hand should have a card count of 1")
+	assert.Equal(t, 1, hand.NumCards(), "Hand should have a card count of 1")
 
 	card2 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2}
-	assert.Equal(t, 2, hand.Num_Cards(), "Hand should have a card count of 2")
+	assert.Equal(t, 2, hand.NumCards(), "Hand should have a card count of 2")
 
 	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2, card3}
-	assert.Equal(t, 3, hand.Num_Cards(), "Hand should have a card count of 3")
+	assert.Equal(t, 3, hand.NumCards(), "Hand should have a card count of 3")
 }
 
 func TestDealerHandIsHandOver(t *testing.T) {
@@ -390,9 +388,9 @@ func TestCreatePlayerMasterHand(t *testing.T) {
 	assert.Equal(t, 0, master_hand.Num_Hands(), "Need to start without a single hand in the master hand")
 	assert.Equal(
 		t,
-		house_rules.SPLITS_PER_HAND+1, 
-		master_hand.HANDS_LIMIT, 
-		"Master hand can only be split %v times", 
+		house_rules.SPLITS_PER_HAND+1,
+		master_hand.HANDS_LIMIT,
+		"Master hand can only be split %v times",
 		house_rules.SPLITS_PER_HAND,
 	)
 
@@ -402,13 +400,13 @@ func TestCreatePlayerMasterHand(t *testing.T) {
 }
 
 func dump_hands(intro string, expected []cards.Card, actual []cards.Card) {
-    fmt.Printf(
+	fmt.Printf(
 		"%v: expected [ %v%v , %v%v ] actual [ %v%v , %v%v ]\n",
 		intro,
 		expected[0].Rank, cards.CardSuiteValue[expected[0].Suite],
 		expected[1].Rank, cards.CardSuiteValue[expected[1].Suite],
-		actual[0].Rank,   cards.CardSuiteValue[actual[0].Suite],
-		actual[1].Rank,   cards.CardSuiteValue[actual[1].Suite],
+		actual[0].Rank, cards.CardSuiteValue[actual[0].Suite],
+		actual[1].Rank, cards.CardSuiteValue[actual[1].Suite],
 	)
 }
 
@@ -433,13 +431,13 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		//
 		// SPLIT #1:
 		// hand[0] [A♥️, A♠️]
-		// splits into 
+		// splits into
 		// hand[0] [A♥️, A♦️] and hand[1] [A♠️, A♣️]
 		//
 
 		// create two new cards to add second to each split hand
 		new_card1 := cards.Card{Suite: cards.DIAMONDS, Rank: cards.CardRank(i)}
-		new_card2 := cards.Card{Suite: cards.CLUBS,    Rank: cards.CardRank(i)}
+		new_card2 := cards.Card{Suite: cards.CLUBS, Rank: cards.CardRank(i)}
 		cards_to_add := [2]cards.Card{new_card1, new_card2}
 
 		hand_index := 0
@@ -506,7 +504,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[0].Cards[0].Rank,
-		    "Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[0].Cards[0].Suite],
@@ -516,7 +514,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[0].Cards[1].Rank,
-		    "Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[0].Cards[0].Suite],
@@ -526,17 +524,17 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardSuite(cards.HEARTS),
 			master_hand.Hands[0].Cards[0].Suite,
-		    "Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[0].Cards[0].Suite],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[0].Cards[1].Suite],
 		)
 		assert.Equal(
-			t, 
-			cards.CardSuite(cards.CLUBS),  
-			master_hand.Hands[0].Cards[1].Suite, 
-		    "Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			t,
+			cards.CardSuite(cards.CLUBS),
+			master_hand.Hands[0].Cards[1].Suite,
+			"Hand[0] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[0].Cards[0].Suite],
@@ -548,7 +546,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[1].Cards[0].Rank,
-		    "Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[1].Cards[0].Suite],
@@ -558,7 +556,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[1].Cards[1].Rank,
-		    "Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[1].Cards[0].Suite],
@@ -568,17 +566,17 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardSuite(cards.SPADES),
 			master_hand.Hands[1].Cards[0].Suite,
-		    "Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[1].Cards[0].Suite],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[1].Cards[1].Suite],
 		)
 		assert.Equal(
-			t, 
-			cards.CardSuite(cards.DIAMONDS),  
-			master_hand.Hands[1].Cards[1].Suite, 
-		    "Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			t,
+			cards.CardSuite(cards.DIAMONDS),
+			master_hand.Hands[1].Cards[1].Suite,
+			"Hand[1] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[1].Cards[0].Suite],
@@ -590,7 +588,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[2].Cards[0].Rank,
-		    "Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[2].Cards[0].Suite],
@@ -600,7 +598,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[2].Cards[1].Rank,
-		    "Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[2].Cards[0].Suite],
@@ -610,17 +608,17 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardSuite(cards.DIAMONDS),
 			master_hand.Hands[2].Cards[0].Suite,
-		    "Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[2].Cards[0].Suite],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[2].Cards[1].Suite],
 		)
 		assert.Equal(
-			t, 
-			cards.CardSuite(cards.SPADES),  
-			master_hand.Hands[2].Cards[1].Suite, 
-		    "Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			t,
+			cards.CardSuite(cards.SPADES),
+			master_hand.Hands[2].Cards[1].Suite,
+			"Hand[2] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.DIAMONDS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.SPADES],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[2].Cards[0].Suite],
@@ -632,7 +630,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[3].Cards[0].Rank,
-		    "Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[3].Cards[0].Suite],
@@ -642,7 +640,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardRank(i),
 			master_hand.Hands[3].Cards[1].Rank,
-		    "Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[3].Cards[0].Suite],
@@ -652,17 +650,17 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 			t,
 			cards.CardSuite(cards.CLUBS),
 			master_hand.Hands[3].Cards[0].Suite,
-		    "Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			"Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[3].Cards[0].Suite],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[3].Cards[1].Suite],
 		)
 		assert.Equal(
-			t, 
-			cards.CardSuite(cards.HEARTS),  
-			master_hand.Hands[3].Cards[1].Suite, 
-		    "Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
+			t,
+			cards.CardSuite(cards.HEARTS),
+			master_hand.Hands[3].Cards[1].Suite,
+			"Hand[3] expected [ %v%v , %v%v ] got [ %v%v , %v%v ]",
 			cards.CardRank(i), cards.CardSuiteValue[cards.CLUBS],
 			cards.CardRank(i), cards.CardSuiteValue[cards.HEARTS],
 			cards.CardRank(i), cards.CardSuiteValue[master_hand.Hands[3].Cards[0].Suite],
@@ -679,28 +677,28 @@ func TestCreatePlayer(t *testing.T) {
 	player1.SetGameBets([]int{2})
 	player2.SetGameBets([]int{2, 2})
 
-	assert.Equal(t, 1, player1.Num_Master_Hands(), "player 1 should have 1 master hand")
-	assert.Equal(t, 2, player2.Num_Master_Hands(), "player 2 should have 2 master hand")
+	assert.Equal(t, 1, player1.NumMasterHands(), "player 1 should have 1 master hand")
+	assert.Equal(t, 2, player2.NumMasterHands(), "player 2 should have 2 master hand")
 
 	// deal opening hand
 
 	card := cards.Card{Suite: cards.SPADES, Rank: cards.ACE}
 
 	for i := 0; i < 2; i++ {
-		for j := 0; j < player1.Num_Master_Hands(); j++ {
+		for j := 0; j < player1.NumMasterHands(); j++ {
 			player1.PlayerMasterHands[j].Hands[0].AddCard(card)
 		}
-		for j := 0; j < player2.Num_Master_Hands(); j++ {
+		for j := 0; j < player2.NumMasterHands(); j++ {
 			player2.PlayerMasterHands[j].Hands[0].AddCard(card)
 		}
 		dealer.DealerHand.AddCard(card)
 	}
 
-	assert.Equal(t, 2, player1.PlayerMasterHands[0].Hands[0].Num_Cards(), "Player 1 should have 2 cards in hand")
-	assert.Equal(t, 2, player2.PlayerMasterHands[0].Hands[0].Num_Cards(), "Player 2.1 should have 2 cards in hand")
-	assert.Equal(t, 2, player2.PlayerMasterHands[1].Hands[0].Num_Cards(), "Player 2.2 should have 2 cards in hand")
+	assert.Equal(t, 2, player1.PlayerMasterHands[0].Hands[0].NumCards(), "Player 1 should have 2 cards in hand")
+	assert.Equal(t, 2, player2.PlayerMasterHands[0].Hands[0].NumCards(), "Player 2.1 should have 2 cards in hand")
+	assert.Equal(t, 2, player2.PlayerMasterHands[1].Hands[0].NumCards(), "Player 2.2 should have 2 cards in hand")
 
-	assert.Equal(t, 2, dealer.DealerHand.Num_Cards(), "Dealer should have 2 cards in hand")
+	assert.Equal(t, 2, dealer.DealerHand.NumCards(), "Dealer should have 2 cards in hand")
 }
 
 func TestBlackJackGameStart(t *testing.T) {
@@ -714,11 +712,11 @@ func TestBlackJackGameStart(t *testing.T) {
 	player1.SetGameBets([]int{2})
 	player2.SetGameBets([]int{2, 2})
 
-	assert.Equal(t, 1, player1.Num_Master_Hands(), "player 1 should have 1 master hand")
-	assert.Equal(t, 2, player2.Num_Master_Hands(), "player 2 should have 2 master hand")
+	assert.Equal(t, 1, player1.NumMasterHands(), "player 1 should have 1 master hand")
+	assert.Equal(t, 2, player2.NumMasterHands(), "player 2 should have 2 master hand")
 
-	assert.Equal(t, 1, blackjack.Players[0].Num_Master_Hands(), "player 1 should have 1 master hand")
-	assert.Equal(t, 2, blackjack.Players[1].Num_Master_Hands(), "player 2 should have 2 master hand")
+	assert.Equal(t, 1, blackjack.Players[0].NumMasterHands(), "player 1 should have 1 master hand")
+	assert.Equal(t, 2, blackjack.Players[1].NumMasterHands(), "player 2 should have 2 master hand")
 }
 
 func TestBlackJackPlayGame(t *testing.T) {

@@ -48,7 +48,7 @@ func CreatePlayerHand(from_split bool, bet int) *PlayerHand {
 // (self PlayerHand) uses a copy of the object,
 //     all updates are made to the copy
 
-func (self *PlayerHand) Num_Cards() int {
+func (self *PlayerHand) NumCards() int {
 	return len(self.Cards)
 }
 
@@ -66,7 +66,7 @@ func (self *PlayerHand) AddCard(card cards.Card) {
 
 func (self *PlayerHand) AcesCount() int {
 	count := 0
-	for i := 0; i < self.Num_Cards(); i++ {
+	for i := 0; i < self.NumCards(); i++ {
 		card := self.Cards[i]
 		if card.Rank == cards.ACE {
 			count++
@@ -77,7 +77,7 @@ func (self *PlayerHand) AcesCount() int {
 
 func (self *PlayerHand) HardCount() int {
 	hard_count := 0
-	for i := 0; i < self.Num_Cards(); i++ {
+	for i := 0; i < self.NumCards(); i++ {
 		card := self.Cards[i]
 		hard_count += cards.CardRankValue[card.Rank]
 	}
@@ -91,7 +91,7 @@ func (self *PlayerHand) SoftCount() int {
 	// and the soft count has become the hard count.
 	soft_count := 0
 	aces_count := 0
-	for i := 0; i < self.Num_Cards(); i++ {
+	for i := 0; i < self.NumCards(); i++ {
 		card := self.Cards[i]
 		if card.Rank == cards.ACE {
 			soft_count += 11
@@ -119,7 +119,7 @@ func (self *PlayerHand) Count() int {
 
 func (self *PlayerHand) IsNatural() bool {
 	if !self.FromSplit {
-		if self.Num_Cards() == 2 {
+		if self.NumCards() == 2 {
 			if self.SoftCount() == 21 {
 				return true
 			}
@@ -137,7 +137,7 @@ func (self *PlayerHand) CanSplit() bool {
 	// at a higher abstraction level ... like splitting aces
 	// after a split ...like limiting the number of splits
 	// from the original (aka "master") hand.
-	if self.Num_Cards() == 2 {
+	if self.NumCards() == 2 {
 		card1 := self.Cards[0]
 		card2 := self.Cards[1]
 		if house_rules.SPLIT_ON_VALUE_MATCH {
@@ -194,7 +194,7 @@ func (self *DealerHand) AddCard(card cards.Card) {
 
 func (self *DealerHand) HardCount() int {
 	hard_count := 0
-	for i := 0; i < self.Num_Cards(); i++ {
+	for i := 0; i < self.NumCards(); i++ {
 		card := self.Cards[i]
 		hard_count += cards.CardRankValue[card.Rank]
 	}
@@ -208,7 +208,7 @@ func (self *DealerHand) SoftCount() int {
 	// and the soft count has become the hard count.
 	soft_count := 0
 	aces_count := 0
-	for i := 0; i < self.Num_Cards(); i++ {
+	for i := 0; i < self.NumCards(); i++ {
 		card := self.Cards[i]
 		if card.Rank == cards.ACE {
 			soft_count += 11
@@ -235,7 +235,7 @@ func (self *DealerHand) Count() int {
 }
 
 func (self *DealerHand) IsNatural() bool {
-	if self.Num_Cards() == 2 {
+	if self.NumCards() == 2 {
 		if self.SoftCount() == 21 {
 			return true
 		}
@@ -247,7 +247,7 @@ func (self *DealerHand) IsBust() bool {
 	return self.Count() > 21
 }
 
-func (self *DealerHand) Num_Cards() int {
+func (self *DealerHand) NumCards() int {
 	return len(self.Cards)
 }
 
@@ -297,7 +297,7 @@ func (self *PlayerMasterHand) AddStartHand(bet int) {
 	self.Hands = append(self.Hands, player_hand)
 }
 
-func (self *PlayerMasterHand) log_hands(preface string) {
+func (self *PlayerMasterHand) logHands(preface string) {
 	fmt.Printf("%v: MasterHand\n", preface)
 	for i := 0; i < len(self.Hands); i++ {
 		hand := self.Hands[i]
@@ -318,7 +318,7 @@ func (self *PlayerMasterHand) SplitHand(
 	hand_index int,
 	cards_to_add [2]cards.Card,
 ) int {
-	// self.log_hands("before")
+	// self.logHands("before")
 
 	// there are two in the hand of the same value
 	// or rank depending of the house rules.
@@ -339,7 +339,7 @@ func (self *PlayerMasterHand) SplitHand(
 	new_hand_index := self.Num_Hands()
 	self.Hands = append(self.Hands, new_player_hand)
 
-	// self.log_hands("after")
+	// self.logHands("after")
 
 	return new_hand_index
 }

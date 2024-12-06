@@ -213,7 +213,7 @@ func TestPlayerHandInterface(t *testing.T) {
 	var player_hand_interface strategy.PlayerHandInterface = player_hand
 
 	assert.Equal(t, false, player_hand_interface.IsFromSplit(), "PlayerHandInterface IsFromSplit() failed")
-	assert.Equal(t, 2, player_hand_interface.Num_Cards(), "PlayerHandInterface Num_Cards() failed")
+	assert.Equal(t, 2, player_hand_interface.NumCards(), "PlayerHandInterface NumCards() failed")
 	assert.Equal(t, 2, player_hand_interface.HardCount(), "PlayerHandInterface HardCount() failed")
 	assert.Equal(t, 12, player_hand_interface.SoftCount(), "PlayerHandInterface SoftCount() failed")
 	assert.Equal(t, player_card1, player_hand_interface.GetCard(0), "PlayerHandInterface GetCard() failed")

@@ -23,7 +23,7 @@ func CreateBlackJack() *BlackJack {
 	return &blackjack
 }
 
-func (self *BlackJack) Num_Players() int {
+func (self *BlackJack) NumPlayers() int {
 	return len(self.Players)
 }
 
@@ -72,9 +72,9 @@ func (self *BlackJack) PlayGame() {
 	var card cards.Card
 
 	for i := 0; i < 2; i++ {
-		for j := 0; j < self.Num_Players(); j++ {
+		for j := 0; j < self.NumPlayers(); j++ {
 			var player *Player = self.Players[j]
-			for k := 0; k < player.Num_Master_Hands(); k++ {
+			for k := 0; k < player.NumMasterHands(); k++ {
 				card = self.GetCardFromShoe()
 				var master_hand *PlayerMasterHand = player.PlayerMasterHands[k]
 				var first_hand *PlayerHand = master_hand.Hands[0]
@@ -106,9 +106,9 @@ func (self *BlackJack) PlayGame() {
 
 		dealer.DealerHand.OutCome = HandOutcome(DEALER_BLACKJACK)
 
-		for i := 0; i < self.Num_Players(); i++ {
+		for i := 0; i < self.NumPlayers(); i++ {
 			var player *Player = self.Players[i]
-			for j := 0; j < player.Num_Master_Hands(); j++ {
+			for j := 0; j < player.NumMasterHands(); j++ {
 				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
 				for k := 0; k < master_hand.Num_Hands(); k++ {
 					// really should only be one hand in the master hand at this point
@@ -121,15 +121,15 @@ func (self *BlackJack) PlayGame() {
 
 	} else {
 		// dealer does not have a natural
-		for i := 0; i < self.Num_Players(); i++ {
+		for i := 0; i < self.NumPlayers(); i++ {
 			var player *Player = self.Players[i]
 			self.log((fmt.Sprintf("player %v - %v", i+1, player.Name)))
-			for j := 0; j < player.Num_Master_Hands(); j++ {
+			for j := 0; j < player.NumMasterHands(); j++ {
 				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
 				for k := 0; k < master_hand.Num_Hands(); k++ {
 					var hand *PlayerHand = master_hand.Hands[k]
 					self.log(fmt.Sprintf("    hand %v.%v:", j+1, k+1))
-					for l := 0; l < hand.Num_Cards(); l++ {
+					for l := 0; l < hand.NumCards(); l++ {
 						var card cards.Card = hand.Cards[l]
 						self.log(fmt.Sprintf("    card %v: %v", l+1, card.Str()))
 					}
@@ -185,7 +185,7 @@ func (self *BlackJack) PlayGame() {
 		}
 
 		//
-		// DEALER HANDS
+		// DEALER HAND
 		//
 
 		self.log("DEALER HAND")
@@ -221,4 +221,60 @@ func (self *BlackJack) PlayGame() {
 	//
 
 	self.log("SETTLE HAND")
+	if dealer.DealerHand.OutCome == HandOutcome(DEALER_BLACKJACK) {
+		for i := 0; i < self.NumPlayers(); i++ {
+			var player *Player = self.Players[i]
+			self.log(fmt.Sprintf("Player %v - %v", i+1, player.Name))
+			for j := 0; j < player.NumMasterHands(); j++ {
+				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
+				for k := 0; k < master_hand.Num_Hands(); k++ {
+					var hand *PlayerHand = master_hand.Hands[k]
+					if hand.IsNatural() {
+						self.log(fmt.Sprintf("    hand %v.%v: push both player and dealer had naturals", j+1, k+1))
+					} else {
+						self.log(fmt.Sprintf("    hand %v.%v: lost $%v", j+1, k+1, hand.Bet))
+					}
+				}
+			}
+		}
+
+	} else {
+		// dealer does not have a natural
+		for i := 0; i < self.NumPlayers(); i++ {
+			var player *Player = self.Players[i]
+			self.log(fmt.Sprintf("Player %v - %v", i+1, player.Name))
+			for j := 0; j < player.NumMasterHands(); j++ {
+				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
+				for k := 0; k < master_hand.Num_Hands(); k++ {
+					var hand *PlayerHand = master_hand.Hands[k]
+					if hand.OutCome == HandOutcome(BUST) {
+						self.log(fmt.Sprintf("    hand %v.%v: bust: lost $%v", j+1, k+1, hand.Bet))
+
+					} else if hand.OutCome == HandOutcome(SURRENDER) {
+						self.log(fmt.Sprintf("    hand %v.%v: surrender: lost $%v", j+1, k+1, hand.Bet))
+
+					} else {
+						// player has a non-bust, non-surrender hand
+						if hand.IsFromSplit() {
+							self.log(fmt.Sprintf("    hand %v.%v: natural: won $%v", j+1, k+1, int(float32(hand.Bet)*house_rules.NATURAL_BLACKJACK_PAYOUT)))
+
+						} else if dealer.DealerHand.OutCome == HandOutcome(BUST) {
+							self.log(fmt.Sprintf("    hand %v.%v: surrender: dealer bust: won $%v", j+1, k+1, hand.Bet))
+
+						} else {
+							if hand.Count() < dealer.DealerHand.Count() {
+								self.log(fmt.Sprintf("    hand %v.%v: lost $%v", j+1, k+1, hand.Bet))
+
+							} else if hand.Count() > dealer.DealerHand.Count() {
+								self.log(fmt.Sprintf("    hand %v.%v: won $%v", j+1, k+1, hand.Bet))
+
+							} else {
+								self.log(fmt.Sprintf("    hand %v.%v: push", j+1, k+1))
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
