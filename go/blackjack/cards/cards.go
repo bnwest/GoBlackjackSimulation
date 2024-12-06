@@ -81,6 +81,11 @@ type Card struct {
 	Rank  CardRank
 }
 
+func (self Card) Str() string {
+	// need extra space since Suite emoticons are extra wide
+	return fmt.Sprintf("%v%v ", CardRankString[self.Rank], CardSuiteValue[self.Suite])
+}
+
 var UNSHUFFLED_DECK = []Card{
 	// HEARTS
 	Card{Suite: HEARTS, Rank: ACE},
@@ -162,12 +167,22 @@ func CreateShoe() []Card {
 	default:
 		shoe = UNSHUFFLED_DECK
 	}
+
+	ShuffleShoe(shoe)
+
 	return shoe
 }
 
+// https://pkg.go.dev/math/rand
+var seed int64 = 42
+
+// rand.Seed(seed) is deprecated for ...
+var source rand.Source = rand.NewSource(seed)
+var randomGenerator *rand.Rand = rand.New(source)
+
 func ShuffleShoe(shoe []Card) {
 	for i := 0; i < len(shoe); i++ {
-		rand.Shuffle(
+		randomGenerator.Shuffle(
 			len(shoe),
 			func(i, j int) {
 				shoe[i], shoe[j] = shoe[j], shoe[i]
@@ -182,4 +197,3 @@ func DisplayShoe(shoe []Card) {
 		fmt.Printf("%v%v\n", CardRankString[card.Rank], CardSuiteValue[card.Suite])
 	}
 }
- 

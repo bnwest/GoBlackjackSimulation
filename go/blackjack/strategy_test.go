@@ -125,20 +125,19 @@ func determine_one_basic_decision_play(
 	from_split bool,
 	hand_allow_more_splits bool,
 ) bool {
-	player_hand := game.CreatePlayerHand(from_split, bet)
+	var player_hand *game.PlayerHand
+	player_hand = game.CreatePlayerHand(from_split, bet)
 	player_hand.AddCard(player_card1)
 	player_hand.AddCard(player_card2)
-	player_decision := strategy.DetermineBasicStrategyPlay(
-		dealer_top_card, *player_hand, hand_allow_more_splits,
+
+	var player_decision strategy.PlayerDecision
+	player_decision = strategy.DetermineBasicStrategyPlay(
+		dealer_top_card, player_hand, hand_allow_more_splits,
 	)
 
 	// end running lazy golang decision to prevent as many newlines as possible
 	var decision_ok bool = false
-	decision_ok = decision_ok || player_decision == strategy.PlayerDecision(strategy.STAND)
-	decision_ok = decision_ok || player_decision == strategy.PlayerDecision(strategy.HIT)
-	decision_ok = decision_ok || player_decision == strategy.PlayerDecision(strategy.DOUBLE)
-	decision_ok = decision_ok || player_decision == strategy.PlayerDecision(strategy.SPLIT)
-	decision_ok = decision_ok || player_decision == strategy.PlayerDecision(strategy.SURRENDER)
+	decision_ok = strategy.IsValidPlayerDecision(player_decision)
 	return decision_ok
 }
 
@@ -199,4 +198,23 @@ func TestDetermineBasicStrategyPlay(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestPlayerHandInterface(t *testing.T) {
+	var player_card1 cards.Card = cards.Card{Rank: cards.ACE, Suite: cards.HEARTS}
+	var player_card2 cards.Card = cards.Card{Rank: cards.ACE, Suite: cards.DIAMONDS}
+	from_split := false
+	bet := 100
+	var player_hand *game.PlayerHand = game.CreatePlayerHand(from_split, bet)
+	player_hand.AddCard(player_card1)
+	player_hand.AddCard(player_card2)
+
+	// assign (*game.PlayerHand) to (strategy.PlayerHandInterface)
+	var player_hand_interface strategy.PlayerHandInterface = player_hand
+
+	assert.Equal(t, false, player_hand_interface.IsFromSplit(), "PlayerHandInterface IsFromSplit() failed")
+	assert.Equal(t, 2, player_hand_interface.Num_Cards(), "PlayerHandInterface Num_Cards() failed")
+	assert.Equal(t, 2, player_hand_interface.HardCount(), "PlayerHandInterface HardCount() failed")
+	assert.Equal(t, 12, player_hand_interface.SoftCount(), "PlayerHandInterface SoftCount() failed")
+	assert.Equal(t, player_card1, player_hand_interface.GetCard(0), "PlayerHandInterface GetCard() failed")
 }

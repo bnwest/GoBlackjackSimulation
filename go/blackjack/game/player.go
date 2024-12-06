@@ -15,13 +15,13 @@ import (
 
 type Player struct {
 	PlayerMasterHands []*PlayerMasterHand
-	Name string
+	Name              string
 }
 
 func CreatePlayer(name string) *Player {
 	player := Player{
 		PlayerMasterHands: []*PlayerMasterHand{},
-		Name: name,
+		Name:              name,
 	}
 	return &player
 }
@@ -31,16 +31,16 @@ func (self *Player) Num_Master_Hands() int {
 }
 
 func (self *Player) Game_Reset() {
-    self.PlayerMasterHands = []*PlayerMasterHand{}
+	self.PlayerMasterHands = []*PlayerMasterHand{}
 }
 
 func (self *Player) SetGameBets(bets []int) {
 	// At start of the game, the player will place separate bets,
 	// for each hand that they want. Each of these original hands
 	// will be considered a "master" hand.
-	// the number of bets is the number of master hands the player 
+	// the number of bets is the number of master hands the player
 	// wants for this game.
-    self.Game_Reset()
+	self.Game_Reset()
 
 	for i := 0; i < len(bets); i++ {
 		bet := bets[i]
@@ -58,19 +58,19 @@ func (self *Player) SetGameBets(bets []int) {
 
 type Dealer struct {
 	DealerHand DealerHand
-	Name string
+	Name       string
 }
 
 func CreateDealer() *Dealer {
 	dealer := Dealer{
 		DealerHand: *CreateDealerHand(),
-		Name: "Riverboat Dealer",
+		Name:       "Riverboat Dealer",
 	}
 	return &dealer
 }
 
 func (self *Dealer) Game_Reset() {
-    self.DealerHand = *CreateDealerHand()
+	self.DealerHand = *CreateDealerHand()
 }
 
 func (self *Dealer) TopCard() *cards.Card {

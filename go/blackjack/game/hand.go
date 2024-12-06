@@ -10,11 +10,11 @@ import (
 type HandOutcome string
 
 const (
-	STAND HandOutcome            = "stand"
-	BUST HandOutcome             = "bust"
-	SURRENDER HandOutcome        = "surrender"
+	STAND            HandOutcome = "stand"
+	BUST             HandOutcome = "bust"
+	SURRENDER        HandOutcome = "surrender"
 	DEALER_BLACKJACK HandOutcome = "dealer-blackjack"
-	IN_PLAY HandOutcome          = "in-play"
+	IN_PLAY          HandOutcome = "in-play"
 )
 
 //
@@ -22,19 +22,19 @@ const (
 //
 
 type PlayerHand struct {
-	Cards []cards.Card
+	Cards     []cards.Card
 	FromSplit bool
-	Bet int
-	OutCome HandOutcome
+	Bet       int
+	OutCome   HandOutcome
 }
 
 // factory
 func CreatePlayerHand(from_split bool, bet int) *PlayerHand {
 	hand := PlayerHand{
-		Cards: []cards.Card{},
+		Cards:     []cards.Card{},
 		FromSplit: from_split,
-		Bet: bet,
-		OutCome: HandOutcome(IN_PLAY),
+		Bet:       bet,
+		OutCome:   HandOutcome(IN_PLAY),
 	}
 	return &hand
 }
@@ -50,6 +50,14 @@ func CreatePlayerHand(from_split bool, bet int) *PlayerHand {
 
 func (self *PlayerHand) Num_Cards() int {
 	return len(self.Cards)
+}
+
+func (self *PlayerHand) IsFromSplit() bool {
+	return self.FromSplit
+}
+
+func (self *PlayerHand) GetCard(cardIndex int) cards.Card {
+	return self.Cards[cardIndex]
 }
 
 func (self *PlayerHand) AddCard(card cards.Card) {
@@ -77,9 +85,9 @@ func (self *PlayerHand) HardCount() int {
 }
 
 func (self *PlayerHand) SoftCount() int {
-	// if the soft count is a bust, we convert the Ace values 
-	// back to the value of 1, one at a time, until the soft count 
-	// is no longer a bust or until there are no more Aces 
+	// if the soft count is a bust, we convert the Ace values
+	// back to the value of 1, one at a time, until the soft count
+	// is no longer a bust or until there are no more Aces
 	// and the soft count has become the hard count.
 	soft_count := 0
 	aces_count := 0
@@ -126,8 +134,8 @@ func (self *PlayerHand) IsBust() bool {
 
 func (self *PlayerHand) CanSplit() bool {
 	// there are other split house rules that will be applied
-	// at a higher abstraction level ... like splitting aces 
-	// after a split ...like limiting the number of splits 
+	// at a higher abstraction level ... like splitting aces
+	// after a split ...like limiting the number of splits
 	// from the original (aka "master") hand.
 	if self.Num_Cards() == 2 {
 		card1 := self.Cards[0]
@@ -167,14 +175,14 @@ func (self *PlayerHand) IsHandOver() bool {
 //
 
 type DealerHand struct {
-	Cards []cards.Card
+	Cards   []cards.Card
 	OutCome HandOutcome
 }
 
 // factory
 func CreateDealerHand() *DealerHand {
 	hand := DealerHand{
-		Cards: []cards.Card{},
+		Cards:   []cards.Card{},
 		OutCome: HandOutcome(IN_PLAY),
 	}
 	return &hand
@@ -183,7 +191,6 @@ func CreateDealerHand() *DealerHand {
 func (self *DealerHand) AddCard(card cards.Card) {
 	self.Cards = append(self.Cards, card)
 }
-
 
 func (self *DealerHand) HardCount() int {
 	hard_count := 0
@@ -195,9 +202,9 @@ func (self *DealerHand) HardCount() int {
 }
 
 func (self *DealerHand) SoftCount() int {
-	// if the soft count is a bust, we convert the Ace values 
-	// back to the value of 1, one at a time, until the soft count 
-	// is no longer a bust or until there are no more Aces 
+	// if the soft count is a bust, we convert the Ace values
+	// back to the value of 1, one at a time, until the soft count
+	// is no longer a bust or until there are no more Aces
 	// and the soft count has become the hard count.
 	soft_count := 0
 	aces_count := 0
@@ -265,13 +272,13 @@ func (self *DealerHand) IsHandOver() bool {
 
 type PlayerMasterHand struct {
 	HANDS_LIMIT int
-	Hands []*PlayerHand
+	Hands       []*PlayerHand
 }
 
 // factory
 func CreatePlayerMasterHand() *PlayerMasterHand {
 	master_hand := PlayerMasterHand{
-		Hands: []*PlayerHand{},
+		Hands:       []*PlayerHand{},
 		HANDS_LIMIT: house_rules.SPLITS_PER_HAND + 1,
 	}
 	return &master_hand
@@ -298,7 +305,7 @@ func (self *PlayerMasterHand) log_hands(preface string) {
 		for j := 0; j < len(hand.Cards); j++ {
 			card := hand.Cards[j]
 			fmt.Printf(
-				"        Card %v: %v%v\n", 
+				"        Card %v: %v%v\n",
 				j+1,
 				cards.CardRankString[card.Rank],
 				cards.CardSuiteValue[card.Suite],
