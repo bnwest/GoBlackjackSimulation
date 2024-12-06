@@ -3,7 +3,7 @@
 //     if conf { stmt } else if { cond } else { stmt }
 // 2. Function that start with a lower case letter => private
 // 3. Stuct field names that start with a lower case letter => private
-// 4. Unit test files must end in "_test.go".  Test functions therein 
+// 4. Unit test files must end in "_test.go".  Test functions therein
 // must have the prefix "Test"
 // 5. The ":=" declaration + assignment operator does not take a type, FTW.
 // 6. ":=" and "=" are maddenly different
@@ -11,7 +11,7 @@
 // 6.2 ":=" has no explicit type => avoid for aggregate types and references thereto
 // 7. Go has no "set" aggregate type.
 // 8. Go does not support constant arrays, maps or slices.
-// 9. Methods are added outside the struct ... aka a receiver function ... 
+// 9. Methods are added outside the struct ... aka a receiver function ...
 // "func (self *<struct>) AddCard()" is a receiver function.
 // 9.2 "func (self <struct>) AddCard()" is EVIL, the value the struct instance
 // is copied and perhaps modified by call which is NOT what is desired EVER
@@ -19,7 +19,7 @@
 // 10. Tuple type has no intrinsic support ... workaround is to define then use struct
 // 11. gofmt is not configurable, no way to disable formatting for a block of code
 // 12. python cares about newline and indents; go cares about newlines
-// 13. WRT <struct instance?>.<member>, the "." notation is the same 
+// 13. WRT <struct instance?>.<member>, the "." notation is the same
 // for both instance and instance reference
 // 13.1 Avoid ":=" since type is implicit => do not know if an instance
 // or  instance reference is being created
@@ -27,28 +27,12 @@
 package main
 
 import (
-	"fmt"
-
-  "github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
+	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/game"
 )
 
 func main() {
-  fmt.Println("Hello World.")
-
-  var spade cards.CardSuite
-  spade = cards.SPADES 
-  fmt.Printf("spade enum value: %v\n", spade)
-  fmt.Printf("spade enum string value: %v\n", cards.CardSuiteValue[spade])
-
-  heart := cards.HEARTS
-  fmt.Printf("heart enum value: %v\n", heart)
-  fmt.Printf("heart enum string value: %v\n", cards.CardSuiteValue[heart])
-
-  shoe := cards.CreateShoe()
-  fmt.Printf("shoes has %v cards\n", len(shoe))
-
-  cards.ShuffleShoe(shoe)
-  fmt.Printf("shoes has %v cards\n", len(shoe))
-
-  cards.DisplayShoe(shoe)
+	for i := 0; i < 10; i++ {
+		blackjack := game.CreateBlackJack()
+		blackjack.PlayGame()
+	}
 }

@@ -284,7 +284,7 @@ func CreatePlayerMasterHand() *PlayerMasterHand {
 	return &master_hand
 }
 
-func (self *PlayerMasterHand) Num_Hands() int {
+func (self *PlayerMasterHand) NumHands() int {
 	return len(self.Hands)
 }
 
@@ -315,39 +315,41 @@ func (self *PlayerMasterHand) logHands(preface string) {
 }
 
 func (self *PlayerMasterHand) SplitHand(
-	hand_index int,
-	cards_to_add [2]cards.Card,
+	handIndex int,
+	cardsToAdd [2]cards.Card,
 ) int {
+	// fmt.Printf("SplitHand: hand index: %v\n", handIndex)
+	// fmt.Printf("SplitHand: cards to add: %v  %v", cardsToAdd[0].Str(), cardsToAdd[1].Str())
 	// self.logHands("before")
 
 	// there are two in the hand of the same value
 	// or rank depending of the house rules.
-	card1 := self.Hands[hand_index].Cards[0]
-	card2 := self.Hands[hand_index].Cards[1]
+	card1 := self.Hands[handIndex].Cards[0]
+	card2 := self.Hands[handIndex].Cards[1]
 
-	var old_player_hand *PlayerHand
-	old_player_hand = self.Hands[hand_index]
-	old_player_hand.Cards = []cards.Card{card1, cards_to_add[0]}
-	old_player_hand.FromSplit = true
-	old_player_hand.OutCome = HandOutcome(IN_PLAY)
+	var oldPlayerHand *PlayerHand
+	oldPlayerHand = self.Hands[handIndex]
+	oldPlayerHand.Cards = []cards.Card{card1, cardsToAdd[0]}
+	oldPlayerHand.FromSplit = true
+	oldPlayerHand.OutCome = HandOutcome(IN_PLAY)
 
-	var new_player_hand *PlayerHand
-	new_player_hand = CreatePlayerHand(true, old_player_hand.Bet)
-	new_player_hand.Cards = []cards.Card{card2, cards_to_add[1]}
-	new_player_hand.OutCome = HandOutcome(IN_PLAY)
+	var newPlayerHand *PlayerHand
+	newPlayerHand = CreatePlayerHand(true, oldPlayerHand.Bet)
+	newPlayerHand.Cards = []cards.Card{card2, cardsToAdd[1]}
+	newPlayerHand.OutCome = HandOutcome(IN_PLAY)
 
-	new_hand_index := self.Num_Hands()
-	self.Hands = append(self.Hands, new_player_hand)
+	newHandIndex := self.NumHands()
+	self.Hands = append(self.Hands, newPlayerHand)
 
 	// self.logHands("after")
 
-	return new_hand_index
+	return newHandIndex
 }
 
-func (self *PlayerMasterHand) CanSplit(hand_index int) bool {
-	if self.Num_Hands() < self.HANDS_LIMIT {
+func (self *PlayerMasterHand) CanSplit(handIndex int) bool {
+	if self.NumHands() < self.HANDS_LIMIT {
 		// master hand allows
-		var hand *PlayerHand = self.Hands[hand_index]
+		var hand *PlayerHand = self.Hands[handIndex]
 		if hand.CanSplit() {
 			// individual hand allows
 			return true
