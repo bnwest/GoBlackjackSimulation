@@ -4,7 +4,7 @@ Blackjack simulation.
 Learn to play blackjack:
 https://bicyclecards.com/how-to-play/blackjack
 
-The House Edge and the Basic Strategy of Blackjack 
+The House Edge and the Basic Strategy of Blackjack
 https://www.shs-conferences.org/articles/shsconf/pdf/2022/18/shsconf_icprss2022_03038.pdf
 
 Blackjack - Wikipedia
@@ -55,7 +55,7 @@ class HouseRules:
     # 5. Surrender
 
     DECKS_IN_SHOE: int = 6
-    FORCE_RESHUFFLE: int = ((52 * DECKS_IN_SHOE) * 3) / 4
+    FORCE_RESHUFFLE: int = int(((52 * DECKS_IN_SHOE) * 3) / 4)
 
     # True => Must stand after the Ace split (stand on the Ace plus the one card dealt after split)
     # True => no double down after the Ace split, no splitting Aces after the Ace split
@@ -486,6 +486,8 @@ def convert_to_player_decision(
 
     surrender_can_be_played: bool = is_first_decision and HouseRules.SURRENDER_ALLOWED
 
+    player_decision: PlayerDecision
+
     if decision == S:
         return PlayerDecision.STAND
 
@@ -497,7 +499,6 @@ def convert_to_player_decision(
         # basic stratgey wants to double down on
         #     hand hard totals [9, 10, 11]
         #     hand soft totals [12, 13,14, 15, 16, 17, 18, 19]
-        player_decision: PlayerDecision
         nondouble_down_decision: PlayerDecision = (
             PlayerDecision.HIT if decision == Dh else PlayerDecision.STAND
         )
@@ -539,7 +540,6 @@ def convert_to_player_decision(
     elif decision == Uh or decision == Us or decision == Usp:
         # surrent decision must be allowed in the House Rules and
         # must be a first decision (before splitting)
-        player_decision: PlayerDecision
         nonsurrender_decision: PlayerDecision = (
             PlayerDecision.HIT
             if decision == Uh
@@ -646,7 +646,7 @@ def create_pairs_decision() -> dict[CardRank, dict[CardRank, str]]:
     return decisions
 
 
-PAIRS_DECISION: dict[CardRank, str] = create_pairs_decision()
+PAIRS_DECISION: dict[CardRank, dict[CardRank, str]] = create_pairs_decision()
 
 # Expect to use the soft total decision table for: (A,A) and (A,2),
 # which is the only way to get to hard totals 2 and 3.
@@ -707,11 +707,14 @@ def create_hard_total_decision() -> list[dict[CardRank, str]]:
             ...
         ]
     """
+    decisions: list[dict[CardRank, str]]
     decisions = [{} for i in range(22)]
+
     for hard_total in range(22):
         for rank in CardRank:
             decision: str = _HARD_TOTAL_DECISION[hard_total][CARD_VALUE[rank]]
             decisions[hard_total][rank] = decision
+
     return decisions
 
 
@@ -775,11 +778,14 @@ def create_soft_total_decision() -> list[dict[CardRank, str]]:
             ...
         ]
     """
+    decisions: list[dict[CardRank, str]]
     decisions = [{} for i in range(22)]
+
     for soft_total in range(22):
         for rank in CardRank:
             decision: str = _SOFT_TOTAL_DECISION[soft_total][CARD_VALUE[rank]]
             decisions[soft_total][rank] = decision
+
     return decisions
 
 
@@ -801,6 +807,8 @@ class BasicStrategy:
         player_card1: Card = player_hand.cards[0]
         player_card2: Card = player_hand.cards[1]
 
+        decision: str
+
         got_pairs: bool = False
         if HouseRules.SPLIT_ON_VALUE_MATCH:
             # recognize pair match for all card with a value of 10, plus ordinary pairs
@@ -818,7 +826,7 @@ class BasicStrategy:
             else:
                 pair_rank = player_card1.rank
 
-            decision: str = PAIRS_DECISION[player_card1.rank][dealer_top_card.rank]
+            decision = PAIRS_DECISION[player_card1.rank][dealer_top_card.rank]
 
             player_decision = convert_to_player_decision(
                 decision=decision, player_hand=player_hand
@@ -830,7 +838,7 @@ class BasicStrategy:
 
         if use_soft_total:
             soft_total: int = player_hand.soft_count
-            decision: str = SOFT_TOTAL_DECISION[soft_total][dealer_top_card.rank]
+            decision = SOFT_TOTAL_DECISION[soft_total][dealer_top_card.rank]
             player_decision = convert_to_player_decision(
                 decision=decision, player_hand=player_hand
             )
@@ -838,7 +846,7 @@ class BasicStrategy:
 
         else:
             hard_total: int = player_hand.hard_count
-            decision: str = HARD_TOTAL_DECISION[hard_total][dealer_top_card.rank]
+            decision = HARD_TOTAL_DECISION[hard_total][dealer_top_card.rank]
             player_decision = convert_to_player_decision(
                 decision=decision, player_hand=player_hand
             )
@@ -955,7 +963,9 @@ class BlackJack:
 
                         print(f"    hand {mh+1}.{hand_index+1}:")
                         for card_index, card in enumerate(hand.cards):
-                            print(f"""        Card {card_index+1}: {card.rank.value}{card.suite.value}""")
+                            print(
+                                f"""        Card {card_index+1}: {card.rank.value}{card.suite.value}"""
+                            )
 
                         num_hands: int = len(master_hand.hands)
                         is_split_possible: bool = (
@@ -972,9 +982,7 @@ class BlackJack:
                                 player_hand=hand,
                                 hand_allows_more_splits=is_split_possible,
                             )
-                            print(
-                                f"""        decision: {decision.value}"""
-                            )
+                            print(f"""        decision: {decision.value}""")
 
                             if decision == PlayerDecision.STAND:
                                 hand.outcome = HandOutcome.STAND
@@ -1007,7 +1015,7 @@ class BlackJack:
                                 )
                                 if hand_total > 21:
                                     hand.outcome = HandOutcome.BUST
-                                    print(f"""        bust""")
+                                    print("""        bust""")
                                     break
                                 else:
                                     hand.outcome = HandOutcome.IN_PLAY
@@ -1140,13 +1148,14 @@ class BlackJack:
                         hand_index += 1
 
 
-# pdb.set_trace()
+if __name__ == "__main__":
+    # pdb.set_trace()
 
-bj = BlackJack()
+    bj = BlackJack()
 
-for i in range(10):
-    bj.play_game()
+    for i in range(10):
+        bj.play_game()
 
-# exit(0xDEADBEEF)
+    # exit(0xDEADBEEF)
 
-print("Done.")
+    print("Done.")
