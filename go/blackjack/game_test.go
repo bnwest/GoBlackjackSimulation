@@ -17,15 +17,15 @@ import (
 //
 
 func TestCreatePlayerHand(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 	assert.NotEmpty(t, hand, "CreatePlayerHand() must return a non-nil object")
 }
 
 func TestPlayerHandAddCard(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card := cards.Card{
+		var card cards.Card = cards.Card{
 			Suite: cards.CardSuite(cards.HEARTS),
 			Rank:  cards.CardRank(i),
 		}
@@ -37,12 +37,14 @@ func TestPlayerHandAddCard(t *testing.T) {
 }
 
 func TestPlayerHandAcesCount(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
 	assert.Equal(t, 0, hand.AcesCount(), "Empty hand should not have an Ace")
 
+	var card cards.Card
+
 	for i := cards.TWO; i <= cards.KING; i++ {
-		card := cards.Card{
+		card = cards.Card{
 			Suite: cards.CardSuite(cards.HEARTS),
 			Rank:  cards.CardRank(i),
 		}
@@ -50,7 +52,7 @@ func TestPlayerHandAcesCount(t *testing.T) {
 		assert.Equal(t, 0, hand.AcesCount(), "Hand should not have an Ace")
 	}
 
-	card := cards.Card{
+	card = cards.Card{
 		Suite: cards.CardSuite(cards.HEARTS),
 		Rank:  cards.CardRank(cards.CardRank(cards.ACE)),
 	}
@@ -68,12 +70,12 @@ func TestPlayerHandAcesCount(t *testing.T) {
 }
 
 func TestPlayerHandHardCount(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card1 := cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
+		var card1 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 		for j := cards.ACE; j <= cards.KING; j++ {
-			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
+			var card2 cards.Card = cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
 			hardCount := hand.HardCount()
 			assert.Condition(
@@ -86,12 +88,12 @@ func TestPlayerHandHardCount(t *testing.T) {
 }
 
 func TestPlayerHandSoftCount(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card1 := cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
+		var card1 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 		for j := cards.ACE; j <= cards.KING; j++ {
-			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
+			var card2 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
 			softCount := hand.SoftCount()
 			assert.Condition(
@@ -104,14 +106,14 @@ func TestPlayerHandSoftCount(t *testing.T) {
 }
 
 func TestPlayerHandIsNatural(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card1 := cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
+		var card1 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 		for j := cards.ACE; j <= cards.KING; j++ {
-			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
+			var card2 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
-			isNaturalExpected := ((card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
+			var isNaturalExpected bool = ((card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
 				(card2.Rank == cards.ACE && cards.CardRankValue[card1.Rank] == 10))
 			assert.Equalf(t,
 				isNaturalExpected,
@@ -126,11 +128,11 @@ func TestPlayerHandIsNatural(t *testing.T) {
 }
 
 func TestPlayerHandIsBust(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
-	card1 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
-	card2 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
-	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card1 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card2 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card3 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 
 	hand.Cards = []cards.Card{card1, card2}
 	assert.Equal(t, false, hand.IsBust(), "Unexpected bust")
@@ -146,24 +148,24 @@ func TestPlayerHandIsBust(t *testing.T) {
 }
 
 func TestPlayerHandCardCount(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 	assert.Equal(t, 0, hand.NumCards(), "Empty hand should have zero card count")
 
-	card1 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card1 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1}
 	assert.Equal(t, 1, hand.NumCards(), "Hand should have a card count of 1")
 
-	card2 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card2 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2}
 	assert.Equal(t, 2, hand.NumCards(), "Hand should have a card count of 2")
 
-	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card3 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2, card3}
 	assert.Equal(t, 3, hand.NumCards(), "Hand should have a card count of 3")
 }
 
 func TestPlayerHandIsHandOver(t *testing.T) {
-	hand := game.CreatePlayerHand(false, 100)
+	var hand *game.PlayerHand = game.CreatePlayerHand(false, 100)
 
 	hand.OutCome = game.IN_PLAY
 	assert.Equalf(
@@ -221,15 +223,15 @@ func TestPlayerHandIsHandOver(t *testing.T) {
 //
 
 func TestCreateDealerHand(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 	assert.NotEmpty(t, hand, "CreateDeaalerHand() must return a non-nil object")
 }
 
 func TestDealerHandAddCard(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card := cards.Card{
+		var card cards.Card = cards.Card{
 			Suite: cards.CardSuite(cards.HEARTS),
 			Rank:  cards.CardRank(i),
 		}
@@ -240,12 +242,12 @@ func TestDealerHandAddCard(t *testing.T) {
 }
 
 func TestDealerrHandHardCount(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card1 := cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
+		var card1 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 		for j := cards.ACE; j <= cards.KING; j++ {
-			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
+			var card2 cards.Card = cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
 			hardCount := hand.HardCount()
 			assert.Condition(
@@ -258,12 +260,12 @@ func TestDealerrHandHardCount(t *testing.T) {
 }
 
 func TestDealerHandSoftCount(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card1 := cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
+		var card1 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 		for j := cards.ACE; j <= cards.KING; j++ {
-			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
+			var card2 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
 			softCount := hand.SoftCount()
 			assert.Condition(
@@ -276,14 +278,14 @@ func TestDealerHandSoftCount(t *testing.T) {
 }
 
 func TestDealerHandIsNatural(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		card1 := cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
+		var card1 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 		for j := cards.ACE; j <= cards.KING; j++ {
-			card2 := cards.Card{Rank: cards.CardRank(j), Suite: cards.HEARTS}
+			var card2 cards.Card = cards.Card{Rank: cards.CardRank(i), Suite: cards.HEARTS}
 			hand.Cards = []cards.Card{card1, card2}
-			isNaturalExpected := ((card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
+			var isNaturalExpected bool = ((card1.Rank == cards.ACE && cards.CardRankValue[card2.Rank] == 10) ||
 				(card2.Rank == cards.ACE && cards.CardRankValue[card1.Rank] == 10))
 			assert.Equalf(t,
 				isNaturalExpected,
@@ -298,11 +300,11 @@ func TestDealerHandIsNatural(t *testing.T) {
 }
 
 func TestDealerHandIsBust(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 
-	card1 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
-	card2 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
-	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card1 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card2 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card3 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 
 	hand.Cards = []cards.Card{card1, card2}
 	assert.Equal(t, false, hand.IsBust(), "Unexpected bust")
@@ -318,24 +320,24 @@ func TestDealerHandIsBust(t *testing.T) {
 }
 
 func TestDealerHandCardCount(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 	assert.Equal(t, 0, hand.NumCards(), "Empty hand should have zero card count")
 
-	card1 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card1 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1}
 	assert.Equal(t, 1, hand.NumCards(), "Hand should have a card count of 1")
 
-	card2 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card2 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2}
 	assert.Equal(t, 2, hand.NumCards(), "Hand should have a card count of 2")
 
-	card3 := cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
+	var card3 cards.Card = cards.Card{Rank: cards.CardRank(8), Suite: cards.HEARTS}
 	hand.Cards = []cards.Card{card1, card2, card3}
 	assert.Equal(t, 3, hand.NumCards(), "Hand should have a card count of 3")
 }
 
 func TestDealerHandIsHandOver(t *testing.T) {
-	hand := game.CreateDealerHand()
+	var hand *game.DealerHand = game.CreateDealerHand()
 
 	hand.OutCome = game.IN_PLAY
 	assert.Equalf(
@@ -383,7 +385,7 @@ func TestDealerHandIsHandOver(t *testing.T) {
 //
 
 func TestCreatePlayerMasterHand(t *testing.T) {
-	masterHand := game.CreatePlayerMasterHand()
+	var masterHand *game.PlayerMasterHand = game.CreatePlayerMasterHand()
 	assert.NotEmpty(t, masterHand, "CreatePlayerMasterHand() must return a non-nil object")
 	assert.Equal(t, 0, masterHand.NumHands(), "Need to start without a single hand in the master hand")
 	assert.Equal(
@@ -411,19 +413,26 @@ func dumpHands(intro string, expected []cards.Card, actual []cards.Card) {
 }
 
 func TestPlayerMasterHandSplitHand(t *testing.T) {
-	var masterHand *game.PlayerMasterHand
-	masterHand = game.CreatePlayerMasterHand()
+	var masterHand *game.PlayerMasterHand = game.CreatePlayerMasterHand()
 
 	bet := 2
 	masterHand.AddStartHand(bet)
+
+	var card1 cards.Card
+	var card2 cards.Card
+	var newCard1 cards.Card
+	var newCard2 cards.Card
+	var cardsToAdd [2]cards.Card
+	var handIndex int
+	var newHandIndex int
 
 	// add pair to start hand in the master hand
 	for i := cards.ACE; i <= cards.KING; i++ {
 		// reset master hand back to have just a single hand
 		masterHand.Hands = []*game.PlayerHand{masterHand.Hands[0]}
 
-		card1 := cards.Card{Suite: cards.HEARTS, Rank: cards.CardRank(i)}
-		card2 := cards.Card{Suite: cards.SPADES, Rank: cards.CardRank(i)}
+		card1 = cards.Card{Suite: cards.HEARTS, Rank: cards.CardRank(i)}
+		card2 = cards.Card{Suite: cards.SPADES, Rank: cards.CardRank(i)}
 
 		// have a card pair to split to the first hand
 		masterHand.Hands[0].Cards = []cards.Card{card1, card2}
@@ -436,14 +445,14 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		//
 
 		// create two new cards to add second to each split hand
-		newCard1 := cards.Card{Suite: cards.DIAMONDS, Rank: cards.CardRank(i)}
-		newCard2 := cards.Card{Suite: cards.CLUBS, Rank: cards.CardRank(i)}
-		cardsToAdd := [2]cards.Card{newCard1, newCard2}
+		newCard1 = cards.Card{Suite: cards.DIAMONDS, Rank: cards.CardRank(i)}
+		newCard2 = cards.Card{Suite: cards.CLUBS, Rank: cards.CardRank(i)}
+		cardsToAdd = [2]cards.Card{newCard1, newCard2}
 
-		handIndex := 0
+		handIndex = 0
 		assert.Equal(t, true, masterHand.CanSplit(handIndex), "Hand should be split-able")
 
-		newHandIndex := masterHand.SplitHand(handIndex, cardsToAdd)
+		newHandIndex = masterHand.SplitHand(handIndex, cardsToAdd)
 		assert.Equal(t, 2, masterHand.NumHands(), "Master Hand should now have 2 hands")
 		assert.Equal(t, 1, newHandIndex, "New split hand got added as expected")
 
@@ -670,9 +679,9 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 }
 
 func TestCreatePlayer(t *testing.T) {
-	dealer := game.CreateDealer()
-	player1 := game.CreatePlayer("John")
-	player2 := game.CreatePlayer("Jane")
+	var dealer *game.Dealer = game.CreateDealer()
+	var player1 *game.Player = game.CreatePlayer("John")
+	var player2 *game.Player = game.CreatePlayer("Jane")
 
 	player1.SetGameBets([]int{2})
 	player2.SetGameBets([]int{2, 2})
@@ -682,7 +691,7 @@ func TestCreatePlayer(t *testing.T) {
 
 	// deal opening hand
 
-	card := cards.Card{Suite: cards.SPADES, Rank: cards.ACE}
+	var card cards.Card = cards.Card{Suite: cards.SPADES, Rank: cards.ACE}
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < player1.NumMasterHands(); j++ {
@@ -702,7 +711,7 @@ func TestCreatePlayer(t *testing.T) {
 }
 
 func TestBlackJackGameStart(t *testing.T) {
-	blackjack := game.CreateBlackJack()
+	var blackjack *game.BlackJack = game.CreateBlackJack()
 
 	var player1 *game.Player = game.CreatePlayer("John")
 	var player2 *game.Player = game.CreatePlayer("Jane")
@@ -720,6 +729,6 @@ func TestBlackJackGameStart(t *testing.T) {
 }
 
 func TestBlackJackPlayGame(t *testing.T) {
-	blackjack := game.CreateBlackJack()
+	var blackjack *game.BlackJack = game.CreateBlackJack()
 	blackjack.PlayGame()
 }

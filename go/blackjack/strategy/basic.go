@@ -18,18 +18,18 @@ type PlayerHandInterface interface {
 
 func convertToPlayerDecision(
 	decision Decision,
-	player_hand PlayerHandInterface,
+	playerHand PlayerHandInterface,
 ) PlayerDecision {
 	// Decision sometimes return Xy, which translates to do X if allowed else do y.
 	// Determine the X or the y here.
 
-	is_first_decision := player_hand.NumCards() == 2
-	is_first_postsplit_decision := is_first_decision && player_hand.IsFromSplit()
+	isFirstDecision := playerHand.NumCards() == 2
+	isFirstPostSplitDecision := isFirstDecision && playerHand.IsFromSplit()
 
-	var player_decision PlayerDecision
+	var playerDecision PlayerDecision
 
-	hard_count := player_hand.HardCount()
-	soft_count := player_hand.SoftCount()
+	hardCount := playerHand.HardCount()
+	softCount := playerHand.SoftCount()
 
 	if decision == Decision(S) {
 		return PlayerDecision(STAND)
@@ -42,128 +42,128 @@ func convertToPlayerDecision(
 		// basic stratgey wants to double down on
 		//     hand hard totals [9, 10, 11]
 		//     hand soft totals [12, 13,14, 15, 16, 17, 18, 19]
-		var nondouble_down_decision PlayerDecision
+		var nondoubleDownDecision PlayerDecision
 		if decision == Decision(Dh) {
-			player_decision = PlayerDecision(HIT)
+			playerDecision = PlayerDecision(HIT)
 		} else {
-			player_decision = PlayerDecision(STAND)
+			playerDecision = PlayerDecision(STAND)
 		}
 
-		var can_double_down bool
-		if is_first_decision {
-			if is_first_postsplit_decision {
+		var canDoubleDown bool
+		if isFirstDecision {
+			if isFirstPostSplitDecision {
 				if house_rules.DOUBLE_DOWN_AFTER_SPLIT {
-					can_double_down = true
+					canDoubleDown = true
 				} else {
-					can_double_down = false
+					canDoubleDown = false
 				}
 			} else {
-				can_double_down = true
+				canDoubleDown = true
 			}
 		} else {
-			can_double_down = false
+			canDoubleDown = false
 		}
 
-		if can_double_down {
-			var double_down bool
-			if house_rules.CanDoubleDown(hard_count) {
-				double_down = true
-			} else if house_rules.CanDoubleDown(soft_count) {
-				double_down = true
+		if canDoubleDown {
+			var doubleDown bool
+			if house_rules.CanDoubleDown(hardCount) {
+				doubleDown = true
+			} else if house_rules.CanDoubleDown(softCount) {
+				doubleDown = true
 			} else {
-				double_down = false
+				doubleDown = false
 			}
-			if double_down {
-				player_decision = PlayerDecision(DOUBLE)
+			if doubleDown {
+				playerDecision = PlayerDecision(DOUBLE)
 			} else {
-				player_decision = nondouble_down_decision
+				playerDecision = nondoubleDownDecision
 			}
 		} else {
-			player_decision = nondouble_down_decision
+			playerDecision = nondoubleDownDecision
 		}
 
 	} else if decision == Decision(SP) {
-		player_decision = PlayerDecision(SPLIT)
+		playerDecision = PlayerDecision(SPLIT)
 
 	} else if decision == Decision(Uh) || decision == Decision(Us) || decision == Decision(Usp) {
 		// surrent decision must be allowed in the House Rules and
 		// must be a first decision (before splitting)
-		var nonsurrender_decision PlayerDecision
+		var nonsurrenderDecision PlayerDecision
 		switch decision {
 		case Decision(Uh):
-			nonsurrender_decision = PlayerDecision(HIT)
+			nonsurrenderDecision = PlayerDecision(HIT)
 		case Decision(Us):
-			nonsurrender_decision = PlayerDecision(STAND)
+			nonsurrenderDecision = PlayerDecision(STAND)
 		case Decision(Usp):
-			nonsurrender_decision = PlayerDecision(SPLIT)
+			nonsurrenderDecision = PlayerDecision(SPLIT)
 		default:
 			// should never get here
 			panic("convertToPlayerDecision() ran into a little trouble in town.")
 		}
 
-		surrender_can_be_played := is_first_decision && !is_first_postsplit_decision && house_rules.SURRENDER_ALLOWED
-		if surrender_can_be_played {
-			player_decision = PlayerDecision(SURRENDER)
+		surrenderCanBePlayed := isFirstDecision && !isFirstPostSplitDecision && house_rules.SURRENDER_ALLOWED
+		if surrenderCanBePlayed {
+			playerDecision = PlayerDecision(SURRENDER)
 		} else {
-			player_decision = nonsurrender_decision
+			playerDecision = nonsurrenderDecision
 		}
 	}
 
-	return player_decision
+	return playerDecision
 }
 
 func DetermineBasicStrategyPlay(
-	dealer_top_card cards.Card,
-	player_hand PlayerHandInterface,
-	hand_allows_more_splits bool,
+	dealerTopCard cards.Card,
+	playerHand PlayerHandInterface,
+	handAllowsMoreSplits bool,
 ) PlayerDecision {
-	// is_first_decision := player_hand.NumCards() == 2
-	// is_first_postsplit_decision := is_first_decision && player_hand.FromSplit
+	// isFirstDecision := playerHand.NumCards() == 2
+	// isFirstPostSplitDecision := isFirstDecision && playerHand.FromSplit
 
-	player_card1 := player_hand.GetCard(0)
-	player_card2 := player_hand.GetCard(1)
+	playerCard1 := playerHand.GetCard(0)
+	playerCard2 := playerHand.GetCard(1)
 
 	var decision Decision
-	var player_decision PlayerDecision
+	var playerDecision PlayerDecision
 
-	var got_pairs bool
+	var gotPairs bool
 	if house_rules.SPLIT_ON_VALUE_MATCH {
-		got_pairs = cards.CardRankValue[player_card1.Rank] == cards.CardRankValue[player_card2.Rank]
+		gotPairs = cards.CardRankValue[playerCard1.Rank] == cards.CardRankValue[playerCard2.Rank]
 	} else {
-		got_pairs = player_card1.Rank == player_card2.Rank
+		gotPairs = playerCard1.Rank == playerCard2.Rank
 	}
 
-	if got_pairs && hand_allows_more_splits {
+	if gotPairs && handAllowsMoreSplits {
 		// Determine if the pairs can be split.
 		// Note all of the non-split decisions that are ignored below
 		// will not contradict the hard/soft total decision.
-		var pair_rank cards.CardRank
-		if cards.CardRankValue[player_card1.Rank] == 10 {
-			pair_rank = cards.CardRank(10)
+		var pairRank cards.CardRank
+		if cards.CardRankValue[playerCard1.Rank] == 10 {
+			pairRank = cards.CardRank(10)
 		} else {
-			pair_rank = player_card1.Rank
+			pairRank = playerCard1.Rank
 		}
 
-		decision = GetPairSplitDecision(pair_rank, dealer_top_card.Rank)
-		player_decision = convertToPlayerDecision(decision, player_hand)
-		if player_decision == PlayerDecision(SPLIT) {
+		decision = GetPairSplitDecision(pairRank, dealerTopCard.Rank)
+		playerDecision = convertToPlayerDecision(decision, playerHand)
+		if playerDecision == PlayerDecision(SPLIT) {
 			return PlayerDecision(SPLIT)
 		}
 	}
 
-	hard_count := player_hand.HardCount()
-	soft_count := player_hand.SoftCount()
-	use_soft_total := hard_count < soft_count && soft_count <= 21
+	hardCount := playerHand.HardCount()
+	softCount := playerHand.SoftCount()
+	useSoftTotal := hardCount < softCount && softCount <= 21
 
-	if use_soft_total {
-		decision = GetSoftTotalDecision(soft_count, dealer_top_card.Rank)
-		player_decision = convertToPlayerDecision(decision, player_hand)
-		return player_decision
+	if useSoftTotal {
+		decision = GetSoftTotalDecision(softCount, dealerTopCard.Rank)
+		playerDecision = convertToPlayerDecision(decision, playerHand)
+		return playerDecision
 
 	} else {
-		decision = GetHardTotalDecision(hard_count, dealer_top_card.Rank)
-		player_decision = convertToPlayerDecision(decision, player_hand)
-		return player_decision
+		decision = GetHardTotalDecision(hardCount, dealerTopCard.Rank)
+		playerDecision = convertToPlayerDecision(decision, playerHand)
+		return playerDecision
 	}
 
 	// panic("DetermineBasicStrategyPlay() ran into a little trouble in town.")

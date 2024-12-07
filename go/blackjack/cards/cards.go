@@ -147,6 +147,7 @@ var UNSHUFFLED_DECK = []Card{
 
 func CreateShoe() []Card {
 	var shoe []Card = []Card{}
+
 	switch house_rules.DECKS_IN_SHOE {
 	case 1:
 		shoe = UNSHUFFLED_DECK
@@ -193,7 +194,7 @@ func ShuffleShoe(shoe []Card) {
 
 func DisplayShoe(shoe []Card) {
 	for i := 0; i < len(shoe); i++ {
-		card := shoe[i]
+		var card Card = shoe[i]
 		fmt.Printf("%v%v\n", CardRankString[card.Rank], CardSuiteValue[card.Suite])
 	}
 }

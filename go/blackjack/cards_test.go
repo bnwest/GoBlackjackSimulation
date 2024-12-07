@@ -165,7 +165,7 @@ func TestUnshuffledDeck(t *testing.T) {
 }
 
 func TestCreateShoe(t *testing.T) {
-	shoe := cards.CreateShoe()
+	var shoe []cards.Card = cards.CreateShoe()
 	assert.Equal(
 		t, 
 		len(shoe), 
@@ -176,7 +176,7 @@ func TestCreateShoe(t *testing.T) {
 
 
 func TestDisplayShoe(t *testing.T) {
-	shoe := cards.CreateShoe()
+	var shoe []cards.Card = cards.CreateShoe()
 	assert.Equal(
 		t, 
 		len(shoe), 

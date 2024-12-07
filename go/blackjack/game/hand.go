@@ -67,7 +67,7 @@ func (self *PlayerHand) AddCard(card cards.Card) {
 func (self *PlayerHand) AcesCount() int {
 	count := 0
 	for i := 0; i < self.NumCards(); i++ {
-		card := self.Cards[i]
+		var card cards.Card = self.Cards[i]
 		if card.Rank == cards.ACE {
 			count++
 		}
@@ -78,7 +78,7 @@ func (self *PlayerHand) AcesCount() int {
 func (self *PlayerHand) HardCount() int {
 	hard_count := 0
 	for i := 0; i < self.NumCards(); i++ {
-		card := self.Cards[i]
+		var card cards.Card = self.Cards[i]
 		hard_count += cards.CardRankValue[card.Rank]
 	}
 	return hard_count
@@ -92,7 +92,7 @@ func (self *PlayerHand) SoftCount() int {
 	soft_count := 0
 	aces_count := 0
 	for i := 0; i < self.NumCards(); i++ {
-		card := self.Cards[i]
+		var card cards.Card = self.Cards[i]
 		if card.Rank == cards.ACE {
 			soft_count += 11
 			aces_count++
@@ -138,8 +138,8 @@ func (self *PlayerHand) CanSplit() bool {
 	// after a split ...like limiting the number of splits
 	// from the original (aka "master") hand.
 	if self.NumCards() == 2 {
-		card1 := self.Cards[0]
-		card2 := self.Cards[1]
+		var card1 cards.Card = self.Cards[0]
+		var card2 cards.Card = self.Cards[1]
 		if house_rules.SPLIT_ON_VALUE_MATCH {
 			if cards.CardRankValue[card1.Rank] == cards.CardRankValue[card2.Rank] {
 				return true
@@ -181,7 +181,7 @@ type DealerHand struct {
 
 // factory
 func CreateDealerHand() *DealerHand {
-	hand := DealerHand{
+	var hand DealerHand = DealerHand{
 		Cards:   []cards.Card{},
 		OutCome: HandOutcome(IN_PLAY),
 	}
@@ -195,7 +195,7 @@ func (self *DealerHand) AddCard(card cards.Card) {
 func (self *DealerHand) HardCount() int {
 	hard_count := 0
 	for i := 0; i < self.NumCards(); i++ {
-		card := self.Cards[i]
+		var card cards.Card = self.Cards[i]
 		hard_count += cards.CardRankValue[card.Rank]
 	}
 	return hard_count
@@ -209,7 +209,7 @@ func (self *DealerHand) SoftCount() int {
 	soft_count := 0
 	aces_count := 0
 	for i := 0; i < self.NumCards(); i++ {
-		card := self.Cards[i]
+		var card cards.Card = self.Cards[i]
 		if card.Rank == cards.ACE {
 			soft_count += 11
 			aces_count++
@@ -277,7 +277,7 @@ type PlayerMasterHand struct {
 
 // factory
 func CreatePlayerMasterHand() *PlayerMasterHand {
-	master_hand := PlayerMasterHand{
+	var master_hand PlayerMasterHand = PlayerMasterHand{
 		Hands:       []*PlayerHand{},
 		HANDS_LIMIT: house_rules.SPLITS_PER_HAND + 1,
 	}
@@ -299,11 +299,11 @@ func (self *PlayerMasterHand) AddStartHand(bet int) {
 
 func (self *PlayerMasterHand) logHands(preface string) {
 	fmt.Printf("%v: MasterHand\n", preface)
-	for i := 0; i < len(self.Hands); i++ {
-		hand := self.Hands[i]
+	for i := 0; i < self.NumHands(); i++ {
+		var hand *PlayerHand = self.Hands[i]
 		fmt.Printf("    Hand %v\n", i+1)
-		for j := 0; j < len(hand.Cards); j++ {
-			card := hand.Cards[j]
+		for j := 0; j < hand.NumCards(); j++ {
+			var card cards.Card = hand.Cards[j]
 			fmt.Printf(
 				"        Card %v: %v%v\n",
 				j+1,
@@ -324,8 +324,8 @@ func (self *PlayerMasterHand) SplitHand(
 
 	// there are two in the hand of the same value
 	// or rank depending of the house rules.
-	card1 := self.Hands[handIndex].Cards[0]
-	card2 := self.Hands[handIndex].Cards[1]
+	var card1 cards.Card = self.Hands[handIndex].Cards[0]
+	var card2 cards.Card = self.Hands[handIndex].Cards[1]
 
 	var oldPlayerHand *PlayerHand
 	oldPlayerHand = self.Hands[handIndex]

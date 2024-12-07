@@ -86,10 +86,10 @@ func (self *BlackJack) PlayGame() {
 		dealer.DealerHand.AddCard(card)
 	}
 
-	var dealerTopCard cards.Card = *dealer.TopCard()
+	var dealerTopCard cards.Card = dealer.TopCard()
 	self.log(fmt.Sprintf("dealer top card: %v", dealerTopCard.Str()))
 
-	var dealerHoleCard cards.Card = *dealer.HoleCard()
+	var dealerHoleCard cards.Card = dealer.HoleCard()
 
 	//
 	// PLAY HANDS

@@ -32,21 +32,21 @@ func TestPlayerDecisions(t *testing.T) {
 }
 
 func TestGetPairSplitDecision(t *testing.T) {
-	playerSplitCard := cards.ACE
+	var playerSplitCard cards.CardRank = cards.ACE
 	for i := cards.ACE; i <= cards.KING; i++ {
-		dealerTopCard := cards.CardRank(i)
-		decision := strategy.GetPairSplitDecision(playerSplitCard, dealerTopCard)
+		var dealerTopCard cards.CardRank = cards.CardRank(i)
+		var decision strategy.Decision = strategy.GetPairSplitDecision(playerSplitCard, dealerTopCard)
 		assert.Equal(t, strategy.SP, decision, "ACEs should always be split")
 	}
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		playerSplitCard := cards.CardRank(i)
+		var playerSplitCard cards.CardRank = cards.CardRank(i)
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealerTopCard := cards.CardRank(j)
+			var dealerTopCard cards.CardRank = cards.CardRank(j)
 			assert.NotPanics(
 				t,
 				func() {
-					decision := strategy.Decision(strategy.GetPairSplitDecision(playerSplitCard, dealerTopCard))
+					var decision strategy.Decision = strategy.Decision(strategy.GetPairSplitDecision(playerSplitCard, dealerTopCard))
 					if !strategy.IsValidDecision(decision) {
 						panic("GetPairSplitDecision() returned an invalid decision")
 					}
@@ -62,19 +62,19 @@ func TestGetPairSplitDecision(t *testing.T) {
 func TestGetHardTotalDecision(t *testing.T) {
 	playerTotal := 21
 	for i := cards.ACE; i <= cards.KING; i++ {
-		dealerTopCard := cards.CardRank(i)
-		decision := strategy.GetHardTotalDecision(playerTotal, dealerTopCard)
+		var dealerTopCard cards.CardRank = cards.CardRank(i)
+		var decision strategy.Decision = strategy.GetHardTotalDecision(playerTotal, dealerTopCard)
 		assert.Equal(t, strategy.S, decision, "Player should always stand on a 21")
 	}
 
 	for i := 4; i <= 21; i++ {
 		playerTotal := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealerTopCard := cards.CardRank(j)
+			var dealerTopCard cards.CardRank = cards.CardRank(j)
 			assert.NotPanicsf(
 				t,
 				func() {
-					decision := strategy.Decision(strategy.GetHardTotalDecision(playerTotal, dealerTopCard))
+					var decision strategy.Decision = strategy.Decision(strategy.GetHardTotalDecision(playerTotal, dealerTopCard))
 					if !strategy.IsValidDecision(decision) {
 						panic("GetHardTotalDecision() returned an invalid decision")
 					}
@@ -91,8 +91,8 @@ func TestGetSoftTotalDecision(t *testing.T) {
 	for i := 20; i <= 21; i++ {
 		playerTotal := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealerTopCard := cards.CardRank(j)
-			decision := strategy.GetHardTotalDecision(playerTotal, dealerTopCard)
+			var dealerTopCard cards.CardRank = cards.CardRank(j)
+			var decision strategy.Decision = strategy.GetHardTotalDecision(playerTotal, dealerTopCard)
 			assert.Equal(t, strategy.S, decision, "Player should always stand on a S20 or S21")
 		}
 	}
@@ -100,11 +100,11 @@ func TestGetSoftTotalDecision(t *testing.T) {
 	for i := 12; i <= 21; i++ {
 		playerTotal := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealerTopCard := cards.CardRank(j)
+			var dealerTopCard cards.CardRank = cards.CardRank(j)
 			assert.NotPanicsf(
 				t,
 				func() {
-					decision := strategy.Decision(strategy.GetSoftTotalDecision(playerTotal, dealerTopCard))
+					var decision strategy.Decision = strategy.Decision(strategy.GetSoftTotalDecision(playerTotal, dealerTopCard))
 					if !strategy.IsValidDecision(decision) {
 						panic("GetSoftTotalDecision() returned an invalid decision")
 					}
@@ -125,18 +125,16 @@ func determineOneBasicDecisionPlay(
 	fromSplit bool,
 	handAllowMoreSplits bool,
 ) bool {
-	var playerHand *game.PlayerHand
-	playerHand = game.CreatePlayerHand(fromSplit, bet)
+	var playerHand *game.PlayerHand = game.CreatePlayerHand(fromSplit, bet)
 	playerHand.AddCard(playerCard1)
 	playerHand.AddCard(playerCard2)
 
-	var playerDecision strategy.PlayerDecision
-	playerDecision = strategy.DetermineBasicStrategyPlay(
+	var playerDecision strategy.PlayerDecision = strategy.DetermineBasicStrategyPlay(
 		dealerTopCard, playerHand, handAllowMoreSplits,
 	)
 
 	// end running lazy golang decision to prevent as many newlines as possible
-	var decisionOk bool = false
+	var decisionOk bool
 	decisionOk = strategy.IsValidPlayerDecision(playerDecision)
 	return decisionOk
 }

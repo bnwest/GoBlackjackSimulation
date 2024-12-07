@@ -32,7 +32,7 @@ import (
 
 func main() {
 	for i := 0; i < 100; i++ {
-		blackjack := game.CreateBlackJack()
+		var blackjack *game.BlackJack = game.CreateBlackJack()
 		blackjack.PlayGame()
 	}
 }

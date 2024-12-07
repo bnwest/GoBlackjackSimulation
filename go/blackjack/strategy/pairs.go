@@ -45,26 +45,26 @@ func createPairDecisions() map[cards.CardRank]map[cards.CardRank]Decision {
 	// decisions = {
 	//     cards.ACE: {cards.ACE: S, ...}, ...
 	// }
-	decisions := make( map[cards.CardRank]map[cards.CardRank]Decision)
+	decisions := make(map[cards.CardRank]map[cards.CardRank]Decision)
 
 	// initialize the inner map
 	for i := cards.ACE; i <= cards.KING; i++ {
-		var player_pair_rank cards.CardRank =  cards.CardRank(i)
+		var playerPairRank cards.CardRank =  cards.CardRank(i)
 
 		// checks to see if key exists 
 		// (for demonstrative purposes only, since key will not exist)
-		_, ok := decisions[player_pair_rank]
+		_, ok := decisions[playerPairRank]
 		if !ok {
 			// create the inner map
-			decisions[player_pair_rank] = map[cards.CardRank]Decision{}
+			decisions[playerPairRank] = map[cards.CardRank]Decision{}
 		}
 	}
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		var player_pair_rank cards.CardRank =  cards.CardRank(i)
+		var playerPairRank cards.CardRank =  cards.CardRank(i)
 		for j := cards.ACE; j <= cards.KING; j++ {
-			var dealer_top_card_rank cards.CardRank = cards.CardRank(j)
-			decisions[player_pair_rank][dealer_top_card_rank] = pairsDecisions[i][j]
+			var dealerTopCard_rank cards.CardRank = cards.CardRank(j)
+			decisions[playerPairRank][dealerTopCard_rank] = pairsDecisions[i][j]
 		}
 	}
 
@@ -75,8 +75,9 @@ func createPairDecisions() map[cards.CardRank]map[cards.CardRank]Decision {
 var _PAIR_DECISIONS map[cards.CardRank]map[cards.CardRank]Decision = createPairDecisions()
 
 func GetPairSplitDecision(
-	player_pair_rank cards.CardRank,
-	dealer_top_card cards.CardRank,
+	playerPairRank cards.CardRank,
+	dealerTopCard cards.CardRank,
 ) Decision {
-	return _PAIR_DECISIONS[player_pair_rank][dealer_top_card]
+	var decision Decision = _PAIR_DECISIONS[playerPairRank][dealerTopCard]
+	return decision
 }

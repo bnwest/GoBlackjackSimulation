@@ -70,8 +70,8 @@ func createHardTotalDecisions() [22]map[cards.CardRank]Decision {
 	for i := 0; i < 22; i++ {
 		total := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealer_top_card := cards.CardRank(j)
-			decisions[total][dealer_top_card] = hard_total_decision[total][dealer_top_card]
+			dealerTopCard := cards.CardRank(j)
+			decisions[total][dealerTopCard] = hard_total_decision[total][dealerTopCard]
 		}
 	}
 
@@ -81,7 +81,10 @@ func createHardTotalDecisions() [22]map[cards.CardRank]Decision {
 // not exported
 var _HARD_TOTAL_DECISIONS [22]map[cards.CardRank]Decision = createHardTotalDecisions()
 
-func GetHardTotalDecision(player_total int, dealer_top_card cards.CardRank) Decision {
-	decision := _HARD_TOTAL_DECISIONS[player_total][dealer_top_card]
+func GetHardTotalDecision(
+	playerTotal int, 
+	dealerTopCard cards.CardRank,
+) Decision {
+	var decision Decision = _HARD_TOTAL_DECISIONS[playerTotal][dealerTopCard]
 	return decision
 }

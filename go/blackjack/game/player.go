@@ -19,7 +19,7 @@ type Player struct {
 }
 
 func CreatePlayer(name string) *Player {
-	player := Player{
+	var player Player = Player{
 		PlayerMasterHands: []*PlayerMasterHand{},
 		Name:              name,
 	}
@@ -62,7 +62,7 @@ type Dealer struct {
 }
 
 func CreateDealer() *Dealer {
-	dealer := Dealer{
+	var dealer Dealer = Dealer{
 		DealerHand: *CreateDealerHand(),
 		Name:       "Riverboat Dealer",
 	}
@@ -73,10 +73,10 @@ func (self *Dealer) GameReset() {
 	self.DealerHand = *CreateDealerHand()
 }
 
-func (self *Dealer) TopCard() *cards.Card {
-	return &self.DealerHand.Cards[0]
+func (self *Dealer) TopCard() cards.Card {
+	return self.DealerHand.Cards[0]
 }
 
-func (self *Dealer) HoleCard() *cards.Card {
-	return &self.DealerHand.Cards[1]
+func (self *Dealer) HoleCard() cards.Card {
+	return self.DealerHand.Cards[1]
 }
