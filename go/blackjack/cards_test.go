@@ -97,11 +97,11 @@ func TestCardRank(t *testing.T) {
 	}
 
 	for i:= 0; i < len(ranks); i++ {
-		maybe_rank := ranks[i]
+		maybeRank := ranks[i]
 		// To test whether an interface value holds a specific type, 
 		// a type assertion can return two values: the underlying value 
 		// and a boolean value that reports whether the assertion succeeded.
-		rank, ok := maybe_rank.(cards.CardRank)
+		rank, ok := maybeRank.(cards.CardRank)
 		if ok {
 			assert.Equal(t, int(rank), i, "card rank enum is expected int")
 			assert.Equal(t, rank, cards.CardRank(i), "card rank enum is expected int")
@@ -119,12 +119,12 @@ func TestCardRankValue(t *testing.T) {
 }
 
 func TestUnshuffledDeck(t *testing.T) {
-	hearts_count := 0
-	diamonds_count := 0
-	spades_count := 0
-	clubs_count := 0
+	heartsCount := 0
+	diamondsCount := 0
+	spadesCount := 0
+	clubsCount := 0
 
-	rank_counts := map[cards.CardRank]int {
+	rankCounts := map[cards.CardRank]int {
 		cards.ACE: 0,
 		cards.TWO: 0,
 		cards.THREE: 0,
@@ -143,24 +143,24 @@ func TestUnshuffledDeck(t *testing.T) {
 	for i := 0; i < len(cards.UNSHUFFLED_DECK); i++ {
 		var card cards.Card = cards.UNSHUFFLED_DECK[i]
 		if card.Suite == cards.HEARTS {
-			hearts_count++
+			heartsCount++
 		} else if card.Suite == cards.DIAMONDS {
-			diamonds_count++
+			diamondsCount++
 		} else if card.Suite == cards.SPADES {
-			spades_count++
+			spadesCount++
 		} else if card.Suite == cards.CLUBS {
-			clubs_count++
+			clubsCount++
 		}
-		rank_counts[card.Rank]++
+		rankCounts[card.Rank]++
 	}
 
-	assert.Equal(t, hearts_count,   13, "deck must 13 cards from each suite")
-	assert.Equal(t, diamonds_count, 13, "deck must 13 cards from each suite")
-	assert.Equal(t, spades_count,   13, "deck must 13 cards from each suite")
-	assert.Equal(t, clubs_count,	13, "deck must 13 cards from each suite")
+	assert.Equal(t, heartsCount,   13, "deck must 13 cards from each suite")
+	assert.Equal(t, diamondsCount, 13, "deck must 13 cards from each suite")
+	assert.Equal(t, spadesCount,   13, "deck must 13 cards from each suite")
+	assert.Equal(t, clubsCount,	13, "deck must 13 cards from each suite")
 
 	for rank := cards.ACE; rank <= cards.KING; rank++ {
-		assert.Equal(t, rank_counts[rank], 4, "deck must have four of each rank")
+		assert.Equal(t, rankCounts[rank], 4, "deck must have four of each rank")
 	}
 }
 

@@ -76,9 +76,9 @@ func (self *BlackJack) PlayGame() {
 			var player *Player = self.Players[j]
 			for k := 0; k < player.NumMasterHands(); k++ {
 				card = self.GetCardFromShoe()
-				var master_hand *PlayerMasterHand = player.PlayerMasterHands[k]
-				var first_hand *PlayerHand = master_hand.Hands[0]
-				first_hand.AddCard(card)
+				var masterHand *PlayerMasterHand = player.PlayerMasterHands[k]
+				var firstHand *PlayerHand = masterHand.Hands[0]
+				firstHand.AddCard(card)
 			}
 		}
 
@@ -86,10 +86,10 @@ func (self *BlackJack) PlayGame() {
 		dealer.DealerHand.AddCard(card)
 	}
 
-	var dealer_top_card cards.Card = *dealer.TopCard()
-	self.log(fmt.Sprintf("dealer top card: %v", dealer_top_card.Str()))
+	var dealerTopCard cards.Card = *dealer.TopCard()
+	self.log(fmt.Sprintf("dealer top card: %v", dealerTopCard.Str()))
 
-	var dealer_hole_card cards.Card = *dealer.HoleCard()
+	var dealerHoleCard cards.Card = *dealer.HoleCard()
 
 	//
 	// PLAY HANDS
@@ -109,10 +109,10 @@ func (self *BlackJack) PlayGame() {
 		for i := 0; i < self.NumPlayers(); i++ {
 			var player *Player = self.Players[i]
 			for j := 0; j < player.NumMasterHands(); j++ {
-				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
-				for k := 0; k < master_hand.NumHands(); k++ {
+				var masterHand *PlayerMasterHand = player.PlayerMasterHands[j]
+				for k := 0; k < masterHand.NumHands(); k++ {
 					// really should only be one hand in the master hand at this point
-					var hand *PlayerHand = master_hand.Hands[k]
+					var hand *PlayerHand = masterHand.Hands[k]
 					// standing will do the right thing for both cases
 					hand.OutCome = HandOutcome(STAND)
 				}
@@ -125,21 +125,21 @@ func (self *BlackJack) PlayGame() {
 			var player *Player = self.Players[i]
 			self.log((fmt.Sprintf("player %v - %v", i+1, player.Name)))
 			for j := 0; j < player.NumMasterHands(); j++ {
-				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
-				for k := 0; k < master_hand.NumHands(); k++ {
-					var hand *PlayerHand = master_hand.Hands[k]
+				var masterHand *PlayerMasterHand = player.PlayerMasterHands[j]
+				for k := 0; k < masterHand.NumHands(); k++ {
+					var hand *PlayerHand = masterHand.Hands[k]
 					self.log(fmt.Sprintf("    hand %v.%v:", j+1, k+1))
 					for l := 0; l < hand.NumCards(); l++ {
 						var card cards.Card = hand.Cards[l]
 						self.log(fmt.Sprintf("    card %v: %v", l+1, card.Str()))
 					}
 
-					var is_split_possible bool = master_hand.NumHands() < master_hand.HANDS_LIMIT
+					var isSplitPossible bool = masterHand.NumHands() < masterHand.HANDS_LIMIT
 
 					// Need to make decisions pr player hand ...
 					for {
 						var decision strategy.PlayerDecision = strategy.DetermineBasicStrategyPlay(
-							dealer_top_card, hand, is_split_possible,
+							dealerTopCard, hand, isSplitPossible,
 						)
 						self.log(fmt.Sprintf("    basic strategy: %v", decision))
 
@@ -165,9 +165,9 @@ func (self *BlackJack) PlayGame() {
 						} else if decision == strategy.HIT {
 							card = self.GetCardFromShoe()
 							hand.AddCard(card)
-							hand_total := hand.Count()
+							handTotal := hand.Count()
 							self.log(fmt.Sprintf("    hit: %v, total H%v S%v", card.Str(), hand.HardCount(), hand.SoftCount()))
-							if hand_total > 21 {
+							if handTotal > 21 {
 								hand.OutCome = HandOutcome(BUST)
 								self.log(fmt.Sprintf("    %v", hand.OutCome))
 								break
@@ -179,7 +179,7 @@ func (self *BlackJack) PlayGame() {
 							var card1 cards.Card = self.GetCardFromShoe()
 							var card2 cards.Card = self.GetCardFromShoe()
 							var handIndex int = k
-							var newHandIndex int = master_hand.SplitHand(handIndex, [2]cards.Card{card1, card2})
+							var newHandIndex int = masterHand.SplitHand(handIndex, [2]cards.Card{card1, card2})
 							self.log(fmt.Sprintf("    split, new hand index %v, adding cards %v, %v", newHandIndex, card1.Str(), card2.Str()))
 
 						} else {
@@ -198,8 +198,8 @@ func (self *BlackJack) PlayGame() {
 		//
 
 		self.log("DEALER HAND")
-		self.log(fmt.Sprintf("dealer top card: %v", dealer_top_card.Str()))
-		self.log(fmt.Sprintf("dealer hole card: %v", dealer_hole_card.Str()))
+		self.log(fmt.Sprintf("dealer top card: %v", dealerTopCard.Str()))
+		self.log(fmt.Sprintf("dealer hole card: %v", dealerHoleCard.Str()))
 		var dealerDone bool = false
 		for !dealerDone {
 			hardCount := dealer.DealerHand.HardCount()
@@ -237,9 +237,9 @@ func (self *BlackJack) PlayGame() {
 			var player *Player = self.Players[i]
 			self.log(fmt.Sprintf("Player %v - %v", i+1, player.Name))
 			for j := 0; j < player.NumMasterHands(); j++ {
-				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
-				for k := 0; k < master_hand.NumHands(); k++ {
-					var hand *PlayerHand = master_hand.Hands[k]
+				var masterHand *PlayerMasterHand = player.PlayerMasterHands[j]
+				for k := 0; k < masterHand.NumHands(); k++ {
+					var hand *PlayerHand = masterHand.Hands[k]
 					if hand.IsNatural() {
 						self.log(fmt.Sprintf("    hand %v.%v: push both player and dealer had naturals", j+1, k+1))
 					} else {
@@ -255,9 +255,9 @@ func (self *BlackJack) PlayGame() {
 			var player *Player = self.Players[i]
 			self.log(fmt.Sprintf("Player %v - %v", i+1, player.Name))
 			for j := 0; j < player.NumMasterHands(); j++ {
-				var master_hand *PlayerMasterHand = player.PlayerMasterHands[j]
-				for k := 0; k < master_hand.NumHands(); k++ {
-					var hand *PlayerHand = master_hand.Hands[k]
+				var masterHand *PlayerMasterHand = player.PlayerMasterHands[j]
+				for k := 0; k < masterHand.NumHands(); k++ {
+					var hand *PlayerHand = masterHand.Hands[k]
 					if hand.OutCome == HandOutcome(BUST) {
 						self.log(fmt.Sprintf("    hand %v.%v: bust: lost $%v", j+1, k+1, hand.Bet))
 

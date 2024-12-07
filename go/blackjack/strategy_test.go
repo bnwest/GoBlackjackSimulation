@@ -32,56 +32,56 @@ func TestPlayerDecisions(t *testing.T) {
 }
 
 func TestGetPairSplitDecision(t *testing.T) {
-	player_split_card := cards.ACE
+	playerSplitCard := cards.ACE
 	for i := cards.ACE; i <= cards.KING; i++ {
-		dealer_top_card := cards.CardRank(i)
-		decision := strategy.GetPairSplitDecision(player_split_card, dealer_top_card)
+		dealerTopCard := cards.CardRank(i)
+		decision := strategy.GetPairSplitDecision(playerSplitCard, dealerTopCard)
 		assert.Equal(t, strategy.SP, decision, "ACEs should always be split")
 	}
 
 	for i := cards.ACE; i <= cards.KING; i++ {
-		player_split_card := cards.CardRank(i)
+		playerSplitCard := cards.CardRank(i)
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealer_top_card := cards.CardRank(j)
+			dealerTopCard := cards.CardRank(j)
 			assert.NotPanics(
 				t,
 				func() {
-					decision := strategy.Decision(strategy.GetPairSplitDecision(player_split_card, dealer_top_card))
+					decision := strategy.Decision(strategy.GetPairSplitDecision(playerSplitCard, dealerTopCard))
 					if !strategy.IsValidDecision(decision) {
 						panic("GetPairSplitDecision() returned an invalid decision")
 					}
 				},
 				"GetPairSplitDecision(%v, %v) should not panic given valid inputs",
-				player_split_card,
-				dealer_top_card,
+				playerSplitCard,
+				dealerTopCard,
 			)
 		}
 	}
 }
 
 func TestGetHardTotalDecision(t *testing.T) {
-	player_total := 21
+	playerTotal := 21
 	for i := cards.ACE; i <= cards.KING; i++ {
-		dealer_top_card := cards.CardRank(i)
-		decision := strategy.GetHardTotalDecision(player_total, dealer_top_card)
+		dealerTopCard := cards.CardRank(i)
+		decision := strategy.GetHardTotalDecision(playerTotal, dealerTopCard)
 		assert.Equal(t, strategy.S, decision, "Player should always stand on a 21")
 	}
 
 	for i := 4; i <= 21; i++ {
-		player_total := i
+		playerTotal := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealer_top_card := cards.CardRank(j)
+			dealerTopCard := cards.CardRank(j)
 			assert.NotPanicsf(
 				t,
 				func() {
-					decision := strategy.Decision(strategy.GetHardTotalDecision(player_total, dealer_top_card))
+					decision := strategy.Decision(strategy.GetHardTotalDecision(playerTotal, dealerTopCard))
 					if !strategy.IsValidDecision(decision) {
 						panic("GetHardTotalDecision() returned an invalid decision")
 					}
 				},
 				"GetHardTotalDecision(%v, %v) should not panic given valid inputs",
-				player_total,
-				dealer_top_card,
+				playerTotal,
+				dealerTopCard,
 			)
 		}
 	}
@@ -89,132 +89,132 @@ func TestGetHardTotalDecision(t *testing.T) {
 
 func TestGetSoftTotalDecision(t *testing.T) {
 	for i := 20; i <= 21; i++ {
-		player_total := i
+		playerTotal := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealer_top_card := cards.CardRank(j)
-			decision := strategy.GetHardTotalDecision(player_total, dealer_top_card)
+			dealerTopCard := cards.CardRank(j)
+			decision := strategy.GetHardTotalDecision(playerTotal, dealerTopCard)
 			assert.Equal(t, strategy.S, decision, "Player should always stand on a S20 or S21")
 		}
 	}
 
 	for i := 12; i <= 21; i++ {
-		player_total := i
+		playerTotal := i
 		for j := cards.ACE; j <= cards.KING; j++ {
-			dealer_top_card := cards.CardRank(j)
+			dealerTopCard := cards.CardRank(j)
 			assert.NotPanicsf(
 				t,
 				func() {
-					decision := strategy.Decision(strategy.GetSoftTotalDecision(player_total, dealer_top_card))
+					decision := strategy.Decision(strategy.GetSoftTotalDecision(playerTotal, dealerTopCard))
 					if !strategy.IsValidDecision(decision) {
 						panic("GetSoftTotalDecision() returned an invalid decision")
 					}
 				},
 				"GetSoftTotalDecision(%v, %v) should not panic given valid inputs",
-				player_total,
-				dealer_top_card,
+				playerTotal,
+				dealerTopCard,
 			)
 		}
 	}
 }
 
-func determine_one_basic_decision_play(
-	dealer_top_card cards.Card,
-	player_card1 cards.Card,
-	player_card2 cards.Card,
+func determineOneBasicDecisionPlay(
+	dealerTopCard cards.Card,
+	playerCard1 cards.Card,
+	playerCard2 cards.Card,
 	bet int,
-	from_split bool,
-	hand_allow_more_splits bool,
+	fromSplit bool,
+	handAllowMoreSplits bool,
 ) bool {
-	var player_hand *game.PlayerHand
-	player_hand = game.CreatePlayerHand(from_split, bet)
-	player_hand.AddCard(player_card1)
-	player_hand.AddCard(player_card2)
+	var playerHand *game.PlayerHand
+	playerHand = game.CreatePlayerHand(fromSplit, bet)
+	playerHand.AddCard(playerCard1)
+	playerHand.AddCard(playerCard2)
 
-	var player_decision strategy.PlayerDecision
-	player_decision = strategy.DetermineBasicStrategyPlay(
-		dealer_top_card, player_hand, hand_allow_more_splits,
+	var playerDecision strategy.PlayerDecision
+	playerDecision = strategy.DetermineBasicStrategyPlay(
+		dealerTopCard, playerHand, handAllowMoreSplits,
 	)
 
 	// end running lazy golang decision to prevent as many newlines as possible
-	var decision_ok bool = false
-	decision_ok = strategy.IsValidPlayerDecision(player_decision)
-	return decision_ok
+	var decisionOk bool = false
+	decisionOk = strategy.IsValidPlayerDecision(playerDecision)
+	return decisionOk
 }
 
 func TestDetermineBasicStrategyPlay(t *testing.T) {
 	// strategy.DetermineBasicStrategyPlay
-	//     dealer_top_card cards.Card,
-	//     player_hand game.PlayerHand,
-	//     hand_allow_more_splits bool,
+	//     dealerTopCard cards.Card,
+	//     playerHand game.PlayerHand,
+	//     handAllowMoreSplits bool,
 	// )
 	const bet int = 100
-	var dealer_top_card cards.Card
-	var player_card1 cards.Card
-	var player_card2 cards.Card
+	var dealerTopCard cards.Card
+	var playerCard1 cards.Card
+	var playerCard2 cards.Card
 	for i := cards.ACE; i <= cards.KING; i++ {
-		dealer_top_card = cards.Card{Rank: cards.CardRank(i), Suite: cards.DIAMONDS}
+		dealerTopCard = cards.Card{Rank: cards.CardRank(i), Suite: cards.DIAMONDS}
 
 		for j := cards.ACE; j <= cards.KING; j++ {
-			player_card1 = cards.Card{Rank: cards.CardRank(i), Suite: cards.DIAMONDS}
+			playerCard1 = cards.Card{Rank: cards.CardRank(i), Suite: cards.DIAMONDS}
 
 			for k := cards.ACE; k <= cards.KING; k++ {
-				player_card2 = cards.Card{Rank: cards.CardRank(i), Suite: cards.DIAMONDS}
+				playerCard2 = cards.Card{Rank: cards.CardRank(i), Suite: cards.DIAMONDS}
 
-				var from_split bool
-				var hand_allow_more_splits bool
-				var decision_ok bool
+				var fromSplit bool
+				var handAllowMoreSplits bool
+				var decisionOk bool
 
-				from_split = false
-				hand_allow_more_splits = false
-				decision_ok = determine_one_basic_decision_play(
-					dealer_top_card, player_card1, player_card2,
-					bet, from_split, hand_allow_more_splits,
+				fromSplit = false
+				handAllowMoreSplits = false
+				decisionOk = determineOneBasicDecisionPlay(
+					dealerTopCard, playerCard1, playerCard2,
+					bet, fromSplit, handAllowMoreSplits,
 				)
-				assert.Equal(t, true, decision_ok, "Verifying basic strategy API returns valid decision")
+				assert.Equal(t, true, decisionOk, "Verifying basic strategy API returns valid decision")
 
-				from_split = false
-				hand_allow_more_splits = true
-				decision_ok = determine_one_basic_decision_play(
-					dealer_top_card, player_card1, player_card2,
-					bet, from_split, hand_allow_more_splits,
+				fromSplit = false
+				handAllowMoreSplits = true
+				decisionOk = determineOneBasicDecisionPlay(
+					dealerTopCard, playerCard1, playerCard2,
+					bet, fromSplit, handAllowMoreSplits,
 				)
-				assert.Equal(t, true, decision_ok, "Verifying basic strategy API returns valid decision")
+				assert.Equal(t, true, decisionOk, "Verifying basic strategy API returns valid decision")
 
-				from_split = true
-				hand_allow_more_splits = false
-				decision_ok = determine_one_basic_decision_play(
-					dealer_top_card, player_card1, player_card2,
-					bet, from_split, hand_allow_more_splits,
+				fromSplit = true
+				handAllowMoreSplits = false
+				decisionOk = determineOneBasicDecisionPlay(
+					dealerTopCard, playerCard1, playerCard2,
+					bet, fromSplit, handAllowMoreSplits,
 				)
-				assert.Equal(t, true, decision_ok, "Verifying basic strategy API returns valid decision")
+				assert.Equal(t, true, decisionOk, "Verifying basic strategy API returns valid decision")
 
-				from_split = true
-				hand_allow_more_splits = true
-				decision_ok = determine_one_basic_decision_play(
-					dealer_top_card, player_card1, player_card2,
-					bet, from_split, hand_allow_more_splits,
+				fromSplit = true
+				handAllowMoreSplits = true
+				decisionOk = determineOneBasicDecisionPlay(
+					dealerTopCard, playerCard1, playerCard2,
+					bet, fromSplit, handAllowMoreSplits,
 				)
-				assert.Equal(t, true, decision_ok, "Verifying basic strategy API returns valid decision")
+				assert.Equal(t, true, decisionOk, "Verifying basic strategy API returns valid decision")
 			}
 		}
 	}
 }
 
 func TestPlayerHandInterface(t *testing.T) {
-	var player_card1 cards.Card = cards.Card{Rank: cards.ACE, Suite: cards.HEARTS}
-	var player_card2 cards.Card = cards.Card{Rank: cards.ACE, Suite: cards.DIAMONDS}
-	from_split := false
+	var playerCard1 cards.Card = cards.Card{Rank: cards.ACE, Suite: cards.HEARTS}
+	var playerCard2 cards.Card = cards.Card{Rank: cards.ACE, Suite: cards.DIAMONDS}
+	fromSplit := false
 	bet := 100
-	var player_hand *game.PlayerHand = game.CreatePlayerHand(from_split, bet)
-	player_hand.AddCard(player_card1)
-	player_hand.AddCard(player_card2)
+	var playerHand *game.PlayerHand = game.CreatePlayerHand(fromSplit, bet)
+	playerHand.AddCard(playerCard1)
+	playerHand.AddCard(playerCard2)
 
 	// assign (*game.PlayerHand) to (strategy.PlayerHandInterface)
-	var player_hand_interface strategy.PlayerHandInterface = player_hand
+	var playerHandInterface strategy.PlayerHandInterface = playerHand
 
-	assert.Equal(t, false, player_hand_interface.IsFromSplit(), "PlayerHandInterface IsFromSplit() failed")
-	assert.Equal(t, 2, player_hand_interface.NumCards(), "PlayerHandInterface NumCards() failed")
-	assert.Equal(t, 2, player_hand_interface.HardCount(), "PlayerHandInterface HardCount() failed")
-	assert.Equal(t, 12, player_hand_interface.SoftCount(), "PlayerHandInterface SoftCount() failed")
-	assert.Equal(t, player_card1, player_hand_interface.GetCard(0), "PlayerHandInterface GetCard() failed")
+	assert.Equal(t, false, playerHandInterface.IsFromSplit(), "PlayerHandInterface IsFromSplit() failed")
+	assert.Equal(t, 2, playerHandInterface.NumCards(), "PlayerHandInterface NumCards() failed")
+	assert.Equal(t, 2, playerHandInterface.HardCount(), "PlayerHandInterface HardCount() failed")
+	assert.Equal(t, 12, playerHandInterface.SoftCount(), "PlayerHandInterface SoftCount() failed")
+	assert.Equal(t, playerCard1, playerHandInterface.GetCard(0), "PlayerHandInterface GetCard() failed")
 }
