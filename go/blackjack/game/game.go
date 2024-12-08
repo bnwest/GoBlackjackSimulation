@@ -184,10 +184,12 @@ func (self *BlackJack) PlayGame() {
 
 						} else {
 							self.log("FTW")
+							self.log(fmt.Sprintf("FTW: dealerTopCard: %v, isSplitPossible %v", dealerTopCard.Str(), isSplitPossible))
+							self.log(fmt.Sprintf("FTW: player hand count: H%v S%v", hand.HardCount(), hand.SoftCount()))
+							self.log(fmt.Sprintf("FTW: decision: %v", decision))
 							hand.OutCome = HandOutcome(STAND)
 							break
 						}
-
 					}
 				}
 			}

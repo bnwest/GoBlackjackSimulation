@@ -1,7 +1,7 @@
 package strategy
 
 import (
-	// "fmt"
+	"fmt"
 
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
 	house_rules "github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
@@ -44,9 +44,9 @@ func convertToPlayerDecision(
 		//     hand soft totals [12, 13,14, 15, 16, 17, 18, 19]
 		var nondoubleDownDecision PlayerDecision
 		if decision == Decision(Dh) {
-			playerDecision = PlayerDecision(HIT)
+			nondoubleDownDecision = PlayerDecision(HIT)
 		} else {
-			playerDecision = PlayerDecision(STAND)
+			nondoubleDownDecision = PlayerDecision(STAND)
 		}
 
 		var canDoubleDown bool
@@ -117,7 +117,7 @@ func DetermineBasicStrategyPlay(
 	playerHand PlayerHandInterface,
 	handAllowsMoreSplits bool,
 ) PlayerDecision {
-	// isFirstDecision := playerHand.NumCards() == 2
+	isFirstDecision := playerHand.NumCards() == 2
 	// isFirstPostSplitDecision := isFirstDecision && playerHand.FromSplit
 
 	playerCard1 := playerHand.GetCard(0)
@@ -127,10 +127,14 @@ func DetermineBasicStrategyPlay(
 	var playerDecision PlayerDecision
 
 	var gotPairs bool
-	if house_rules.SPLIT_ON_VALUE_MATCH {
-		gotPairs = cards.CardRankValue[playerCard1.Rank] == cards.CardRankValue[playerCard2.Rank]
+	if isFirstDecision {
+		if house_rules.SPLIT_ON_VALUE_MATCH {
+			gotPairs = cards.CardRankValue[playerCard1.Rank] == cards.CardRankValue[playerCard2.Rank]
+		} else {
+			gotPairs = playerCard1.Rank == playerCard2.Rank
+		}
 	} else {
-		gotPairs = playerCard1.Rank == playerCard2.Rank
+		gotPairs = false
 	}
 
 	if gotPairs && handAllowsMoreSplits {
@@ -166,5 +170,6 @@ func DetermineBasicStrategyPlay(
 		return playerDecision
 	}
 
-	// panic("DetermineBasicStrategyPlay() ran into a little trouble in town.")
+	fmt.Println("DetermineBasicStrategyPlay() ran into a little trouble in town.")
+	panic("DetermineBasicStrategyPlay() ran into a little trouble in town.")
 }

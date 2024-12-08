@@ -809,12 +809,15 @@ class BasicStrategy:
 
         decision: str
 
-        got_pairs: bool = False
-        if HouseRules.SPLIT_ON_VALUE_MATCH:
-            # recognize pair match for all card with a value of 10, plus ordinary pairs
-            got_pairs = CARD_VALUE[player_card1.rank] == CARD_VALUE[player_card2.rank]
+        got_pairs: bool
+        if is_first_decision:
+            if HouseRules.SPLIT_ON_VALUE_MATCH:
+                # recognize pair match for all card with a value of 10, plus ordinary pairs
+                got_pairs = CARD_VALUE[player_card1.rank] == CARD_VALUE[player_card2.rank]
+            else:
+                got_pairs = player_card1.rank == player_card2.rank
         else:
-            got_pairs = player_card1.rank == player_card2.rank
+            got_pairs = False
 
         if got_pairs and hand_allows_more_splits:
             # Determine if the pairs can be split.
