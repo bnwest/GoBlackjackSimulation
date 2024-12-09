@@ -27,12 +27,28 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/game"
 )
 
 func main() {
-	for i := 0; i < 100; i++ {
-		var blackjack *game.BlackJack = game.CreateBlackJack()
+	var blackjack *game.BlackJack = game.CreateBlackJack()
+	for i := 0; i < 1000_000; i++ {
 		blackjack.PlayGame()
+	}
+
+	// for 100,000 games and $2 bets per hand:
+	// John: {HandsPlayed:102848 HandsWon:44180 HandsLost:50248  HandsPushed:8420  Proceeds:1365}
+	// Jane: {HandsPlayed:205678 HandsWon:88299 HandsLost:100572 HandsPushed:16807 Proceeds:3267}
+
+	// for 1,000,000 games and $2 bets per hand:
+	// John: {HandsPlayed:1028420 HandsWon:439691 HandsLost:504276  HandsPushed:84453  Proceeds:6472}
+	// Jane: {HandsPlayed:2057493 HandsWon:879804 HandsLost:1009397 HandsPushed:168292 Proceeds:12758}
+
+	for playerName, result := range blackjack.Results {
+		var playerResult *game.BlackJackResults = result
+		// "%+v" => print the struct field names and values, versus just values
+		fmt.Printf("%v: %+v\n", playerName, *playerResult)
 	}
 }
