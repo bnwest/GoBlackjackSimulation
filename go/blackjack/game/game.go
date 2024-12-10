@@ -19,6 +19,7 @@ type BlackJackResults struct {
 type BlackJackStats struct {
 	DoubleDownCount int
 	SurrenderCount  int
+	SplitCount      int
 	AcesSplit       int
 }
 
@@ -26,6 +27,7 @@ func CreateBlackJackStats() BlackJackStats {
 	return BlackJackStats{
 		DoubleDownCount: 0,
 		SurrenderCount:  0,
+		SplitCount:      0,
 		AcesSplit:       0,
 	}
 }
@@ -90,6 +92,7 @@ func abs(i int) int {
 
 func (self *BlackJack) AddResult(
 	player *Player,
+	handIndex int,
 	playerHand *PlayerHand,
 	initialBet int,
 	result int,
@@ -111,6 +114,10 @@ func (self *BlackJack) AddResult(
 
 	if playerHand.OutCome == HandOutcome(SURRENDER) {
 		self.Stats.SurrenderCount++
+	}
+
+	if handIndex > 0 {
+		self.Stats.SplitCount++
 	}
 
 	splittingAces := playerHand.FromSplit && playerHand.Cards[0].Rank == cards.ACE
@@ -336,10 +343,10 @@ func (self *BlackJack) PlayGame() {
 				for k := 0; k < masterHand.NumHands(); k++ {
 					var hand *PlayerHand = masterHand.Hands[k]
 					if hand.IsNatural() {
-						self.AddResult(player, hand, initialBet, 0)
+						self.AddResult(player, k, hand, initialBet, 0)
 						self.log(fmt.Sprintf("    hand %v.%v: push both player and dealer had naturals", j+1, k+1))
 					} else {
-						self.AddResult(player, hand, initialBet, -hand.Bet)
+						self.AddResult(player, k, hand, initialBet, -hand.Bet)
 						self.log(fmt.Sprintf("    hand %v.%v: lost $%v", j+1, k+1, hand.Bet))
 					}
 				}
@@ -356,35 +363,35 @@ func (self *BlackJack) PlayGame() {
 				for k := 0; k < masterHand.NumHands(); k++ {
 					var hand *PlayerHand = masterHand.Hands[k]
 					if hand.OutCome == HandOutcome(BUST) {
-						self.AddResult(player, hand, initialBet, -hand.Bet)
+						self.AddResult(player, k, hand, initialBet, -hand.Bet)
 						self.log(fmt.Sprintf("    hand %v.%v: bust: lost $%v", j+1, k+1, hand.Bet))
 
 					} else if hand.OutCome == HandOutcome(SURRENDER) {
-						self.AddResult(player, hand, initialBet, -hand.Bet)
+						self.AddResult(player, k, hand, initialBet, -hand.Bet)
 						self.log(fmt.Sprintf("    hand %v.%v: surrender: lost $%v", j+1, k+1, hand.Bet))
 
 					} else {
 						// player has a non-bust, non-surrender hand
 						if hand.IsNatural() {
 							var payout int = int(float32(hand.Bet) * house_rules.NATURAL_BLACKJACK_PAYOUT)
-							self.AddResult(player, hand, initialBet, payout)
+							self.AddResult(player, k, hand, initialBet, payout)
 							self.log(fmt.Sprintf("    hand %v.%v: natural: won $%v", j+1, k+1, payout))
 
 						} else if dealer.DealerHand.OutCome == HandOutcome(BUST) {
-							self.AddResult(player, hand, initialBet, hand.Bet)
+							self.AddResult(player, k, hand, initialBet, hand.Bet)
 							self.log(fmt.Sprintf("    hand %v.%v: won: dealer bust: won $%v", j+1, k+1, hand.Bet))
 
 						} else {
 							if hand.Count() < dealer.DealerHand.Count() {
-								self.AddResult(player, hand, initialBet, -hand.Bet)
+								self.AddResult(player, k, hand, initialBet, -hand.Bet)
 								self.log(fmt.Sprintf("    hand %v.%v: lost $%v", j+1, k+1, hand.Bet))
 
 							} else if hand.Count() > dealer.DealerHand.Count() {
-								self.AddResult(player, hand, initialBet, hand.Bet)
+								self.AddResult(player, k, hand, initialBet, hand.Bet)
 								self.log(fmt.Sprintf("    hand %v.%v: won $%v", j+1, k+1, hand.Bet))
 
 							} else {
-								self.AddResult(player, hand, initialBet, 0)
+								self.AddResult(player, k, hand, initialBet, 0)
 								self.log(fmt.Sprintf("    hand %v.%v: push", j+1, k+1))
 							}
 						}

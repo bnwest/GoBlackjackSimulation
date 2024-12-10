@@ -54,8 +54,8 @@ func main() {
 	}
 
 	// for 1,000,000 games with 3 master hands per game => about 3,000,000 hands
-	// Stats: {DoubleDownCount:307408 SurrenderCount:155882 AcesSplit:35517}
-	// roughly 10% hands double down, 5% of hands surrender, 1% split Aces
+	// Stats: {DoubleDownCount:302801 SurrenderCount:155506 SplitCount:83061 AcesSplit:32778}
+	// roughly 10% hands double down, 5% surrender, 2.5% split, 1% split Aces
 
 	fmt.Printf("Stats: %+v\n", blackjack.Stats)
 }
