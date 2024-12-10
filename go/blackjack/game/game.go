@@ -140,8 +140,8 @@ func (self *BlackJack) PlayGame() {
 
 	var dealer *Dealer = CreateDealer()
 
-	var player1 *Player = CreatePlayer("John")
-	var player2 *Player = CreatePlayer("Jane")
+	var player1 *Player = CreatePlayer("Jack")
+	var player2 *Player = CreatePlayer("Jill")
 
 	self.SetPlayersForGame([]*Player{player1, player2})
 
