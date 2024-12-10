@@ -35,7 +35,7 @@ import (
 
 func main() {
 	var blackjack *game.BlackJack = game.CreateBlackJack()
-	for i := 0; i < 1000_000; i++ {
+	for i := 0; i < 100; i++ {
 		blackjack.PlayGame()
 	}
 
@@ -43,7 +43,7 @@ func main() {
 	// John: {HandsPlayed:102848 HandsWon:44180 HandsLost:50248  HandsPushed:8420  Proceeds:1365}
 	// Jane: {HandsPlayed:205678 HandsWon:88299 HandsLost:100572 HandsPushed:16807 Proceeds:3267}
 
-	// for 1,000,000 games and $2 bets per hand:
+	// for 1,000,000 games, 3 master hands per game and $2 bets per hand => about $6,000,000 bet
 	// John: {HandsPlayed:1028420 HandsWon:439691 HandsLost:504276  HandsPushed:84453  Proceeds:6472}
 	// Jane: {HandsPlayed:2057493 HandsWon:879804 HandsLost:1009397 HandsPushed:168292 Proceeds:12758}
 
@@ -52,4 +52,10 @@ func main() {
 		// "%+v" => print the struct field names and values, versus just values
 		fmt.Printf("%v: %+v\n", playerName, *playerResult)
 	}
+
+	// for 1,000,000 games with 3 master hands per game => about 3,000,000 hands
+	// Stats: {DoubleDownCount:307408 SurrenderCount:155882 AcesSplit:35517}
+	// roughly 10% hands double down, 5% of hands surrender, 1% split Aces
+
+	fmt.Printf("Stats: %+v\n", blackjack.Stats)
 }

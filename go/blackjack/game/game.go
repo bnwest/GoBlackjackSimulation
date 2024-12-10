@@ -16,11 +16,26 @@ type BlackJackResults struct {
 	Proceeds    int
 }
 
+type BlackJackStats struct {
+	DoubleDownCount int
+	SurrenderCount  int
+	AcesSplit       int
+}
+
+func CreateBlackJackStats() BlackJackStats {
+	return BlackJackStats{
+		DoubleDownCount: 0,
+		SurrenderCount:  0,
+		AcesSplit:       0,
+	}
+}
+
 type BlackJack struct {
 	Shoe    []cards.Card
 	ShoeTop int
 	Players []*Player
 	Results map[string]*BlackJackResults
+	Stats   BlackJackStats
 }
 
 func CreateBlackJack() *BlackJack {
@@ -29,6 +44,7 @@ func CreateBlackJack() *BlackJack {
 		ShoeTop: 0,
 		Players: []*Player{},
 		Results: make(map[string]*BlackJackResults),
+		Stats:   CreateBlackJackStats(),
 	}
 	return &blackjack
 }
@@ -65,7 +81,19 @@ func (self *BlackJack) SetPlayersForGame(players []*Player) {
 	}
 }
 
-func (self *BlackJack) AddResult(player *Player, result int) {
+func abs(i int) int {
+	if i < 0 {
+		return -i
+	}
+	return i
+}
+
+func (self *BlackJack) AddResult(
+	player *Player,
+	playerHand *PlayerHand,
+	initialBet int,
+	result int,
+) {
 	self.Results[player.Name].HandsPlayed++
 	if result > 0 {
 		self.Results[player.Name].HandsWon++
@@ -75,6 +103,20 @@ func (self *BlackJack) AddResult(player *Player, result int) {
 		self.Results[player.Name].HandsPushed++
 	}
 	self.Results[player.Name].Proceeds += result
+
+	isDoubleDown := playerHand.NumCards() == 3 && abs(initialBet)*2 == abs(result)
+	if isDoubleDown {
+		self.Stats.DoubleDownCount++
+	}
+
+	if playerHand.OutCome == HandOutcome(SURRENDER) {
+		self.Stats.SurrenderCount++
+	}
+
+	splittingAces := playerHand.FromSplit && playerHand.Cards[0].Rank == cards.ACE
+	if splittingAces {
+		self.Stats.AcesSplit++
+	}
 }
 
 func (self *BlackJack) log(msg string) {
@@ -96,8 +138,9 @@ func (self *BlackJack) PlayGame() {
 
 	self.SetPlayersForGame([]*Player{player1, player2})
 
-	player1.SetGameBets([]int{2})
-	player2.SetGameBets([]int{2, 2})
+	initialBet := 2
+	player1.SetGameBets([]int{initialBet})
+	player2.SetGameBets([]int{initialBet, initialBet})
 
 	//
 	// DEAL HANDS
@@ -174,6 +217,12 @@ func (self *BlackJack) PlayGame() {
 
 					// Need to make decisions pr player hand ...
 					for {
+						if hand.OutCome == HandOutcome(STAND) {
+							// product of a prior ace split, outcome has already been determined.
+							self.log(fmt.Sprintf("    prior aces split: %v", strategy.PlayerDecision(strategy.STAND)))
+							break
+						}
+
 						var decision strategy.PlayerDecision = strategy.DetermineBasicStrategyPlay(
 							dealerTopCard, hand, isSplitPossible,
 						)
@@ -216,7 +265,15 @@ func (self *BlackJack) PlayGame() {
 							var card2 cards.Card = self.GetCardFromShoe()
 							var handIndex int = k
 							var newHandIndex int = masterHand.SplitHand(handIndex, [2]cards.Card{card1, card2})
-							self.log(fmt.Sprintf("    split, new hand index %v, adding cards %v, %v", newHandIndex, card1.Str(), card2.Str()))
+							self.log(fmt.Sprintf("    split, new hand index %v, adding cards %v, %v", newHandIndex+1, card1.Str(), card2.Str()))
+							self.log(fmt.Sprintf("    new card 2: %v", card1.Str()))
+							splittingAces := hand.Cards[0].Rank == cards.ACE
+							if splittingAces && house_rules.NO_MORE_CARDS_AFTER_SPLITTING_ACES {
+								hand.OutCome = HandOutcome(STAND)
+								self.log(fmt.Sprintf("    aces split: %v", strategy.PlayerDecision(strategy.STAND)))
+								masterHand.Hands[newHandIndex].OutCome = HandOutcome(STAND)
+								break
+							}
 
 						} else {
 							self.log("FTW")
@@ -279,10 +336,10 @@ func (self *BlackJack) PlayGame() {
 				for k := 0; k < masterHand.NumHands(); k++ {
 					var hand *PlayerHand = masterHand.Hands[k]
 					if hand.IsNatural() {
-						self.AddResult(player, 0)
+						self.AddResult(player, hand, initialBet, 0)
 						self.log(fmt.Sprintf("    hand %v.%v: push both player and dealer had naturals", j+1, k+1))
 					} else {
-						self.AddResult(player, -hand.Bet)
+						self.AddResult(player, hand, initialBet, -hand.Bet)
 						self.log(fmt.Sprintf("    hand %v.%v: lost $%v", j+1, k+1, hand.Bet))
 					}
 				}
@@ -299,35 +356,35 @@ func (self *BlackJack) PlayGame() {
 				for k := 0; k < masterHand.NumHands(); k++ {
 					var hand *PlayerHand = masterHand.Hands[k]
 					if hand.OutCome == HandOutcome(BUST) {
-						self.AddResult(player, -hand.Bet)
+						self.AddResult(player, hand, initialBet, -hand.Bet)
 						self.log(fmt.Sprintf("    hand %v.%v: bust: lost $%v", j+1, k+1, hand.Bet))
 
 					} else if hand.OutCome == HandOutcome(SURRENDER) {
-						self.AddResult(player, -hand.Bet)
+						self.AddResult(player, hand, initialBet, -hand.Bet)
 						self.log(fmt.Sprintf("    hand %v.%v: surrender: lost $%v", j+1, k+1, hand.Bet))
 
 					} else {
 						// player has a non-bust, non-surrender hand
 						if hand.IsNatural() {
 							var payout int = int(float32(hand.Bet) * house_rules.NATURAL_BLACKJACK_PAYOUT)
-							self.AddResult(player, payout)
+							self.AddResult(player, hand, initialBet, payout)
 							self.log(fmt.Sprintf("    hand %v.%v: natural: won $%v", j+1, k+1, payout))
 
 						} else if dealer.DealerHand.OutCome == HandOutcome(BUST) {
-							self.AddResult(player, hand.Bet)
+							self.AddResult(player, hand, initialBet, hand.Bet)
 							self.log(fmt.Sprintf("    hand %v.%v: won: dealer bust: won $%v", j+1, k+1, hand.Bet))
 
 						} else {
 							if hand.Count() < dealer.DealerHand.Count() {
-								self.AddResult(player, -hand.Bet)
+								self.AddResult(player, hand, initialBet, -hand.Bet)
 								self.log(fmt.Sprintf("    hand %v.%v: lost $%v", j+1, k+1, hand.Bet))
 
 							} else if hand.Count() > dealer.DealerHand.Count() {
-								self.AddResult(player, hand.Bet)
+								self.AddResult(player, hand, initialBet, hand.Bet)
 								self.log(fmt.Sprintf("    hand %v.%v: won $%v", j+1, k+1, hand.Bet))
 
 							} else {
-								self.AddResult(player, 0)
+								self.AddResult(player, hand, initialBet, 0)
 								self.log(fmt.Sprintf("    hand %v.%v: push", j+1, k+1))
 							}
 						}
