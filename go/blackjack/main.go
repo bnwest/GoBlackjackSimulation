@@ -12,18 +12,24 @@
 // 7. Go has no "set" aggregate type.
 // 8. Go does not support constant arrays, maps or slices.
 // 9. Methods are added outside the struct ... aka a receiver function ...
-// "func (self *<struct>) AddCard()" is a receiver function.
+// "func (self *<struct>) AddCard()" is a receiver function, self is the receiver arg.
 // 9.1 "func (self <struct>) AddCard()" is EVIL, the value the struct instance
 // is copied and perhaps modified by call which is NOT what is desired EVER
 // the idiom should always be used; "func (self *<struct>) AddCard()" ie
-// always define receiver functions with a reference tot he struct
-// 10. Tuple type has no intrinsic support ... workaround is to define then use struct
+// always define receiver functions with a reference to the struct
+// 9.2 paramter copying is the expected behavior for all function arguments
+// 9.3 (*p).method() is the same as p.method(), as a convenience
+// 10. Tuple type has no intrinsic support ... workaround is to define then use struct???
+// 10.1 func swap(x, y string) (string, string) { return y, x } is the counter example
 // 11. gofmt is not configurable, no way to disable formatting for a block of code
 // 12. python cares about newline and indents; go cares about newlines
 // 13. WRT <struct instance?>.<member>, the "." notation is the same
 // for both instance and instance reference
-// 13.1 Avoid ":=" since type is implicit => do not know if an instance
-// or instance reference is being created
+// 13.1 (*p).field is the same as p.field, as a convenience
+// 13.2 Avoid ":=" in struct creation since type is implicit => do not know
+// if an instance or instance reference is being created
+// 14. Go Playground is a web service that runs on golang.org's servers.
+// 15. stackoverflow default response to a Go question is: roll your on.
 
 package main
 
@@ -45,6 +51,7 @@ func main() {
 	// 43% hands won, 49% hands lost, 8% hands pushed
 
 	for playerName, result := range blackjack.Results {
+		// result is a copy of blackjack.Results[playerName] ... a pointer in this case
 		var playerResult *game.BlackJackResults = result
 		// "%+v" => print the struct field names and values, versus just values
 		fmt.Printf("%v: %+v\n", playerName, *playerResult)
