@@ -50,7 +50,7 @@ class HouseRules:
     # are what casinos advetize wrt their BJ tables:
     # 1. 6/8 decks in shoe
     # 2. 3:2 blackjack payout
-    # 3. Hit/Stand on a soft 17
+    # 3. Dealer Hit/Stand on a soft 17
     # 4. Re-splitting Aces (exceptionally rare)
     # 5. Surrender
 
@@ -92,7 +92,7 @@ class HouseRules:
 
 
 # fmt: off
-class CardSuit(StrEnum):
+class CardSuite(StrEnum):
     # these are emoji symbols which require two unicode characters
     HEARTS   = "♥️"  # aka U+2665 + U+fe0f
     DIAMONDS = "♦️"  # aka U+2666 + U+fe0f
@@ -139,71 +139,71 @@ CARD_VALUE = {
 
 
 class Card:
-    def __init__(self, suite: CardSuit, rank: CardRank):
+    def __init__(self, suite: CardSuite, rank: CardRank):
         self.suite = suite
         self.rank = rank
 
-    suite: CardSuit
+    suite: CardSuite
     rank: CardRank
 
 
 UNSHUFFLED_DECK: list[Card] = [
     # HEARTS
-    Card(suite=CardSuit.HEARTS, rank=CardRank.ACE),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.TWO),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.THREE),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.FOUR),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.FIVE),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.SIX),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.SEVEN),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.EIGHT),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.NINE),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.TEN),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.JACK),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.QUEEN),
-    Card(suite=CardSuit.HEARTS, rank=CardRank.KING),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.ACE),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.TWO),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.THREE),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.FOUR),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.FIVE),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.SIX),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.SEVEN),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.EIGHT),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.NINE),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.TEN),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.JACK),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.QUEEN),
+    Card(suite=CardSuite.HEARTS, rank=CardRank.KING),
     # DIAMONDS
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.ACE),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.TWO),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.THREE),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.FOUR),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.FIVE),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.SIX),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.SEVEN),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.EIGHT),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.NINE),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.TEN),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.JACK),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.QUEEN),
-    Card(suite=CardSuit.DIAMONDS, rank=CardRank.KING),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.ACE),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.TWO),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.THREE),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.FOUR),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.FIVE),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.SIX),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.SEVEN),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.EIGHT),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.NINE),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.TEN),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.JACK),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.QUEEN),
+    Card(suite=CardSuite.DIAMONDS, rank=CardRank.KING),
     # SPADES
-    Card(suite=CardSuit.SPADES, rank=CardRank.ACE),
-    Card(suite=CardSuit.SPADES, rank=CardRank.TWO),
-    Card(suite=CardSuit.SPADES, rank=CardRank.THREE),
-    Card(suite=CardSuit.SPADES, rank=CardRank.FOUR),
-    Card(suite=CardSuit.SPADES, rank=CardRank.FIVE),
-    Card(suite=CardSuit.SPADES, rank=CardRank.SIX),
-    Card(suite=CardSuit.SPADES, rank=CardRank.SEVEN),
-    Card(suite=CardSuit.SPADES, rank=CardRank.EIGHT),
-    Card(suite=CardSuit.SPADES, rank=CardRank.NINE),
-    Card(suite=CardSuit.SPADES, rank=CardRank.TEN),
-    Card(suite=CardSuit.SPADES, rank=CardRank.JACK),
-    Card(suite=CardSuit.SPADES, rank=CardRank.QUEEN),
-    Card(suite=CardSuit.SPADES, rank=CardRank.KING),
+    Card(suite=CardSuite.SPADES, rank=CardRank.ACE),
+    Card(suite=CardSuite.SPADES, rank=CardRank.TWO),
+    Card(suite=CardSuite.SPADES, rank=CardRank.THREE),
+    Card(suite=CardSuite.SPADES, rank=CardRank.FOUR),
+    Card(suite=CardSuite.SPADES, rank=CardRank.FIVE),
+    Card(suite=CardSuite.SPADES, rank=CardRank.SIX),
+    Card(suite=CardSuite.SPADES, rank=CardRank.SEVEN),
+    Card(suite=CardSuite.SPADES, rank=CardRank.EIGHT),
+    Card(suite=CardSuite.SPADES, rank=CardRank.NINE),
+    Card(suite=CardSuite.SPADES, rank=CardRank.TEN),
+    Card(suite=CardSuite.SPADES, rank=CardRank.JACK),
+    Card(suite=CardSuite.SPADES, rank=CardRank.QUEEN),
+    Card(suite=CardSuite.SPADES, rank=CardRank.KING),
     # CLUBS
-    Card(suite=CardSuit.CLUBS, rank=CardRank.ACE),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.TWO),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.THREE),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.FOUR),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.FIVE),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.SIX),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.SEVEN),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.EIGHT),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.NINE),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.TEN),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.JACK),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.QUEEN),
-    Card(suite=CardSuit.CLUBS, rank=CardRank.KING),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.ACE),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.TWO),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.THREE),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.FOUR),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.FIVE),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.SIX),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.SEVEN),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.EIGHT),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.NINE),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.TEN),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.JACK),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.QUEEN),
+    Card(suite=CardSuite.CLUBS, rank=CardRank.KING),
 ]
 
 
@@ -312,7 +312,7 @@ class PlayerHand:
         if len(self.cards) == 2:
             card1 = self.cards[0]
             card2 = self.cards[1]
-            # check card value or rank, depending on hiuse rules
+            # check card value or rank, depending on house rules
             if HouseRules.SPLIT_ON_VALUE_MATCH:
                 if CARD_VALUE[card1.rank] == CARD_VALUE[card2.rank]:
                     return True
@@ -526,6 +526,7 @@ def convert_to_player_decision(
                 double_down = True
             else:
                 double_down = False
+
             player_decision = (
                 PlayerDecision.DOUBLE if double_down else nondouble_down_decision
             )

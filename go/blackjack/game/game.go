@@ -8,7 +8,7 @@ import (
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/strategy"
 )
 
-type BlackJackResults struct {
+type BlackJackPlayerResults struct {
 	HandsPlayed int
 	HandsWon    int
 	HandsLost   int
@@ -36,7 +36,7 @@ type BlackJack struct {
 	Shoe    []cards.Card
 	ShoeTop int
 	Players []*Player
-	Results map[string]*BlackJackResults
+	Results map[string]*BlackJackPlayerResults
 	Stats   BlackJackStats
 }
 
@@ -45,7 +45,7 @@ func CreateBlackJack() *BlackJack {
 		Shoe:    cards.CreateShoe(),
 		ShoeTop: 0,
 		Players: []*Player{},
-		Results: make(map[string]*BlackJackResults),
+		Results: make(map[string]*BlackJackPlayerResults),
 		Stats:   CreateBlackJackStats(),
 	}
 	return &blackjack
@@ -72,7 +72,7 @@ func (self *BlackJack) SetPlayersForGame(players []*Player) {
 		var player *Player = self.Players[i]
 		_, ok := self.Results[player.Name]
 		if !ok {
-			self.Results[player.Name] = &BlackJackResults{
+			self.Results[player.Name] = &BlackJackPlayerResults{
 				HandsPlayed: 0,
 				HandsWon:    0,
 				HandsLost:   0,
