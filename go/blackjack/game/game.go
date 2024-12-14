@@ -199,7 +199,7 @@ func (self *BlackJack) PlayGame() {
 				for k := 0; k < masterHand.NumHands(); k++ {
 					// really should only be one hand in the master hand at this point
 					var hand *PlayerHand = masterHand.Hands[k]
-					// standing will do the right thing for both cases
+					// standing will do the right thing in the settlement logic below
 					hand.OutCome = HandOutcome(STAND)
 				}
 			}
@@ -214,6 +214,7 @@ func (self *BlackJack) PlayGame() {
 				var masterHand *PlayerMasterHand = player.PlayerMasterHands[j]
 				for k := 0; k < masterHand.NumHands(); k++ {
 					var hand *PlayerHand = masterHand.Hands[k]
+
 					self.log(fmt.Sprintf("    hand %v.%v:", j+1, k+1))
 					for l := 0; l < hand.NumCards(); l++ {
 						var card cards.Card = hand.Cards[l]
@@ -222,7 +223,7 @@ func (self *BlackJack) PlayGame() {
 
 					var isSplitPossible bool = masterHand.NumHands() < masterHand.HANDS_LIMIT
 
-					// Need to make decisions pr player hand ...
+					// Need to make decisions per player hand ...
 					for {
 						if hand.OutCome == HandOutcome(STAND) {
 							// product of a prior ace split, outcome has already been determined.

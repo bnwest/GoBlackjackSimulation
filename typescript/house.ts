@@ -15,7 +15,7 @@ export class HouseRules {
     static NO_MORE_CARDS_AFTER_SPLITTING_ACES: boolean = true
 
     // [9, 10, 11] aka range(9, 12) => "Reno Rules"
-    // static DOUBLE_DOWN_ON_TOTAL: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+    // static DOUBLE_DOWN_ON_TOTAL: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
     // python list comprehension can be faked with lambdas, unsure how TS-ic that is.
     static DOUBLE_DOWN_ON_TOTAL: number[] = ((): number[] => { 
         let doubleOn: number[] = [];

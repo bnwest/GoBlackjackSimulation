@@ -18,7 +18,7 @@ HouseRules.FORCE_RESHUFFLE = Math.floor(((52 * HouseRules.DECKS_IN_SHOE) * 3) / 
 // True => no double down after the Ace split, no splitting Aces after the Ace split
 HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES = true;
 // [9, 10, 11] aka range(9, 12) => "Reno Rules"
-// static DOUBLE_DOWN_ON_TOTAL: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+// static DOUBLE_DOWN_ON_TOTAL: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 // python list comprehension can be faked with lambdas, unsure how TS-ic that is.
 HouseRules.DOUBLE_DOWN_ON_TOTAL = (() => {
     let doubleOn = [];

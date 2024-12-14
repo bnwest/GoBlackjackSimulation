@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlayerDecision = void 0;
 exports.determineBasicStrategyPlay = determineBasicStrategyPlay;
 const card_1 = require("./card");
 const house_1 = require("./house");
 //
 // Basic Strategy:
-//     https://en.wikipedia.org/wiki/Blackjack//Basic_strategy
+//     https://en.wikipedia.org/wiki/Blackjack#Basic_strategy
 //     All Hail The Wikipedia!
 //
 // to make decision tables readable:
@@ -42,12 +43,12 @@ var PlayerDecision;
     PlayerDecision["DOUBLE"] = "double-down";
     PlayerDecision["SPLIT"] = "split";
     PlayerDecision["SURRENDER"] = "surrender";
-})(PlayerDecision || (PlayerDecision = {}));
+})(PlayerDecision || (exports.PlayerDecision = PlayerDecision = {}));
 function convertToPlayerDecision(decision, playerHand) {
     // Decision sometimes return Xy, which translates to do X if allowed else do y.
     // Determine the X or the y here.
-    const isFirstDecision = playerHand.numCards == 2;
-    const isFirstPostSplitDecision = isFirstDecision && playerHand.isFromSplit;
+    const isFirstDecision = (playerHand.numCards == 2);
+    const isFirstPostSplitDecision = (isFirstDecision && playerHand.isFromSplit);
     var playerDecision = PlayerDecision.STAND;
     const hardCount = playerHand.hardCount;
     const softCount = playerHand.softCount;
@@ -57,7 +58,7 @@ function convertToPlayerDecision(decision, playerHand) {
     else if (decision == H) {
         return PlayerDecision.HIT;
     }
-    else if (decision in [Dh, Ds]) {
+    else if (decision == Dh || decision == Ds) {
         // may be only allow to down on hand totals [9, 10, 11] or some such
         // basic stratgey wants to double down on
         //     hand hard totals [9, 10, 11]
@@ -99,11 +100,14 @@ function convertToPlayerDecision(decision, playerHand) {
             }
             playerDecision = doubleDown ? PlayerDecision.DOUBLE : nondoubleDownDecision;
         }
+        else {
+            playerDecision = nondoubleDownDecision;
+        }
     }
     else if (decision == SP) {
         playerDecision = PlayerDecision.SPLIT;
     }
-    else if (decision in [Uh, Us, Usp]) {
+    else if (decision == Uh || decision == Us || decision == Usp) {
         // surrent decision must be allowed in the House Rules and
         // must be a first decision (before splitting)
         var nonsurrenderDecision;
@@ -120,16 +124,17 @@ function convertToPlayerDecision(decision, playerHand) {
             default:
                 throw new Error("convertToPlayerDecision() ran into a little trouble in town");
         }
-        var surrenderAllowed = isFirstDecision && !isFirstPostSplitDecision && house_1.HouseRules.SURRENDER_ALLOWED;
+        var surrenderAllowed = (isFirstDecision && !isFirstPostSplitDecision && house_1.HouseRules.SURRENDER_ALLOWED);
         playerDecision = surrenderAllowed ? PlayerDecision.SURRENDER : nonsurrenderDecision;
     }
+    // console.log(`convertToPlayerDecision: decision "${decision}" -> playerDecision "${playerDecision}"`);
     return playerDecision;
 }
 // Use NO since we live in a zero index world.
 // Only use the SP aka SPLIT decision from this table.  The other decisions 
 // mirror exactly what the hard/soft total decision tables yield.
 const _PAIRS_DECISION = [
-    // 0   A   2   3   4   5   6   7   8   9  10   J   Q   K
+    //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],
     // player pair card: Ace  x  dealer top card
     [NO, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP],
@@ -157,6 +162,7 @@ const _PAIRS_DECISION = [
     [NO, S, S, S, S, S, S, S, S, S, S, S, S, S],
     // player pair card: K  x  dealer top card
     [NO, S, S, S, S, S, S, S, S, S, S, S, S, S],
+    //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 ];
 function createPairsDecison() {
     /*
@@ -187,7 +193,7 @@ const PAIRS_DECISION = createPairsDecison();
 // Expect to use the soft total decision table for: (A,A) and (A,2),
 // which is the only way to get to hard totals 2 and 3.
 const _HARD_TOTAL_DECISION = [
-    // 0   A   2   3   4   5   6   7   8   9  10   J   Q   K
+    //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],
     // hard total: 1  x  dealer top card
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],
@@ -231,6 +237,7 @@ const _HARD_TOTAL_DECISION = [
     [NO, S, S, S, S, S, S, S, S, S, S, S, S, S],
     // hard total: 21  x  dealer top card
     [NO, S, S, S, S, S, S, S, S, S, S, S, S, S],
+    //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 ];
 function createHardTotalDecision() {
     /*
@@ -257,7 +264,7 @@ function createHardTotalDecision() {
 }
 const HARD_TOTAL_DECISION = createHardTotalDecision();
 const _SOFT_TOTAL_DECISION = [
-    // 0   A   2   3   4   5   6   7   8   9  10   J   Q   K
+    //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],
     // soft total: 1  x  dealer top card
     [NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO],
@@ -301,6 +308,7 @@ const _SOFT_TOTAL_DECISION = [
     [NO, S, S, S, S, S, S, S, S, S, S, S, S, S],
     // soft total: 21 (A, 10)  x  dealer top card
     [NO, S, S, S, S, S, S, S, S, S, S, S, S, S],
+    //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
 ];
 function createSoftTotalDecision() {
     /*
@@ -328,8 +336,8 @@ function createSoftTotalDecision() {
 const SOFT_TOTAL_DECISION = createSoftTotalDecision();
 function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSplits) {
     var _a;
-    var isFirstDecision = playerHand.numCards == 2;
-    var isFirstPostSplitDecision = isFirstDecision && playerHand.isFromSplit;
+    var isFirstDecision = (playerHand.numCards == 2);
+    var isFirstPostSplitDecision = (isFirstDecision && playerHand.isFromSplit);
     var playerCard1 = playerHand.getCard(0);
     var playerCard2 = playerHand.getCard(1);
     var decision;
@@ -365,7 +373,7 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
     }
     var hardCount = playerHand.hardCount;
     var softCount = playerHand.softCount;
-    var useSoftTotal = hardCount < softCount && softCount <= 21;
+    var useSoftTotal = (hardCount < softCount && softCount <= 21);
     if (useSoftTotal) {
         decision = SOFT_TOTAL_DECISION[softCount].get(dealerTopCard.rank);
         playerDecision = convertToPlayerDecision(decision, playerHand);

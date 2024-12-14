@@ -1,4 +1,4 @@
-// Lesson Learned
+// Lesson Learned:
 // 1. Go compiler had a strong opinion on newlines in
 //     if conf { stmt } else if { cond } else { stmt }
 // 2. Function that start with a lower case letter => private
