@@ -45,6 +45,8 @@ func main() {
 		blackjack.PlayGame()
 	}
 
+	// for the above loop, playing a million games takes about 1.5 minutes on the laptop.
+
 	// for 1,000,000 games, 3 master hands per game and $2 bets per hand => about $6,000,000 bet
 	// Jack: {HandsPlayed:1028420 HandsWon:439691 HandsLost:504276  HandsPushed:84453  Proceeds:6472}
 	// Jill: {HandsPlayed:2057493 HandsWon:879804 HandsLost:1009397 HandsPushed:168292 Proceeds:12758}

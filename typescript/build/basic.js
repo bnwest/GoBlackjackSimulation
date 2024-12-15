@@ -357,7 +357,7 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
     if (gotPairs && handsAllowMoreSplits) {
         // Determine if the pairs can be split.
         // Note all of the non-split decisions that are ignored below
-        // will not contradict the hard/soft total decision.
+        // (which will not contradict the hard/soft total decision).
         var pairRank;
         if ((0, card_1.getCardValue)(playerCard1.rank) == 10) {
             pairRank = card_1.CardRank.TEN;

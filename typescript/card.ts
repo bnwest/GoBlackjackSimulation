@@ -21,20 +21,21 @@ export enum CardRank {
     KING  = "K",
 };
 
-const CardValue: Map<CardRank, number> = new Map();
-CardValue.set(CardRank.ACE,    1);
-CardValue.set(CardRank.TWO,    2);
-CardValue.set(CardRank.THREE,  3);
-CardValue.set(CardRank.FOUR,   4);
-CardValue.set(CardRank.FIVE,   5);
-CardValue.set(CardRank.SIX,    6);
-CardValue.set(CardRank.SEVEN,  7);
-CardValue.set(CardRank.EIGHT,  8);
-CardValue.set(CardRank.NINE,   9);
-CardValue.set(CardRank.TEN,   10);
-CardValue.set(CardRank.JACK,  10);
-CardValue.set(CardRank.QUEEN, 10);
-CardValue.set(CardRank.KING,  10);
+const CardValue: Map<CardRank, number> = new Map<CardRank, number>([
+    [CardRank.ACE,    1],
+    [CardRank.TWO,    2],
+    [CardRank.THREE,  3],
+    [CardRank.FOUR,   4],
+    [CardRank.FIVE,   5],
+    [CardRank.SIX,    6],
+    [CardRank.SEVEN,  7],
+    [CardRank.EIGHT,  8],
+    [CardRank.NINE,   9],
+    [CardRank.TEN,   10],
+    [CardRank.JACK,  10],
+    [CardRank.QUEEN, 10],
+    [CardRank.KING,  10],
+]);
 Object.freeze(CardValue);
 
 export function getCardValue(rank: CardRank): number {
@@ -44,26 +45,27 @@ export function getCardValue(rank: CardRank): number {
     return value;
 }
 
-const CardIndex: Map<CardRank, number> = new Map();
-CardIndex.set(CardRank.ACE,    1);
-CardIndex.set(CardRank.TWO,    2);
-CardIndex.set(CardRank.THREE,  3);
-CardIndex.set(CardRank.FOUR,   4);
-CardIndex.set(CardRank.FIVE,   5);
-CardIndex.set(CardRank.SIX,    6);
-CardIndex.set(CardRank.SEVEN,  7);
-CardIndex.set(CardRank.EIGHT,  8);
-CardIndex.set(CardRank.NINE,   9);
-CardIndex.set(CardRank.TEN,   10);
-CardIndex.set(CardRank.JACK,  11);
-CardIndex.set(CardRank.QUEEN, 12);
-CardIndex.set(CardRank.KING,  13);
+const CardIndex: Map<CardRank, number> = new  Map<CardRank, number>([
+    [CardRank.ACE,    1],
+    [CardRank.TWO,    2],
+    [CardRank.THREE,  3],
+    [CardRank.FOUR,   4],
+    [CardRank.FIVE,   5],
+    [CardRank.SIX,    6],
+    [CardRank.SEVEN,  7],
+    [CardRank.EIGHT,  8],
+    [CardRank.NINE,   9],
+    [CardRank.TEN,   10],
+    [CardRank.JACK,  11],
+    [CardRank.QUEEN, 12],
+    [CardRank.KING,  13],
+])
 Object.freeze(CardIndex);
 
 export function getCardIndex(rank: CardRank): number {
     // typescript does not know that the CardValue map has ALL 
     // of the CardRank values but I do.
-    const value: number = CardIndex.get(rank) as number;
+    const value: number = CardIndex.get(rank)!; // as number;
     return value;
 }
 

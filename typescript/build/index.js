@@ -4,7 +4,19 @@
 // 1.1 and run locally in my case in the Node.js environment
 // 1.2 Runtime errors map to the JS code :(
 // 1.3 Trans-complie JavaScript a real "piece of work", JavaScript library worthy
+// 1.4 compile and run is a 2 step process: 1. npx tsc, 2. node build/index.js
 // 2. string1 in [string1, string2] did not work, FTW.
+// 3. python-like dictionaries are a pain
+// 3.1 A JS idion object.field is the same as object["field"]
+// 3.2 dictionary keys are dynamically created fields
+// 3.3 getting a dynamic field is problematic, since the TS compiler does not know
+// if that field exists
+// 3.4 TS/JS has a generic Map type with a set of methods: has(), get(), set(), delete()
+// which are verbose
+// 3.5 Map.get() does not work with a little help since it returns "type | undefined"
+// so the undefined has to be worked around via "as type" or "!" (tells the compiler 
+// that undefined is not possible, double pink promise)
+// 4. TS/JS OO is solid.  Supports methods, inheritance and interfaces.
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -83,7 +95,7 @@ class Shoe {
             this.cards = this.cards.concat(UNSHUFFLED_DECK);
         }
         this.shuffle();
-        this.top = 0; // redundant, but the TS compiler need to be appeas3d
+        this.top = 0; // redundant, but the TS compiler needs to be appeased
     }
     shuffle() {
         // need third party support for a seeded random number generator
@@ -470,7 +482,7 @@ class BlackJack {
                         while (true) {
                             if (hand.outcome == HandOutcome.STAND) {
                                 // product of a prior ace split, outcome has already been determined.
-                                log(`        prior aces split; ${basic_1.PlayerDecision.STAND}`);
+                                log(`        prior aces split; ${basic_1.PlayerDecision.STAND}, total H${hand.hardCount} S${hand.softCount}`);
                                 break;
                             }
                             var handInterface = hand;
@@ -521,7 +533,7 @@ class BlackJack {
                                 let splittingAces = (card1.rank == card_1.CardRank.ACE);
                                 if (splittingAces && house_1.HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES) {
                                     hand.outcome = HandOutcome.STAND;
-                                    log(`        aces split: stand`);
+                                    log(`        aces split: stand, total H${hand.hardCount} S${hand.softCount}`);
                                     masterHand.hands[newHandIndex].outcome = HandOutcome.STAND;
                                     break;
                                 }
@@ -588,7 +600,7 @@ class BlackJack {
                         }
                         else {
                             this.addResult(player, k, hand, initialBet, -hand.bet);
-                            log(`    hand ${j + 1}.${k + 1}: lost ${hand.bet}`);
+                            log(`    hand ${j + 1}.${k + 1}: dealer natural: lost ${hand.bet}`);
                         }
                     }
                 }
@@ -645,18 +657,21 @@ class BlackJack {
     }
 }
 var blackjack = new BlackJack();
-for (let i = 0; i < 1000000; i++) {
+for (let i = 0; i < 100; i++) {
     blackjack.playGame();
 }
+// for the above loop, playing a million games takes about 2 minutes on the laptop.
+// for 1,000,000 games, 3 master hands per game and $2 bets per hand => about $6,000,000 bet
+// player Jack: {"handsPlayed":1027656,"handsWon":436271,"handsLost":507237,"handsPushed":84148,"proceeds":-7612}
+// player Jill: {"handsPlayed":2055362,"handsWon":870914,"handsLost":1015242,"handsPushed":169206,"proceeds":-21542}
+// 43% hands won, 50% hands lost, 7% hands pushed
 blackjack.playerResults.forEach((value, key) => {
     let playerName = key;
     let playerResult = value;
     log(`\nplayer ${playerName}: ${JSON.stringify(playerResult)}`);
-    log(`    handsPlayed: ${playerResult.handsPlayed}`);
-    log(`    handsWon: ${playerResult.handsWon}`);
-    log(`    handsPushed: ${playerResult.handsPushed}`);
-    log(`    handsLost: ${playerResult.handsLost}`);
-    log(`    proceeds: ${playerResult.proceeds}`);
 });
+// for 1,000,000 games with 3 master hands per game => about 3,000,000 hands
+// game stats: {"doubleDownCount":303854,"surrenderCount":155797,"splitCount":83018,"acesSplit":33595}
+// roughly 10% hands double down, 5% surrender, 2.5% split, 1% split Aces
 log(``);
 log(`game stats: ${JSON.stringify(blackjack.stats)}`);

@@ -3,7 +3,19 @@
 // 1.1 and run locally in my case in the Node.js environment
 // 1.2 Runtime errors map to the JS code :(
 // 1.3 Trans-complie JavaScript a real "piece of work", JavaScript library worthy
+// 1.4 compile and run is a 2 step process: 1. npx tsc, 2. node build/index.js
 // 2. string1 in [string1, string2] did not work, FTW.
+// 3. python-like dictionaries are a pain
+// 3.1 A JS idion object.field is the same as object["field"]
+// 3.2 dictionary keys are dynamically created fields
+// 3.3 getting a dynamic field is problematic, since the TS compiler does not know
+// if that field exists
+// 3.4 TS/JS has a generic Map type with a set of methods: has(), get(), set(), delete()
+// which are verbose
+// 3.5 Map.get() does not work with a little help since it returns "type | undefined"
+// so the undefined has to be worked around via "as type" or "!" (tells the compiler 
+// that undefined is not possible, double pink promise)
+// 4. TS/JS OO is solid.  Supports methods, inheritance and interfaces.
 
 import Rand, { PRNG } from 'rand-seed';
 
@@ -86,7 +98,7 @@ class Shoe {
             this.cards = this.cards.concat(UNSHUFFLED_DECK);
         }
         this.shuffle();
-        this.top = 0;  // redundant, but the TS compiler need to be appeas3d
+        this.top = 0;  // redundant, but the TS compiler needs to be appeased
     }
     shuffle() {
         // need third party support for a seeded random number generator
@@ -418,7 +430,7 @@ class BlackJack {
         var isDoubleDown: boolean = ( 
             playerHand.numCards == 3 && Math.abs(initialBet)*2 == Math.abs(result)
         );
-        if (isDoubleDown ) {
+        if ( isDoubleDown ) {
             this.stats.doubleDownCount++;
         }
 
@@ -441,6 +453,7 @@ class BlackJack {
         if ( this.shoe.top > HouseRules.FORCE_RESHUFFLE ) {
             this.reshuffleShoe();
         }
+
         // setting up the dealer and the player(s) could be done
         // by the caller and pass here via parameters.  ¯\_(ツ)_/¯
 
@@ -736,7 +749,7 @@ for ( let i = 0; i < 100; i++ ) {
     blackjack.playGame();
 }
 
-// for the above loop, playing a million games take less than 2 minutes on the laptop.
+// for the above loop, playing a million games takes about 2 minutes on the laptop.
 
 // for 1,000,000 games, 3 master hands per game and $2 bets per hand => about $6,000,000 bet
 // player Jack: {"handsPlayed":1027656,"handsWon":436271,"handsLost":507237,"handsPushed":84148,"proceeds":-7612}

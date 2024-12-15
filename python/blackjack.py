@@ -981,6 +981,11 @@ class BlackJack:
                         #
 
                         while True:
+                            if hand.outcome == HandOutcome.STAND:
+                                # product of a prior ace split, outcome has already been determined.
+                                print(f"""        prior ace split: stand, total  H{hand.hard_count} S{hand.soft_count}""")
+                                break
+
                             decision: PlayerDecision = BasicStrategy.determine_play(
                                 dealer_top_card=dealer_top_card,
                                 player_hand=hand,
@@ -1034,6 +1039,15 @@ class BlackJack:
                                 print(
                                     f"""        split, adding cards: {card1.rank.value}{card1.suite.value}, {card2.rank.value}{card2.suite.value}"""
                                 )
+                                print(f"""        card 1: {hand.cards[0].rank.value}{hand.cards[0].suite.value}""")
+                                print(f"""        card 2: {hand.cards[1].rank.value}{hand.cards[1].suite.value}""")
+                                splittingAces: bool = hand.cards[0].rank == CardRank.ACE
+                                if splittingAces and HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES:
+                                    # pdb.set_trace()
+                                    hand.outcome = HandOutcome.STAND
+                                    print(f"""        aces split: stand, total H{hand.hard_count} S{hand.soft_count}""")
+                                    master_hand.hands[new_hand_index].outcome = HandOutcome.STAND
+                                    break
 
                             else:
                                 print("FTW")
@@ -1107,7 +1121,7 @@ class BlackJack:
                             )
                         else:
                             print(
-                                f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}"""
+                                f"""    hand {mh+1}.{hand_index+1}: dealer natural: lost {hand.bet}"""
                             )
 
                         hand_index += 1
@@ -1121,21 +1135,21 @@ class BlackJack:
                         hand: PlayerHand = master_hand.hands[hand_index]
                         if hand.outcome == HandOutcome.BUST:
                             print(
-                                f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}, player bust"""
+                                f"""    hand {mh+1}.{hand_index+1}: bust: lost {hand.bet}"""
                             )
                         elif hand.outcome == HandOutcome.SURRENDER:
                             print(
-                                f"""    hand {mh+1}.{hand_index+1}: lost {hand.bet}, player surrender"""
+                                f"""    hand {mh+1}.{hand_index+1}: surrender: lost {hand.bet}"""
                             )
                         else:
                             # player has a non-bust, non-surrender hand
                             if hand.is_natural:
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: won {int(hand.bet * HouseRules.NATURAL_BLACKJACK_PAYOUT)} with natural"""
+                                    f"""    hand {mh+1}.{hand_index+1}: natural: won {int(hand.bet * HouseRules.NATURAL_BLACKJACK_PAYOUT)} with natural"""
                                 )
                             elif dealer.hand.outcome == HandOutcome.BUST:
                                 print(
-                                    f"""    hand {mh+1}.{hand_index+1}: won {hand.bet}, dealer bust"""
+                                    f"""    hand {mh+1}.{hand_index+1}: dealer bust: won {hand.bet}"""
                                 )
                             else:
                                 if hand.count < dealer.hand.count:
@@ -1157,8 +1171,10 @@ if __name__ == "__main__":
 
     bj = BlackJack()
 
-    for i in range(10):
+    for i in range(1_000):
         bj.play_game()
+
+	# for the above loop, playing a million games takes about 2 minutes on the laptop.
 
     # exit(0xDEADBEEF)
 
