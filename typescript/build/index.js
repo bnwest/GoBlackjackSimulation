@@ -358,6 +358,35 @@ class BlackJack {
             }
         }
     }
+    addResult(player, handIndex, playerHand, initialBet, result) {
+        // typescript map get method can return undefined
+        // "!" asserts that the key is present, double pinky promise.
+        this.playerResults.get(player.name).handsPlayed++;
+        if (result > 0) {
+            this.playerResults.get(player.name).handsWon++;
+        }
+        else if (result < 0) {
+            this.playerResults.get(player.name).handsLost++;
+        }
+        else {
+            this.playerResults.get(player.name).handsPushed++;
+        }
+        this.playerResults.get(player.name).proceeds += result;
+        var isDoubleDown = (playerHand.numCards == 3 && Math.abs(initialBet) * 2 == Math.abs(result));
+        if (isDoubleDown) {
+            this.stats.doubleDownCount++;
+        }
+        if (playerHand.outcome == HandOutcome.SURRENDER) {
+            this.stats.surrenderCount++;
+        }
+        if (handIndex > 0) {
+            this.stats.splitCount++;
+        }
+        var splittingAces = (playerHand.fromSplit && playerHand.cards[0].rank == card_1.CardRank.ACE);
+        if (splittingAces) {
+            this.stats.acesSplit++;
+        }
+    }
     playGame() {
         if (this.shoe.top > house_1.HouseRules.FORCE_RESHUFFLE) {
             this.reshuffleShoe();
@@ -487,7 +516,8 @@ class BlackJack {
                                 let handIndex = k;
                                 let newHandIndex = masterHand.splitHand(handIndex, cardsToAdd);
                                 log(`        split, new hand index ${newHandIndex + 1}, adding cards ${card1.str()}, ${card2.str()}`);
-                                log(`        new card 2: ${card1.str()}`);
+                                log(`        card 1: ${hand.cards[0].str()}`);
+                                log(`        card 2: ${hand.cards[1].str()}`);
                                 let splittingAces = (card1.rank == card_1.CardRank.ACE);
                                 if (splittingAces && house_1.HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES) {
                                     hand.outcome = HandOutcome.STAND;
@@ -544,9 +574,89 @@ class BlackJack {
         // SETTLE HANDS
         //
         log("SETTLE HANDS");
+        if (dealer.hand.outcome == HandOutcome.DEALER_BLACKJACK) {
+            for (let i = 0; i < this.numPlayers; i++) {
+                player = this.players[i];
+                log(`player ${i + 1} - ${player.name}`);
+                for (let j = 0; j < player.numMasterHands; j++) {
+                    masterHand = player.masterHands[j];
+                    for (let k = 0; k < masterHand.numHands; k++) {
+                        hand = masterHand.hands[k];
+                        if (hand.isNatural) {
+                            this.addResult(player, k, hand, initialBet, 0);
+                            log(`    hand ${j + 1}.${k + 1}: push both player and dealer had naturals`);
+                        }
+                        else {
+                            this.addResult(player, k, hand, initialBet, -hand.bet);
+                            log(`    hand ${j + 1}.${k + 1}: lost ${hand.bet}`);
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            // dealer does not have a natural
+            for (let i = 0; i < this.numPlayers; i++) {
+                player = this.players[i];
+                log(`player ${i + 1} - ${player.name}`);
+                for (let j = 0; j < player.numMasterHands; j++) {
+                    masterHand = player.masterHands[j];
+                    for (let k = 0; k < masterHand.numHands; k++) {
+                        hand = masterHand.hands[k];
+                        if (hand.outcome == HandOutcome.BUST) {
+                            this.addResult(player, k, hand, initialBet, -hand.bet);
+                            log(`    hand ${j + 1}.${k + 1}: bust: lost ${hand.bet}`);
+                        }
+                        else if (hand.outcome == HandOutcome.SURRENDER) {
+                            this.addResult(player, k, hand, initialBet, -hand.bet);
+                            log(`    hand ${j + 1}.${k + 1}: surrender: lost ${hand.bet}`);
+                        }
+                        else {
+                            // player has a non-bust, non-surrender hand
+                            if (hand.isNatural) {
+                                let payout = Math.floor(hand.bet * house_1.HouseRules.NATURAL_BLACKJACK_PAYOUT);
+                                this.addResult(player, k, hand, initialBet, payout);
+                                log(`    hand ${j + 1}.${k + 1}: natural: won ${payout}`);
+                            }
+                            else if (dealer.hand.outcome == HandOutcome.BUST) {
+                                this.addResult(player, k, hand, initialBet, hand.bet);
+                                log(`    hand ${j + 1}.${k + 1}: dealer bust: won ${hand.bet}`);
+                            }
+                            else {
+                                // cards in the player and dealer hands now matter
+                                if (hand.count < dealer.hand.count) {
+                                    this.addResult(player, k, hand, initialBet, -hand.bet);
+                                    log(`    hand ${j + 1}.${k + 1}: lost ${hand.bet}`);
+                                }
+                                else if (hand.count > dealer.hand.count) {
+                                    this.addResult(player, k, hand, initialBet, hand.bet);
+                                    log(`    hand ${j + 1}.${k + 1}: won ${hand.bet}`);
+                                }
+                                else {
+                                    this.addResult(player, k, hand, initialBet, 0);
+                                    log(`    hand ${j + 1}.${k + 1}: push`);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 var blackjack = new BlackJack();
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 1000000; i++) {
     blackjack.playGame();
 }
+blackjack.playerResults.forEach((value, key) => {
+    let playerName = key;
+    let playerResult = value;
+    log(`\nplayer ${playerName}: ${JSON.stringify(playerResult)}`);
+    log(`    handsPlayed: ${playerResult.handsPlayed}`);
+    log(`    handsWon: ${playerResult.handsWon}`);
+    log(`    handsPushed: ${playerResult.handsPushed}`);
+    log(`    handsLost: ${playerResult.handsLost}`);
+    log(`    proceeds: ${playerResult.proceeds}`);
+});
+log(``);
+log(`game stats: ${JSON.stringify(blackjack.stats)}`);

@@ -50,9 +50,10 @@ func main() {
 	// Jill: {HandsPlayed:2057493 HandsWon:879804 HandsLost:1009397 HandsPushed:168292 Proceeds:12758}
 	// 43% hands won, 49% hands lost, 8% hands pushed
 
+	fmt.Println()
 	for playerName, result := range blackjack.Results {
 		// result is a copy of blackjack.Results[playerName] ... a pointer in this case
-		var playerResult *game.BlackJackResults = result
+		var playerResult *game.BlackJackPlayerResults = result
 		// "%+v" => print the struct field names and values, versus just values
 		fmt.Printf("%v: %+v\n", playerName, *playerResult)
 	}
@@ -61,5 +62,6 @@ func main() {
 	// Stats: {DoubleDownCount:302801 SurrenderCount:155506 SplitCount:83061 AcesSplit:32778}
 	// roughly 10% hands double down, 5% surrender, 2.5% split, 1% split Aces
 
+	fmt.Println()
 	fmt.Printf("Stats: %+v\n", blackjack.Stats)
 }
