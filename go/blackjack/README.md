@@ -28,7 +28,7 @@ go version go1.23.3 darwin/amd64
 
 ## Create a Go project
 
-Create a GO source code directory (from my newly clonen github repo)
+Create a GO source code directory (from my newly cloned github repo)
 ```
 % cd ~/github/
 % git clone https://github.com/bnwest/GoBlackjackSimulation.git
