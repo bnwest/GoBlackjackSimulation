@@ -2,13 +2,11 @@
 
 [Go installation](https://go.dev/doc/install)
 
-Id ownloaded the MacOS install package and installed it:
+I downloaded the MacOS install package and installed it:
 ```
 % open go1.23.3.darwin-amd64.pkg
 ```
-The package installs the Go distribution to /usr/local/go. The package should put the 
-/usr/local/go/bin directory in your PATH environment variable. You may need to restart 
-any open Terminal sessions for the change to take effect.
+The package installs the Go distribution to /usr/local/go. 
 
 Kick the tires:
 ```
@@ -30,7 +28,7 @@ go version go1.23.3 darwin/amd64
 
 ## Create a Go project
 
-Create a GO source code directory (from my new clone github repo)
+Create a GO source code directory (from my newly clonen github repo)
 ```
 % cd ~/github/
 % git clone https://github.com/bnwest/GoBlackjackSimulation.git
