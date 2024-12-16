@@ -17,12 +17,16 @@
 // so the undefined has to be worked around via "as type" or "!" (tells the compiler
 // that undefined is not possible, double pink promise)
 // 4. TS/JS OO is solid.  Supports methods, inheritance and interfaces.
-// 5. "===" versus "=="
+// 5. "===" versus "==", strict equality versus equality with type conversions
 // 6. gts lint-er had a pretty heavy hand when "correcting" white space "errors"
+// 6.1 the prettier config file is located here: node_modules/gts/.prettierrc.json
+// which the root file ".prettierrc.js" references
+// guessing that it is not a best practice to modify node_modules/gts/.prettierrc.json
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// import Rand, {PRNG} from 'rand-seed';
 const rand_seed_1 = __importDefault(require("rand-seed"));
 const basic_1 = require("./basic");
 const card_1 = require("./card");
@@ -483,7 +487,7 @@ class BlackJack {
                         }
                         const isSplitPossible = masterHand.numHands < PlayerMasterHand.HAND_LIMIT;
                         // resolve the current hand ...
-                        while (true === true) {
+                        while (true) {
                             if (hand.outcome === HandOutcome.STAND) {
                                 // product of a prior ace split, outcome has already been determined.
                                 log(`        prior aces split; ${basic_1.PlayerDecision.STAND}, total H${hand.hardCount} S${hand.softCount}`);
@@ -539,7 +543,8 @@ class BlackJack {
                                     house_1.HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES) {
                                     hand.outcome = HandOutcome.STAND;
                                     log(`        aces split: stand, total H${hand.hardCount} S${hand.softCount}`);
-                                    masterHand.hands[newHandIndex].outcome = HandOutcome.STAND;
+                                    masterHand.hands[newHandIndex].outcome =
+                                        HandOutcome.STAND;
                                     break;
                                 }
                             }
@@ -565,7 +570,8 @@ class BlackJack {
                 const hardCount = dealer.hand.hardCount;
                 const softCount = dealer.hand.softCount;
                 const useSoftCount = hardCount < softCount && softCount <= 21;
-                if (useSoftCount && softCount <= house_1.HouseRules.DEALER_HITS_SOFT_ON) {
+                if (useSoftCount &&
+                    softCount <= house_1.HouseRules.DEALER_HITS_SOFT_ON) {
                     card = this.getCardFromShoe();
                     dealer.hand.addCard(card);
                     log(`    add: ${card.str()}, total H${dealer.hand.hardCount} S${dealer.hand.softCount}`);
@@ -632,7 +638,8 @@ class BlackJack {
                         else {
                             // player has a non-bust, non-surrender hand
                             if (hand.isNatural) {
-                                const payout = Math.floor(hand.bet * house_1.HouseRules.NATURAL_BLACKJACK_PAYOUT);
+                                const payout = Math.floor(hand.bet *
+                                    house_1.HouseRules.NATURAL_BLACKJACK_PAYOUT);
                                 this.addResult(player, k, hand, initialBet, payout);
                                 log(`    hand ${j + 1}.${k + 1}: natural: won ${payout}`);
                             }

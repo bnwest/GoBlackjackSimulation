@@ -172,13 +172,13 @@ const _PAIRS_DECISION = [
 ];
 function createPairsDecison() {
     /*
-      Turn the _PAIRS_DECISION table into a rank based dictiopnary:
-          PAIRS_DECISION: dict[CardRank, dict[CardRank, str]] = {
-              CardRank.ACE: {
-                  CardRank.ACE: SP, CardRank.TWO: SP, ..., CardRank.KING: SP,
-              }, ...
-          }
-      */
+    Turn the _PAIRS_DECISION table into a rank based dictiopnary:
+        PAIRS_DECISION: dict[CardRank, dict[CardRank, str]] = {
+            CardRank.ACE: {
+                CardRank.ACE: SP, CardRank.TWO: SP, ..., CardRank.KING: SP,
+            }, ...
+        }
+    */
     const decisions = new Map();
     const ranks = Object.values(card_1.CardRank);
     ranks.forEach(playerPairRank => {
@@ -247,13 +247,13 @@ const _HARD_TOTAL_DECISION = [
 ];
 function createHardTotalDecision() {
     /*
-      Turn _HARD_TOTAL_DECISION table into
-          HARD_TOTAL_DECISION = [
-              ...
-              {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
-              ...
-          ]
-      */
+    Turn _HARD_TOTAL_DECISION table into
+        HARD_TOTAL_DECISION = [
+            ...
+            {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
+            ...
+        ]
+    */
     const decisions = [];
     for (let hardCount = 0; hardCount <= 21; hardCount++) {
         decisions.push(new Map());
@@ -318,13 +318,13 @@ const _SOFT_TOTAL_DECISION = [
 ];
 function createSoftTotalDecision() {
     /*
-      Turn _SOFT_TOTAL_DECISION table into
-          HARD_TOTAL_DECISION = [
-              ...
-              {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
-              ...
-          ]
-      */
+    Turn _SOFT_TOTAL_DECISION table into
+        HARD_TOTAL_DECISION = [
+            ...
+            {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
+            ...
+        ]
+    */
     const decisions = [];
     for (let hardCount = 0; hardCount <= 21; hardCount++) {
         decisions.push(new Map());
@@ -352,7 +352,8 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
     if (isFirstDecision) {
         if (house_1.HouseRules.SPLIT_ON_VALUE_MATCH) {
             gotPairs =
-                (0, card_1.getCardValue)(playerCard1.rank) === (0, card_1.getCardValue)(playerCard2.rank);
+                (0, card_1.getCardValue)(playerCard1.rank) ===
+                    (0, card_1.getCardValue)(playerCard2.rank);
         }
         else {
             gotPairs = playerCard1.rank === playerCard2.rank;
@@ -373,6 +374,10 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
             pairRank = playerCard1.rank;
         }
         decision = (_a = PAIRS_DECISION.get(pairRank)) === null || _a === void 0 ? void 0 : _a.get(dealerTopCard.rank);
+        if (!isDecisionValid(decision)) {
+            throw new Error('determineBasicStrategyPlay() PAIRS_DECISION returns a bad decision ' +
+                decision);
+        }
         playerDecision = convertToPlayerDecision(decision, playerHand);
         if (playerDecision === PlayerDecision.SPLIT) {
             return PlayerDecision.SPLIT;
@@ -383,11 +388,19 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
     const useSoftTotal = hardCount < softCount && softCount <= 21;
     if (useSoftTotal) {
         decision = SOFT_TOTAL_DECISION[softCount].get(dealerTopCard.rank);
+        if (!isDecisionValid(decision)) {
+            throw new Error('determineBasicStrategyPlay() SOFT_TOTAL_DECISION returns a bad decision ' +
+                decision);
+        }
         playerDecision = convertToPlayerDecision(decision, playerHand);
         return playerDecision;
     }
     else {
         decision = HARD_TOTAL_DECISION[softCount].get(dealerTopCard.rank);
+        if (!isDecisionValid(decision)) {
+            throw new Error('determineBasicStrategyPlay() HARD_TOTAL_DECISION returns a bad decision ' +
+                decision);
+        }
         playerDecision = convertToPlayerDecision(decision, playerHand);
         return playerDecision;
     }
