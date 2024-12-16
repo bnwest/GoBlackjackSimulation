@@ -69,8 +69,8 @@ Object.freeze(CardIndex);
 function getCardIndex(rank) {
     // typescript does not know that the CardValue map has ALL 
     // of the CardRank values but I do.
-    const value = CardIndex.get(rank); // as number;
-    return value;
+    const index = CardIndex.get(rank); // as number;
+    return index;
 }
 class Card {
     constructor(suite, rank) {

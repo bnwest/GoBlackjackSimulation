@@ -189,12 +189,12 @@ function createPairsDecison(): Map<CardRank, Map<CardRank, string>> {
             }, ...
         }
     */
-    var decisions: Map<CardRank, Map<CardRank, string>> = new Map();
+    var decisions: Map<CardRank, Map<CardRank, string>> = new Map<CardRank, Map<CardRank, string>>();
 
     const ranks: CardRank[] = Object.values(CardRank);
 
     ranks.forEach((playerPairRank) => {
-        decisions.set(playerPairRank, new Map())
+        decisions.set(playerPairRank, new Map<CardRank, string>())
     });
 
     ranks.forEach((playerPairRank) => {
@@ -272,7 +272,7 @@ function createHardTotalDecision(): Map<CardRank, string>[] {
     */
     var decisions: Map<CardRank, string>[] = [];
     for ( let hardCount = 0; hardCount <= 21; hardCount++ ) {
-        decisions.push(new Map());
+        decisions.push(new Map<CardRank, string>());
     }
 
     const ranks: CardRank[] = Object.values(CardRank);
@@ -349,7 +349,7 @@ function createSoftTotalDecision(): Map<CardRank, string>[] {
     */
     var decisions: Map<CardRank, string>[] = [];
     for ( let hardCount = 0; hardCount <= 21; hardCount++ ) {
-        decisions.push(new Map());
+        decisions.push(new Map<CardRank, string>());
     }
 
     const ranks: CardRank[] = Object.values(CardRank);

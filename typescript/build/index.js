@@ -664,7 +664,7 @@ for (let i = 0; i < 100; i++) {
 // for 1,000,000 games, 3 master hands per game and $2 bets per hand => about $6,000,000 bet
 // player Jack: {"handsPlayed":1027656,"handsWon":436271,"handsLost":507237,"handsPushed":84148,"proceeds":-7612}
 // player Jill: {"handsPlayed":2055362,"handsWon":870914,"handsLost":1015242,"handsPushed":169206,"proceeds":-21542}
-// 43% hands won, 50% hands lost, 7% hands pushed
+// 42% hands won, 49% hands lost, 8% hands pushed
 blackjack.playerResults.forEach((value, key) => {
     let playerName = key;
     let playerResult = value;
@@ -673,5 +673,4 @@ blackjack.playerResults.forEach((value, key) => {
 // for 1,000,000 games with 3 master hands per game => about 3,000,000 hands
 // game stats: {"doubleDownCount":303854,"surrenderCount":155797,"splitCount":83018,"acesSplit":33595}
 // roughly 10% hands double down, 5% surrender, 2.5% split, 1% split Aces
-log(``);
-log(`game stats: ${JSON.stringify(blackjack.stats)}`);
+log(`\ngame stats: ${JSON.stringify(blackjack.stats)}`);
