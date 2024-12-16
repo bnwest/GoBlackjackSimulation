@@ -32,6 +32,7 @@ drwxr-xr-x  5 bwest  staff    160 Dec 12 12:47 node_modules/
 -rw-r--r--  1 bwest  staff     58 Dec 12 12:47 package.json
 -rw-r--r--  1 bwest  staff  12598 Dec 12 12:50 tsconfig.json
 ```
+The --save-dev flag saves TypeScript as a development dependency (see file: `package.json`). This means that TypeScript is required for the development of your project.
 
 The `node_modules` directory contains the external node modules that TypeScript requires.  The `package.json` will contain the package dependencies.
 
