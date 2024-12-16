@@ -1,2 +1,2 @@
 # GoBlackjackSimulation
-Blackjack Simulation in Go and TypeScript and Python.
+Blackjack Simulation in Go ... and TypeScript ... and Python.
