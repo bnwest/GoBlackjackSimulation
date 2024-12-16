@@ -1,4 +1,4 @@
-### Go (aka GoLang) setup
+### Go setup
 
 [Go installation](https://go.dev/doc/install)
 
@@ -61,7 +61,7 @@ Add new module requirements and sums, as needeed:
 ```
 % go mod tidy
 ```
-whcih creates a `go.sum` file.
+which creates a `go.sum` file.
 
 # Creating Go module and packages therein
 
@@ -74,7 +74,7 @@ which indicates the name of the package that the file is a part of.  It's totall
 >
 > In Go, one package == one directory.  That is, all .go files for a package should be contained in the same directory, and a directory should contain the .go files for one package only.  For all non-main packages, the directory name that the code lives in should be the same as the package name.  When choosing a name you should pick something that is short, descriptive, lower case and ideally one word. 
 >
-> Any package with the name main must also contain a main() function somewhere 
+> Any package with the name main `must` also contain a `main()` function somewhere 
 in the package which acts as the entry point for the program.  It's conventional for your `main()` function to live in a file with the filename `main.go`. 
 
 I followed the above conventions when creating my go files.  I created the following 
