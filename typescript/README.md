@@ -2,7 +2,7 @@
 
 [markdown doc: https://www.markdownguide.org/cheat-sheet/]: # 
 
-My laptop already had node and npm set up, so I do not include installation instructions for that here.
+My laptop already had `node` and `npm` set up, so I do not include installation instructions for that here.
 
 > `npm` comes with `Node.js`. To learn more about working with `npm`, check out this [How To Use Node.js Modules with npm and package.json tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-node-js-modules-with-npm-and-package-json).
 
@@ -17,7 +17,7 @@ To start I created a typescript directory and cd-ed to it
 % cd typescript
 ```
 
-and then installed typescript via `npm` and initialized the TypeScript project:
+and then installed TypeScript via `npm` and initialized the TypeScript project:
 ```
 % npm i typescript --save-dev
 
@@ -61,9 +61,9 @@ and compled and ran it:
 ```
 
 Important things to note:  
-The TypeScript complier trans-compile the TS into JS
-Node.JS can be used to run the compiled JS file
-Need `npx` to access `tsc` since `tcs` is not "globally" defined.
+- The TypeScript complier trans-compile the TS into JS
+- Node.JS can be used to run the compiled JS file
+- Need `npx` to access `tsc` since `tcs` is not "globally" defined.
 
 ## GTS (Google TypeScript Style) install
 
@@ -110,9 +110,9 @@ To run the gts linter and fixer:
 % npx gts fix index.ts
 ```
 
-> As GTS provides an opinionated, no-configuration approach, it will use its own sensible linting and fixing rules. These follow many best practices, but if you find yourself needing to modify the rules in any way, you can do so by extending the default eslint rules. To do so, create a file in your project directory named .eslintrc which extends the style rules:
+> As GTS provides an opinionated, no-configuration approach, it will use its own sensible linting and fixing rules. These follow many best practices, but if you find yourself needing to modify the rules in any way, you can do so by extending the default `eslint` rules. To do so, create a file in your project directory named `.eslintrc` which extends the style rules ...
 
-I really hate the two spaces for an indent, so I hacked the `.prettierrc.js` and `.prettierrc.json`
+I really hate the two spaces for an indent, so I hacked the `.prettierrc.js` and `.prettierrc.json`.  Note that the `gts` has separate configurations for the linter and prettier.  I found a hack for the prettier's tab width:
 ```
 % cp node_modules/gts/.prettierrc.json .
 # edit .prettierrc.json
@@ -132,3 +132,5 @@ module.exports = {
   //   ...require('gts/.prettierrc.json'),
 }
 ```
+
+See [Prettier Configuration](https://prettier.io/docs/en/configuration.html).
