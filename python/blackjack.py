@@ -321,7 +321,7 @@ class PlayerHand:
                     return True
         return False
 
-    def add_card(self, card: Card):
+    def add_card(self, card: Card) -> None:
         self.cards.append(card)
 
     @property
@@ -361,11 +361,11 @@ class PlayerMasterHand:
         self.hands = []
         self.num_hands = 0
 
-    def add_start_hand(self, bet: int):
+    def add_start_hand(self, bet: int) -> None:
         self.hands.append(PlayerHand(bet=bet))
         self.num_hands += 1
 
-    def split_hand(self, hand_index: int, cards_to_add: tuple):
+    def split_hand(self, hand_index: int, cards_to_add: tuple) -> int:
         # there are two in the hand of the same value
         # or rank depending of the house rules.
         card1 = self.hands[hand_index].cards[0]
@@ -415,7 +415,7 @@ class Player:
         self.num_of_hands = 0
         self.name = name
 
-    def set_game_bets(self, bets: list[int] = [2]):
+    def set_game_bets(self, bets: list[int] = [2]) -> None:
         """
         At start of the game, the player will place separate bets
         for each hand that they want. Each of these original hands
@@ -483,8 +483,6 @@ def convert_to_player_decision(
     """
     is_first_decision: bool = len(player_hand.cards) == 2
     is_first_postsplit_decision: bool = is_first_decision and player_hand.from_split
-
-    surrender_can_be_played: bool = is_first_decision and HouseRules.SURRENDER_ALLOWED
 
     player_decision: PlayerDecision
 
@@ -801,7 +799,7 @@ class BasicStrategy:
         hand_allows_more_splits: bool,
     ) -> PlayerDecision:
         is_first_decision: bool = len(player_hand.cards) == 2
-        is_first_postsplit_decision: bool = is_first_decision and player_hand.from_split
+        # is_first_postsplit_decision: bool = is_first_decision and player_hand.from_split
 
         player_decision: PlayerDecision
 
@@ -814,7 +812,9 @@ class BasicStrategy:
         if is_first_decision:
             if HouseRules.SPLIT_ON_VALUE_MATCH:
                 # recognize pair match for all card with a value of 10, plus ordinary pairs
-                got_pairs = CARD_VALUE[player_card1.rank] == CARD_VALUE[player_card2.rank]
+                got_pairs = (
+                    CARD_VALUE[player_card1.rank] == CARD_VALUE[player_card2.rank]
+                )
             else:
                 got_pairs = player_card1.rank == player_card2.rank
         else:
@@ -824,12 +824,6 @@ class BasicStrategy:
             # Determine if the pairs can be split.
             # Note all of the non-split decisions that are ignored below
             # will not contradict the hard/soft total decision.
-            pair_rank: CardRank
-            if CARD_VALUE[player_card1.rank] == 10:
-                pair_rank = CardRank.TEN
-            else:
-                pair_rank = player_card1.rank
-
             decision = PAIRS_DECISION[player_card1.rank][dealer_top_card.rank]
 
             player_decision = convert_to_player_decision(
@@ -878,7 +872,7 @@ class BlackJack:
         self.shoe = create_shoe()
         self.shoe_top = 0
 
-    def reshuffle_shoe(self):
+    def reshuffle_shoe(self) -> None:
         shuffle_shoe(self.shoe)
         self.shoe_top = 0
 
@@ -890,7 +884,7 @@ class BlackJack:
     def set_players(self, players: list[Player]) -> None:
         self.players = players
 
-    def play_game(self):
+    def play_game(self) -> None:
         if self.shoe_top > HouseRules.FORCE_RESHUFFLE:
             self.reshuffle_shoe()
 
@@ -905,6 +899,9 @@ class BlackJack:
         dealer: Dealer = Dealer()
 
         card: Card
+        master_hand: PlayerMasterHand
+        hand: PlayerHand
+        hand_index: int
 
         print("\nDEAL HANDS")
 
@@ -913,14 +910,14 @@ class BlackJack:
         for _ in range(2):
             for i in range(player1.num_of_hands):
                 card = self.get_card_from_shoe()
-                master_hand: PlayerMasterHand = player1.master_hands[i]
-                hand: PlayerHand = master_hand.hands[0]
+                master_hand = player1.master_hands[i]
+                hand = master_hand.hands[0]
                 hand.add_card(card)
 
             for i in range(player2.num_of_hands):
                 card = self.get_card_from_shoe()
-                master_hand: PlayerMasterHand = player2.master_hands[i]
-                hand: PlayerHand = master_hand.hands[0]
+                master_hand = player2.master_hands[i]
+                hand = master_hand.hands[0]
                 hand.add_card(card)
 
             card = self.get_card_from_shoe()
@@ -951,9 +948,9 @@ class BlackJack:
 
             for p, player in enumerate(self.players):
                 for mh, master_hand in enumerate(player.master_hands):
-                    hand_index: int = 0
+                    hand_index = 0
                     while hand_index < master_hand.num_hands:
-                        hand: PlayerHand = master_hand.hands[hand_index]
+                        hand = master_hand.hands[hand_index]
                         hand.outcome = HandOutcome.STAND
                         hand_index += 1
 
@@ -961,9 +958,9 @@ class BlackJack:
             for p, player in enumerate(self.players):
                 print(f"player {p+1} - {player.name}:")
                 for mh, master_hand in enumerate(player.master_hands):
-                    hand_index: int = 0
+                    hand_index = 0
                     while hand_index < master_hand.num_hands:
-                        hand: PlayerHand = master_hand.hands[hand_index]
+                        hand = master_hand.hands[hand_index]
 
                         print(f"    hand {mh+1}.{hand_index+1}:")
                         for card_index, card in enumerate(hand.cards):
@@ -983,7 +980,9 @@ class BlackJack:
                         while True:
                             if hand.outcome == HandOutcome.STAND:
                                 # product of a prior ace split, outcome has already been determined.
-                                print(f"""        prior ace split: stand, total  H{hand.hard_count} S{hand.soft_count}""")
+                                print(
+                                    f"""        prior ace split: stand, total  H{hand.hard_count} S{hand.soft_count}"""
+                                )
                                 break
 
                             decision: PlayerDecision = BasicStrategy.determine_play(
@@ -1039,14 +1038,25 @@ class BlackJack:
                                 print(
                                     f"""        split, adding cards: {card1.rank.value}{card1.suite.value}, {card2.rank.value}{card2.suite.value}"""
                                 )
-                                print(f"""        card 1: {hand.cards[0].rank.value}{hand.cards[0].suite.value}""")
-                                print(f"""        card 2: {hand.cards[1].rank.value}{hand.cards[1].suite.value}""")
+                                print(
+                                    f"""        card 1: {hand.cards[0].rank.value}{hand.cards[0].suite.value}"""
+                                )
+                                print(
+                                    f"""        card 2: {hand.cards[1].rank.value}{hand.cards[1].suite.value}"""
+                                )
                                 splittingAces: bool = hand.cards[0].rank == CardRank.ACE
-                                if splittingAces and HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES:
+                                if (
+                                    splittingAces
+                                    and HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES
+                                ):
                                     # pdb.set_trace()
                                     hand.outcome = HandOutcome.STAND
-                                    print(f"""        aces split: stand, total H{hand.hard_count} S{hand.soft_count}""")
-                                    master_hand.hands[new_hand_index].outcome = HandOutcome.STAND
+                                    print(
+                                        f"""        aces split: stand, total H{hand.hard_count} S{hand.soft_count}"""
+                                    )
+                                    master_hand.hands[
+                                        new_hand_index
+                                    ].outcome = HandOutcome.STAND
                                     break
 
                             else:
@@ -1111,9 +1121,9 @@ class BlackJack:
             for p, player in enumerate(self.players):
                 print(f"player {p+1} - {player.name}:")
                 for mh, master_hand in enumerate(player.master_hands):
-                    hand_index: int = 0
+                    hand_index = 0
                     while hand_index < master_hand.num_hands:
-                        hand: PlayerHand = master_hand.hands[hand_index]
+                        hand = master_hand.hands[hand_index]
                         if hand.is_natural:
                             # player neither wins or loses, bet is pushed.
                             print(
@@ -1130,9 +1140,9 @@ class BlackJack:
             for p, player in enumerate(self.players):
                 print(f"player {p+1} - {player.name}:")
                 for mh, master_hand in enumerate(player.master_hands):
-                    hand_index: int = 0
+                    hand_index = 0
                     while hand_index < master_hand.num_hands:
-                        hand: PlayerHand = master_hand.hands[hand_index]
+                        hand = master_hand.hands[hand_index]
                         if hand.outcome == HandOutcome.BUST:
                             print(
                                 f"""    hand {mh+1}.{hand_index+1}: bust: lost {hand.bet}"""
@@ -1174,7 +1184,7 @@ if __name__ == "__main__":
     for i in range(1_000):
         bj.play_game()
 
-	# for the above loop, playing a million games takes about 2 minutes on the laptop.
+    # for the above loop, playing a million games takes about 2 minutes on the laptop.
 
     # exit(0xDEADBEEF)
 
