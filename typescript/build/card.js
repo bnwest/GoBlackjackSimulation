@@ -10,7 +10,6 @@ var CardSuite;
     CardSuite["SPADES"] = "\u2660\uFE0F";
     CardSuite["CLUBS"] = "\u2663\uFE0F";
 })(CardSuite || (exports.CardSuite = CardSuite = {}));
-;
 var CardRank;
 (function (CardRank) {
     CardRank["ACE"] = "A";
@@ -27,7 +26,6 @@ var CardRank;
     CardRank["QUEEN"] = "Q";
     CardRank["KING"] = "K";
 })(CardRank || (exports.CardRank = CardRank = {}));
-;
 const CardValue = new Map([
     [CardRank.ACE, 1],
     [CardRank.TWO, 2],
@@ -45,7 +43,7 @@ const CardValue = new Map([
 ]);
 Object.freeze(CardValue);
 function getCardValue(rank) {
-    // typescript does not know that the CardValue map has ALL 
+    // typescript does not know that the CardValue map has ALL
     // of the CardRank values but I do.
     const value = CardValue.get(rank);
     return value;
@@ -67,7 +65,7 @@ const CardIndex = new Map([
 ]);
 Object.freeze(CardIndex);
 function getCardIndex(rank) {
-    // typescript does not know that the CardValue map has ALL 
+    // typescript does not know that the CardValue map has ALL
     // of the CardRank values but I do.
     const index = CardIndex.get(rank); // as number;
     return index;

@@ -14,9 +14,11 @@
 // 3.4 TS/JS has a generic Map type with a set of methods: has(), get(), set(), delete()
 // which are verbose
 // 3.5 Map.get() does not work with a little help since it returns "type | undefined"
-// so the undefined has to be worked around via "as type" or "!" (tells the compiler 
+// so the undefined has to be worked around via "as type" or "!" (tells the compiler
 // that undefined is not possible, double pink promise)
 // 4. TS/JS OO is solid.  Supports methods, inheritance and interfaces.
+// 5. "===" versus "=="
+// 6. gts lint-er had a pretty heavy hand when "correcting" white space "errors"
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -101,7 +103,7 @@ class Shoe {
         // need third party support for a seeded random number generator
         for (let i = 0; i < this.cards.length; i++) {
             const j = Math.floor(seededRand.next() * this.cards.length);
-            if (i != j) {
+            if (i !== j) {
                 [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
             }
         }
@@ -114,7 +116,7 @@ class Shoe {
         }
     }
     getCard() {
-        var card = this.cards[this.top];
+        const card = this.cards[this.top];
         this.top++;
         return card;
     }
@@ -133,26 +135,26 @@ class BaseHand {
         this.outcome = HandOutcome.IN_PLAY;
     }
     get acesCount() {
-        var count = 0;
+        let count = 0;
         for (let i = 0; i < this.numCards; i++) {
-            if (this.cards[i].rank == card_1.CardRank.ACE) {
+            if (this.cards[i].rank === card_1.CardRank.ACE) {
                 count++;
             }
         }
         return count;
     }
     get hardCount() {
-        var count = 0;
+        let count = 0;
         for (let i = 0; i < this.numCards; i++) {
             count += (0, card_1.getCardValue)(this.cards[i].rank);
         }
         return count;
     }
     get softCount() {
-        var count = 0;
+        let count = 0;
         for (let i = 0; i < this.numCards; i++) {
-            var card = this.cards[i];
-            if (card.rank == card_1.CardRank.ACE) {
+            const card = this.cards[i];
+            if (card.rank === card_1.CardRank.ACE) {
                 count += 11;
             }
             else {
@@ -182,19 +184,20 @@ class BaseHand {
         return this.cards.length;
     }
     get isHandOver() {
-        if (this.outcome == HandOutcome.STAND) {
+        if (this.outcome === HandOutcome.STAND) {
             return true;
         }
-        else if (this.outcome == HandOutcome.BUST) {
+        else if (this.outcome === HandOutcome.BUST) {
             return true;
         }
-        else if (this.outcome == HandOutcome.SURRENDER) {
+        else if (this.outcome === HandOutcome.SURRENDER) {
             return true;
         }
-        else if (this.outcome == HandOutcome.DEALER_BLACKJACK) {
+        else if (this.outcome === HandOutcome.DEALER_BLACKJACK) {
             return true;
         }
-        else { // this.outcome == HandOutcome.IN_PLAY
+        else {
+            // this.outcome === HandOutcome.IN_PLAY
             return false;
         }
     }
@@ -213,8 +216,8 @@ class PlayerHand extends BaseHand {
     }
     get isNatural() {
         if (!this.fromSplit) {
-            if (this.numCards == 2) {
-                if (this.count == 21) {
+            if (this.numCards === 2) {
+                if (this.count === 21) {
                     return true;
                 }
             }
@@ -222,17 +225,17 @@ class PlayerHand extends BaseHand {
         return false;
     }
     get canSplit() {
-        if (this.numCards == 2) {
-            var card1 = this.cards[0];
-            var card2 = this.cards[1];
+        if (this.numCards === 2) {
+            const card1 = this.cards[0];
+            const card2 = this.cards[1];
             // check card value or rank, depending on house rules
             if (house_1.HouseRules.SPLIT_ON_VALUE_MATCH) {
-                if ((0, card_1.getCardValue)(card1.rank) == (0, card_1.getCardValue)(card2.rank)) {
+                if ((0, card_1.getCardValue)(card1.rank) === (0, card_1.getCardValue)(card2.rank)) {
                     return true;
                 }
             }
             else {
-                if (card1.rank == card2.rank) {
+                if (card1.rank === card2.rank) {
                     return true;
                 }
             }
@@ -250,8 +253,8 @@ class DealerHand extends BaseHand {
         super();
     }
     get isNatural() {
-        if (this.numCards == 2) {
-            if (this.count == 21) {
+        if (this.numCards === 2) {
+            if (this.count === 21) {
                 return true;
             }
         }
@@ -266,13 +269,13 @@ class PlayerMasterHand {
         return this.hands.length;
     }
     addStartHand(bet) {
-        let playerHand = new PlayerHand(bet);
+        const playerHand = new PlayerHand(bet);
         this.hands.push(playerHand);
     }
     canSplit(handIndex) {
         if (this.numHands < PlayerMasterHand.HAND_LIMIT) {
             // master hand allows
-            let playerHand = this.hands[handIndex];
+            const playerHand = this.hands[handIndex];
             if (playerHand.canSplit) {
                 // individual hand allows
                 return true;
@@ -281,18 +284,18 @@ class PlayerMasterHand {
         return false;
     }
     splitHand(handIndex, cardsToAdd) {
-        let card1 = this.hands[handIndex].cards[0];
-        let card2 = this.hands[handIndex].cards[1];
-        let oldPlayerHand = this.hands[handIndex];
+        const card1 = this.hands[handIndex].cards[0];
+        const card2 = this.hands[handIndex].cards[1];
+        const oldPlayerHand = this.hands[handIndex];
         // oldPlayerHand is a reference to this.hands[handIndex]
         // => the below changes this.hands[handIndex] "in place"
         oldPlayerHand.cards = [card1, cardsToAdd[0]];
         oldPlayerHand.fromSplit = true;
         oldPlayerHand.outcome = HandOutcome.IN_PLAY;
-        let newPlayerHand = new PlayerHand(oldPlayerHand.bet, true);
+        const newPlayerHand = new PlayerHand(oldPlayerHand.bet, true);
         newPlayerHand.cards = [card2, cardsToAdd[1]];
         newPlayerHand.outcome = HandOutcome.IN_PLAY;
-        let newHandIndex = this.numHands;
+        const newHandIndex = this.numHands;
         this.hands.push(newPlayerHand);
         return newHandIndex;
     }
@@ -309,8 +312,8 @@ class Player {
     setGameBets(bets) {
         this.masterHands = [];
         for (let i = 0; i < bets.length; i++) {
-            let bet = bets[i];
-            let playerMasterHand = new PlayerMasterHand();
+            const bet = bets[i];
+            const playerMasterHand = new PlayerMasterHand();
             playerMasterHand.addStartHand(bet);
             this.masterHands.push(playerMasterHand);
         }
@@ -358,13 +361,13 @@ class BlackJack {
         this.shoe.shuffle();
     }
     getCardFromShoe() {
-        var card = this.shoe.getCard();
+        const card = this.shoe.getCard();
         return card;
     }
     setPlayersForGame(players) {
         this.players = players;
         for (let i = 0; i < this.numPlayers; i++) {
-            let player = this.players[i];
+            const player = this.players[i];
             if (!this.playerResults.has(player.name)) {
                 this.playerResults.set(player.name, new BlackJackPlayerResults());
             }
@@ -384,17 +387,18 @@ class BlackJack {
             this.playerResults.get(player.name).handsPushed++;
         }
         this.playerResults.get(player.name).proceeds += result;
-        var isDoubleDown = (playerHand.numCards == 3 && Math.abs(initialBet) * 2 == Math.abs(result));
+        const isDoubleDown = playerHand.numCards === 3 &&
+            Math.abs(initialBet) * 2 === Math.abs(result);
         if (isDoubleDown) {
             this.stats.doubleDownCount++;
         }
-        if (playerHand.outcome == HandOutcome.SURRENDER) {
+        if (playerHand.outcome === HandOutcome.SURRENDER) {
             this.stats.surrenderCount++;
         }
         if (handIndex > 0) {
             this.stats.splitCount++;
         }
-        var splittingAces = (playerHand.fromSplit && playerHand.cards[0].rank == card_1.CardRank.ACE);
+        const splittingAces = playerHand.fromSplit && playerHand.cards[0].rank === card_1.CardRank.ACE;
         if (splittingAces) {
             this.stats.acesSplit++;
         }
@@ -405,23 +409,23 @@ class BlackJack {
         }
         // setting up the dealer and the player(s) could be done
         // by the caller and pass here via parameters.  ¯\_(ツ)_/¯
-        var dealer = new Dealer();
-        var player1 = new Player("Jack");
-        var player2 = new Player("Jill");
+        const dealer = new Dealer();
+        const player1 = new Player('Jack');
+        const player2 = new Player('Jill');
         this.setPlayersForGame([player1, player2]);
-        var initialBet = 2;
+        const initialBet = 2;
         player1.setGameBets([initialBet]);
         player2.setGameBets([initialBet, initialBet]);
         //
         // DEAL HANDS
         //
-        log("\n\nDEAL HANDS");
-        var card;
-        var player;
-        var masterHand;
-        var hand;
-        var playerDecision;
-        // deal two cards to players and dealer, 
+        log('\n\nDEAL HANDS');
+        let card;
+        let player;
+        let masterHand;
+        let hand;
+        let playerDecision;
+        // deal two cards to players and dealer,
         // all face up except for dealer's second card.
         for (let i = 0; i < 2; i++) {
             for (let j = 0; j < this.numPlayers; j++) {
@@ -429,20 +433,20 @@ class BlackJack {
                 for (let k = 0; k < player.numMasterHands; k++) {
                     card = this.getCardFromShoe();
                     masterHand = player.masterHands[k];
-                    let firstHand = masterHand.hands[0];
+                    const firstHand = masterHand.hands[0];
                     firstHand.addCard(card);
                 }
             }
             card = this.getCardFromShoe();
             dealer.hand.addCard(card);
         }
-        var dealerTopCard = dealer.topCard;
+        const dealerTopCard = dealer.topCard;
         log(`dealer top card: ${dealerTopCard.str()}`);
-        var dealerHoleCard = dealer.holeCard;
+        const dealerHoleCard = dealer.holeCard;
         //
         // PLAY HANDS
         //
-        log("PLAY HANDS");
+        log('PLAY HANDS');
         if (dealer.hand.isNatural) {
             // a real simulation would have to take care of Insurance, which is a sucker's bet,
             // so we just assume that no player will ask for insurance.
@@ -477,28 +481,28 @@ class BlackJack {
                             card = hand.cards[l];
                             log(`        card ${l + 1}: ${card.str()}`);
                         }
-                        var isSplitPossible = (masterHand.numHands < PlayerMasterHand.HAND_LIMIT);
+                        const isSplitPossible = masterHand.numHands < PlayerMasterHand.HAND_LIMIT;
                         // resolve the current hand ...
-                        while (true) {
-                            if (hand.outcome == HandOutcome.STAND) {
+                        while (true === true) {
+                            if (hand.outcome === HandOutcome.STAND) {
                                 // product of a prior ace split, outcome has already been determined.
                                 log(`        prior aces split; ${basic_1.PlayerDecision.STAND}, total H${hand.hardCount} S${hand.softCount}`);
                                 break;
                             }
-                            var handInterface = hand;
+                            const handInterface = hand;
                             playerDecision = (0, basic_1.determineBasicStrategyPlay)(dealerTopCard, handInterface, isSplitPossible);
                             log(`        basic strategy: ${playerDecision}`);
-                            if (playerDecision == basic_1.PlayerDecision.STAND) {
+                            if (playerDecision === basic_1.PlayerDecision.STAND) {
                                 hand.outcome = HandOutcome.STAND;
                                 log(`        stand total H${hand.hardCount} S${hand.softCount}`);
                                 break;
                             }
-                            else if (playerDecision == basic_1.PlayerDecision.SURRENDER) {
+                            else if (playerDecision === basic_1.PlayerDecision.SURRENDER) {
                                 hand.outcome = HandOutcome.SURRENDER;
                                 hand.bet = Math.floor(hand.bet / 2);
                                 break;
                             }
-                            else if (playerDecision == basic_1.PlayerDecision.DOUBLE) {
+                            else if (playerDecision === basic_1.PlayerDecision.DOUBLE) {
                                 card = this.getCardFromShoe();
                                 hand.addCard(card);
                                 hand.bet *= 2;
@@ -507,31 +511,32 @@ class BlackJack {
                                 log(`        stand total H${hand.hardCount} S${hand.softCount}`);
                                 break;
                             }
-                            else if (playerDecision == basic_1.PlayerDecision.HIT) {
+                            else if (playerDecision === basic_1.PlayerDecision.HIT) {
                                 card = this.getCardFromShoe();
                                 hand.addCard(card);
-                                let handTotal = hand.count;
+                                const handTotal = hand.count;
                                 log(`        hit: ${card.str()}}, H${hand.hardCount} S${hand.softCount}`);
                                 if (handTotal > 21) {
                                     hand.outcome = HandOutcome.BUST;
-                                    log(`        bust`);
+                                    log('        bust');
                                     break;
                                 }
                                 else {
                                     hand.outcome = HandOutcome.IN_PLAY;
                                 }
                             }
-                            else if (playerDecision == basic_1.PlayerDecision.SPLIT) {
-                                let card1 = this.getCardFromShoe();
-                                let card2 = this.getCardFromShoe();
-                                let cardsToAdd = [card1, card2];
-                                let handIndex = k;
-                                let newHandIndex = masterHand.splitHand(handIndex, cardsToAdd);
+                            else if (playerDecision === basic_1.PlayerDecision.SPLIT) {
+                                const card1 = this.getCardFromShoe();
+                                const card2 = this.getCardFromShoe();
+                                const cardsToAdd = [card1, card2];
+                                const handIndex = k;
+                                const newHandIndex = masterHand.splitHand(handIndex, cardsToAdd);
                                 log(`        split, new hand index ${newHandIndex + 1}, adding cards ${card1.str()}, ${card2.str()}`);
                                 log(`        card 1: ${hand.cards[0].str()}`);
                                 log(`        card 2: ${hand.cards[1].str()}`);
-                                let splittingAces = (card1.rank == card_1.CardRank.ACE);
-                                if (splittingAces && house_1.HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES) {
+                                const splittingAces = card1.rank === card_1.CardRank.ACE;
+                                if (splittingAces &&
+                                    house_1.HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES) {
                                     hand.outcome = HandOutcome.STAND;
                                     log(`        aces split: stand, total H${hand.hardCount} S${hand.softCount}`);
                                     masterHand.hands[newHandIndex].outcome = HandOutcome.STAND;
@@ -539,7 +544,7 @@ class BlackJack {
                                 }
                             }
                             else {
-                                log(`FTW`);
+                                log('FTW');
                                 log(`FTW: dealer top card: ${dealerTopCard.str()}`);
                                 log(`FTW: player hand count: H${hand.hardCount} S${hand.softCount}`);
                                 log(`FTW: player decision: ${playerDecision}`);
@@ -552,20 +557,21 @@ class BlackJack {
             //
             // DEALER HAND
             //
-            log("DEALER HAND");
+            log('DEALER HAND');
             log(`dealer top card:  ${dealerTopCard.str()}`);
             log(`dealer hole card: ${dealerHoleCard.str()}`);
-            var dealerDone = false;
+            let dealerDone = false;
             while (!dealerDone) {
-                let hardCount = dealer.hand.hardCount;
-                let softCount = dealer.hand.softCount;
-                let useSoftCount = (hardCount < softCount && softCount <= 21);
+                const hardCount = dealer.hand.hardCount;
+                const softCount = dealer.hand.softCount;
+                const useSoftCount = hardCount < softCount && softCount <= 21;
                 if (useSoftCount && softCount <= house_1.HouseRules.DEALER_HITS_SOFT_ON) {
                     card = this.getCardFromShoe();
                     dealer.hand.addCard(card);
                     log(`    add: ${card.str()}, total H${dealer.hand.hardCount} S${dealer.hand.softCount}`);
                 }
-                else if (!useSoftCount && hardCount <= house_1.HouseRules.DEALER_HITS_HARD_ON) {
+                else if (!useSoftCount &&
+                    hardCount <= house_1.HouseRules.DEALER_HITS_HARD_ON) {
                     card = this.getCardFromShoe();
                     dealer.hand.addCard(card);
                     log(`    add: ${card.str()}, total H${dealer.hand.hardCount} S${dealer.hand.softCount}`);
@@ -573,20 +579,20 @@ class BlackJack {
                 else {
                     dealer.hand.outcome = HandOutcome.STAND;
                     dealerDone = true;
-                    log(`    stand`);
+                    log('    stand');
                 }
                 if (dealer.hand.count > 21) {
                     dealer.hand.outcome = HandOutcome.BUST;
                     dealerDone = true;
-                    log(`    bust`);
+                    log('    bust');
                 }
             }
         }
         //
         // SETTLE HANDS
         //
-        log("SETTLE HANDS");
-        if (dealer.hand.outcome == HandOutcome.DEALER_BLACKJACK) {
+        log('SETTLE HANDS');
+        if (dealer.hand.outcome === HandOutcome.DEALER_BLACKJACK) {
             for (let i = 0; i < this.numPlayers; i++) {
                 player = this.players[i];
                 log(`player ${i + 1} - ${player.name}`);
@@ -615,22 +621,22 @@ class BlackJack {
                     masterHand = player.masterHands[j];
                     for (let k = 0; k < masterHand.numHands; k++) {
                         hand = masterHand.hands[k];
-                        if (hand.outcome == HandOutcome.BUST) {
+                        if (hand.outcome === HandOutcome.BUST) {
                             this.addResult(player, k, hand, initialBet, -hand.bet);
                             log(`    hand ${j + 1}.${k + 1}: bust: lost ${hand.bet}`);
                         }
-                        else if (hand.outcome == HandOutcome.SURRENDER) {
+                        else if (hand.outcome === HandOutcome.SURRENDER) {
                             this.addResult(player, k, hand, initialBet, -hand.bet);
                             log(`    hand ${j + 1}.${k + 1}: surrender: lost ${hand.bet}`);
                         }
                         else {
                             // player has a non-bust, non-surrender hand
                             if (hand.isNatural) {
-                                let payout = Math.floor(hand.bet * house_1.HouseRules.NATURAL_BLACKJACK_PAYOUT);
+                                const payout = Math.floor(hand.bet * house_1.HouseRules.NATURAL_BLACKJACK_PAYOUT);
                                 this.addResult(player, k, hand, initialBet, payout);
                                 log(`    hand ${j + 1}.${k + 1}: natural: won ${payout}`);
                             }
-                            else if (dealer.hand.outcome == HandOutcome.BUST) {
+                            else if (dealer.hand.outcome === HandOutcome.BUST) {
                                 this.addResult(player, k, hand, initialBet, hand.bet);
                                 log(`    hand ${j + 1}.${k + 1}: dealer bust: won ${hand.bet}`);
                             }
@@ -656,7 +662,7 @@ class BlackJack {
         }
     }
 }
-var blackjack = new BlackJack();
+const blackjack = new BlackJack();
 for (let i = 0; i < 100; i++) {
     blackjack.playGame();
 }
@@ -666,8 +672,8 @@ for (let i = 0; i < 100; i++) {
 // player Jill: {"handsPlayed":2055362,"handsWon":870914,"handsLost":1015242,"handsPushed":169206,"proceeds":-21542}
 // 42% hands won, 49% hands lost, 8% hands pushed
 blackjack.playerResults.forEach((value, key) => {
-    let playerName = key;
-    let playerResult = value;
+    const playerName = key;
+    const playerResult = value;
     log(`\nplayer ${playerName}: ${JSON.stringify(playerResult)}`);
 });
 // for 1,000,000 games with 3 master hands per game => about 3,000,000 hands

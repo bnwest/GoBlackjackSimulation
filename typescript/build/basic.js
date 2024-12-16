@@ -10,16 +10,16 @@ const house_1 = require("./house");
 //     All Hail The Wikipedia!
 //
 // to make decision tables readable:
-const S = "stand";
-const H = "hit";
-const Dh = "double-down-if-allowed-or-hit";
-const Ds = "double-down-if-allowed-or-stand";
-const SP = "split";
+const S = 'stand';
+const H = 'hit';
+const Dh = 'double-down-if-allowed-or-hit';
+const Ds = 'double-down-if-allowed-or-stand';
+const SP = 'split';
 // U => Surrender, in a world of too many S words
-const Uh = "surrender-if-allowed-or-hit";
-const Us = "surrender-if-allowed-or-stand";
-const Usp = "surrender-if-allowed-or-split";
-const NO = "no-decision";
+const Uh = 'surrender-if-allowed-or-hit';
+const Us = 'surrender-if-allowed-or-stand';
+const Usp = 'surrender-if-allowed-or-split';
+const NO = 'no-decision';
 function isDecisionValid(decision) {
     switch (decision) {
         case S:
@@ -47,30 +47,30 @@ var PlayerDecision;
 function convertToPlayerDecision(decision, playerHand) {
     // Decision sometimes return Xy, which translates to do X if allowed else do y.
     // Determine the X or the y here.
-    const isFirstDecision = (playerHand.numCards == 2);
-    const isFirstPostSplitDecision = (isFirstDecision && playerHand.isFromSplit);
-    var playerDecision = PlayerDecision.STAND;
+    const isFirstDecision = playerHand.numCards === 2;
+    const isFirstPostSplitDecision = isFirstDecision && playerHand.isFromSplit;
+    let playerDecision = PlayerDecision.STAND;
     const hardCount = playerHand.hardCount;
     const softCount = playerHand.softCount;
-    if (decision == S) {
+    if (decision === S) {
         return PlayerDecision.STAND;
     }
-    else if (decision == H) {
+    else if (decision === H) {
         return PlayerDecision.HIT;
     }
-    else if (decision == Dh || decision == Ds) {
+    else if (decision === Dh || decision === Ds) {
         // may be only allow to down on hand totals [9, 10, 11] or some such
         // basic stratgey wants to double down on
         //     hand hard totals [9, 10, 11]
         //     hand soft totals [12, 13,14, 15, 16, 17, 18, 19]
-        var nondoubleDownDecision;
-        if (decision == Dh) {
+        let nondoubleDownDecision;
+        if (decision === Dh) {
             nondoubleDownDecision = PlayerDecision.HIT;
         }
         else {
             nondoubleDownDecision = PlayerDecision.STAND;
         }
-        var doubleDownAllowed;
+        let doubleDownAllowed;
         if (isFirstDecision) {
             if (isFirstPostSplitDecision) {
                 if (house_1.HouseRules.DOUBLE_DOWN_AFTER_SPLIT) {
@@ -88,7 +88,7 @@ function convertToPlayerDecision(decision, playerHand) {
             doubleDownAllowed = false;
         }
         if (doubleDownAllowed) {
-            var doubleDown;
+            let doubleDown;
             if ((0, house_1.canDoubleDown)(hardCount)) {
                 doubleDown = true;
             }
@@ -98,19 +98,21 @@ function convertToPlayerDecision(decision, playerHand) {
             else {
                 doubleDown = false;
             }
-            playerDecision = doubleDown ? PlayerDecision.DOUBLE : nondoubleDownDecision;
+            playerDecision = doubleDown
+                ? PlayerDecision.DOUBLE
+                : nondoubleDownDecision;
         }
         else {
             playerDecision = nondoubleDownDecision;
         }
     }
-    else if (decision == SP) {
+    else if (decision === SP) {
         playerDecision = PlayerDecision.SPLIT;
     }
-    else if (decision == Uh || decision == Us || decision == Usp) {
+    else if (decision === Uh || decision === Us || decision === Usp) {
         // surrent decision must be allowed in the House Rules and
         // must be a first decision (before splitting)
-        var nonsurrenderDecision;
+        let nonsurrenderDecision;
         switch (decision) {
             case Uh:
                 nonsurrenderDecision = PlayerDecision.HIT;
@@ -122,16 +124,20 @@ function convertToPlayerDecision(decision, playerHand) {
                 nonsurrenderDecision = PlayerDecision.SPLIT;
                 break;
             default:
-                throw new Error("convertToPlayerDecision() ran into a little trouble in town");
+                throw new Error('convertToPlayerDecision() ran into a little trouble in town');
         }
-        var surrenderAllowed = (isFirstDecision && !isFirstPostSplitDecision && house_1.HouseRules.SURRENDER_ALLOWED);
-        playerDecision = surrenderAllowed ? PlayerDecision.SURRENDER : nonsurrenderDecision;
+        const surrenderAllowed = isFirstDecision &&
+            !isFirstPostSplitDecision &&
+            house_1.HouseRules.SURRENDER_ALLOWED;
+        playerDecision = surrenderAllowed
+            ? PlayerDecision.SURRENDER
+            : nonsurrenderDecision;
     }
     // console.log(`convertToPlayerDecision: decision "${decision}" -> playerDecision "${playerDecision}"`);
     return playerDecision;
 }
 // Use NO since we live in a zero index world.
-// Only use the SP aka SPLIT decision from this table.  The other decisions 
+// Only use the SP aka SPLIT decision from this table.  The other decisions
 // mirror exactly what the hard/soft total decision tables yield.
 const _PAIRS_DECISION = [
     //0   A   2   3   4   5   6   7   8   9  10   J   Q   K
@@ -166,24 +172,24 @@ const _PAIRS_DECISION = [
 ];
 function createPairsDecison() {
     /*
-    Turn the _PAIRS_DECISION table into a rank based dictiopnary:
-        PAIRS_DECISION: dict[CardRank, dict[CardRank, str]] = {
-            CardRank.ACE: {
-                CardRank.ACE: SP, CardRank.TWO: SP, ..., CardRank.KING: SP,
-            }, ...
-        }
-    */
-    var decisions = new Map();
+      Turn the _PAIRS_DECISION table into a rank based dictiopnary:
+          PAIRS_DECISION: dict[CardRank, dict[CardRank, str]] = {
+              CardRank.ACE: {
+                  CardRank.ACE: SP, CardRank.TWO: SP, ..., CardRank.KING: SP,
+              }, ...
+          }
+      */
+    const decisions = new Map();
     const ranks = Object.values(card_1.CardRank);
-    ranks.forEach((playerPairRank) => {
+    ranks.forEach(playerPairRank => {
         decisions.set(playerPairRank, new Map());
     });
-    ranks.forEach((playerPairRank) => {
-        var playerIndex = (0, card_1.getCardIndex)(playerPairRank);
-        ranks.forEach((dealerTopCardRank) => {
+    ranks.forEach(playerPairRank => {
+        const playerIndex = (0, card_1.getCardIndex)(playerPairRank);
+        ranks.forEach(dealerTopCardRank => {
             var _a;
-            var dealerIndex = (0, card_1.getCardIndex)(dealerTopCardRank);
-            var decision = _PAIRS_DECISION[playerIndex][dealerIndex];
+            const dealerIndex = (0, card_1.getCardIndex)(dealerTopCardRank);
+            const decision = _PAIRS_DECISION[playerIndex][dealerIndex];
             (_a = decisions.get(playerPairRank)) === null || _a === void 0 ? void 0 : _a.set(dealerTopCardRank, decision);
         });
     });
@@ -241,22 +247,22 @@ const _HARD_TOTAL_DECISION = [
 ];
 function createHardTotalDecision() {
     /*
-    Turn _HARD_TOTAL_DECISION table into
-        HARD_TOTAL_DECISION = [
-            ...
-            {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
-            ...
-        ]
-    */
-    var decisions = [];
+      Turn _HARD_TOTAL_DECISION table into
+          HARD_TOTAL_DECISION = [
+              ...
+              {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
+              ...
+          ]
+      */
+    const decisions = [];
     for (let hardCount = 0; hardCount <= 21; hardCount++) {
         decisions.push(new Map());
     }
     const ranks = Object.values(card_1.CardRank);
     for (let hardCount = 0; hardCount <= 21; hardCount++) {
-        ranks.forEach((dealerTopCardRank) => {
-            var dealerIndex = (0, card_1.getCardIndex)(dealerTopCardRank);
-            var decision = _HARD_TOTAL_DECISION[hardCount][dealerIndex];
+        ranks.forEach(dealerTopCardRank => {
+            const dealerIndex = (0, card_1.getCardIndex)(dealerTopCardRank);
+            const decision = _HARD_TOTAL_DECISION[hardCount][dealerIndex];
             decisions[hardCount].set(dealerTopCardRank, decision);
         });
     }
@@ -312,22 +318,22 @@ const _SOFT_TOTAL_DECISION = [
 ];
 function createSoftTotalDecision() {
     /*
-    Turn _SOFT_TOTAL_DECISION table into
-        HARD_TOTAL_DECISION = [
-            ...
-            {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
-            ...
-        ]
-    */
-    var decisions = [];
+      Turn _SOFT_TOTAL_DECISION table into
+          HARD_TOTAL_DECISION = [
+              ...
+              {CardRank.ACE: H, CardRank.TWO: H, ..., CardRank.KING: H}, # [5]
+              ...
+          ]
+      */
+    const decisions = [];
     for (let hardCount = 0; hardCount <= 21; hardCount++) {
         decisions.push(new Map());
     }
     const ranks = Object.values(card_1.CardRank);
     for (let hardCount = 0; hardCount <= 21; hardCount++) {
-        ranks.forEach((dealerTopCardRank) => {
-            var dealerIndex = (0, card_1.getCardIndex)(dealerTopCardRank);
-            var decision = _SOFT_TOTAL_DECISION[hardCount][dealerIndex];
+        ranks.forEach(dealerTopCardRank => {
+            const dealerIndex = (0, card_1.getCardIndex)(dealerTopCardRank);
+            const decision = _SOFT_TOTAL_DECISION[hardCount][dealerIndex];
             decisions[hardCount].set(dealerTopCardRank, decision);
         });
     }
@@ -336,19 +342,20 @@ function createSoftTotalDecision() {
 const SOFT_TOTAL_DECISION = createSoftTotalDecision();
 function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSplits) {
     var _a;
-    var isFirstDecision = (playerHand.numCards == 2);
-    var isFirstPostSplitDecision = (isFirstDecision && playerHand.isFromSplit);
-    var playerCard1 = playerHand.getCard(0);
-    var playerCard2 = playerHand.getCard(1);
-    var decision;
-    var playerDecision;
-    var gotPairs;
+    const isFirstDecision = playerHand.numCards === 2;
+    // const isFirstPostSplitDecision: boolean = isFirstDecision && playerHand.isFromSplit;
+    const playerCard1 = playerHand.getCard(0);
+    const playerCard2 = playerHand.getCard(1);
+    let decision;
+    let playerDecision;
+    let gotPairs;
     if (isFirstDecision) {
         if (house_1.HouseRules.SPLIT_ON_VALUE_MATCH) {
-            gotPairs = (0, card_1.getCardValue)(playerCard1.rank) == (0, card_1.getCardValue)(playerCard2.rank);
+            gotPairs =
+                (0, card_1.getCardValue)(playerCard1.rank) === (0, card_1.getCardValue)(playerCard2.rank);
         }
         else {
-            gotPairs = playerCard1.rank == playerCard2.rank;
+            gotPairs = playerCard1.rank === playerCard2.rank;
         }
     }
     else {
@@ -358,8 +365,8 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
         // Determine if the pairs can be split.
         // Note all of the non-split decisions that are ignored below
         // (which will not contradict the hard/soft total decision).
-        var pairRank;
-        if ((0, card_1.getCardValue)(playerCard1.rank) == 10) {
+        let pairRank;
+        if ((0, card_1.getCardValue)(playerCard1.rank) === 10) {
             pairRank = card_1.CardRank.TEN;
         }
         else {
@@ -367,13 +374,13 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
         }
         decision = (_a = PAIRS_DECISION.get(pairRank)) === null || _a === void 0 ? void 0 : _a.get(dealerTopCard.rank);
         playerDecision = convertToPlayerDecision(decision, playerHand);
-        if (playerDecision == PlayerDecision.SPLIT) {
+        if (playerDecision === PlayerDecision.SPLIT) {
             return PlayerDecision.SPLIT;
         }
     }
-    var hardCount = playerHand.hardCount;
-    var softCount = playerHand.softCount;
-    var useSoftTotal = (hardCount < softCount && softCount <= 21);
+    const hardCount = playerHand.hardCount;
+    const softCount = playerHand.softCount;
+    const useSoftTotal = hardCount < softCount && softCount <= 21;
     if (useSoftTotal) {
         decision = SOFT_TOTAL_DECISION[softCount].get(dealerTopCard.rank);
         playerDecision = convertToPlayerDecision(decision, playerHand);
@@ -384,6 +391,6 @@ function determineBasicStrategyPlay(dealerTopCard, playerHand, handsAllowMoreSpl
         playerDecision = convertToPlayerDecision(decision, playerHand);
         return playerDecision;
     }
-    console.log("determineBasicStrategyPlay() ran into a little trouble in town.");
-    throw new Error("determineBasicStrategyPlay() ran into a little trouble in town.");
+    console.log('determineBasicStrategyPlay() ran into a little trouble in town.');
+    throw new Error('determineBasicStrategyPlay() ran into a little trouble in town.');
 }

@@ -13,7 +13,7 @@ exports.HouseRules = HouseRules;
 // 4. Re-splitting Aces (exceptionally rare)
 // 5. Surrender
 HouseRules.DECKS_IN_SHOE = 6;
-HouseRules.FORCE_RESHUFFLE = Math.floor(((52 * HouseRules.DECKS_IN_SHOE) * 3) / 4);
+HouseRules.FORCE_RESHUFFLE = Math.floor((52 * HouseRules.DECKS_IN_SHOE * 3) / 4);
 // True => Must stand after the Ace split (stand on the Ace plus the one card dealt after split)
 // True => no double down after the Ace split, no splitting Aces after the Ace split
 HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES = true;
@@ -21,7 +21,7 @@ HouseRules.NO_MORE_CARDS_AFTER_SPLITTING_ACES = true;
 // static DOUBLE_DOWN_ON_TOTAL: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 // python list comprehension can be faked with lambdas, unsure how TS-ic that is.
 HouseRules.DOUBLE_DOWN_ON_TOTAL = (() => {
-    let doubleOn = [];
+    const doubleOn = [];
     for (let i = 2; i <= 21; i++) {
         doubleOn.push(i);
     }
