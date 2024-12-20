@@ -22,14 +22,17 @@
 // 10. Tuple type has no intrinsic support ... workaround is to define then use struct???
 // 10.1 func swap(x, y string) (string, string) { return y, x } is the counter example
 // 11. gofmt is not configurable, no way to disable formatting for a block of code
-// 12. python cares about newline and indents; go cares about newlines
+// 12. python cares about newline and indents; Go cares about newlines
 // 13. WRT <struct instance?>.<member>, the "." notation is the same
 // for both instance and instance reference
 // 13.1 (*p).field is the same as p.field, as a convenience
 // 13.2 Avoid ":=" in struct creation since type is implicit => do not know
-// if an instance or instance reference is being created
+// if an instance or instance reference is being created for example.
 // 14. Go Playground is a web service that runs on golang.org's servers.
 // 15. stackoverflow default response to a Go question is: roll your on.
+// 16. C/C++ for function parameters will implicitly send non-trivial values as references.
+// Go sends a copy (which should be treated as readonly within the function).  Go requires
+// that references be explicitly sent.
 
 package main
 
