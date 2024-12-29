@@ -22,6 +22,7 @@
 // 6.1 the prettier config file is located here: node_modules/gts/.prettierrc.json
 // which the root file ".prettierrc.js" references
 // guessing that it is not a best practice to modify node_modules/gts/.prettierrc.json
+// 7. let, var, or const. var is function scoped.  let and const are block scoped.
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
