@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/bnwest/GoBlackjackSimulation/go/blackjack/cards"
@@ -401,6 +400,7 @@ func TestCreatePlayerMasterHand(t *testing.T) {
 	assert.Equal(t, 1, masterHand.NumHands(), "AddStartHand() did not add a hand to the master hand")
 }
 
+/*
 func dumpHands(intro string, expected []cards.Card, actual []cards.Card) {
 	fmt.Printf(
 		"%v: expected [ %v%v , %v%v ] actual [ %v%v , %v%v ]\n",
@@ -411,6 +411,7 @@ func dumpHands(intro string, expected []cards.Card, actual []cards.Card) {
 		actual[1].Rank, cards.CardSuiteValue[actual[1].Suite],
 	)
 }
+*/
 
 func TestPlayerMasterHandSplitHand(t *testing.T) {
 	var masterHand *game.PlayerMasterHand = game.CreatePlayerMasterHand()

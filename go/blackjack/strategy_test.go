@@ -134,8 +134,7 @@ func determineOneBasicDecisionPlay(
 	)
 
 	// end running lazy golang decision to prevent as many newlines as possible
-	var decisionOk bool
-	decisionOk = strategy.IsValidPlayerDecision(playerDecision)
+	var decisionOk bool = strategy.IsValidPlayerDecision(playerDecision)
 	return decisionOk
 }
 
