@@ -1,11 +1,14 @@
 "use strict";
 // Lessons Learned:
+//
 // 1. TypeScript files are trans-compiled into JavaScript
 // 1.1 and run locally in my case in the Node.js environment
 // 1.2 Runtime errors map to the JS code :(
 // 1.3 Trans-complie JavaScript a real "piece of work", JavaScript library worthy
 // 1.4 compile and run is a 2 step process: 1. npx tsc, 2. node build/index.js
+//
 // 2. string1 in [string1, string2] did not work, FTW.
+//
 // 3. python-like dictionaries are a pain
 // 3.1 A JS idion object.field is the same as object["field"]
 // 3.2 dictionary keys are dynamically created fields
@@ -16,13 +19,18 @@
 // 3.5 Map.get() does not work with a little help since it returns "type | undefined"
 // so the undefined has to be worked around via "as type" or "!" (tells the compiler
 // that undefined is not possible, double pink promise)
+//
 // 4. TS/JS OO is solid.  Supports methods, inheritance and interfaces.
+//
 // 5. "===" versus "==", strict equality versus equality with type conversions
+//
 // 6. gts lint-er had a pretty heavy hand when "correcting" white space "errors"
 // 6.1 the prettier config file is located here: node_modules/gts/.prettierrc.json
 // which the root file ".prettierrc.js" references
 // guessing that it is not a best practice to modify node_modules/gts/.prettierrc.json
+//
 // 7. let, var, or const. var is function scoped.  let and const are block scoped.
+//
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

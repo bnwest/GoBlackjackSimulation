@@ -1181,7 +1181,7 @@ if __name__ == "__main__":
 
     bj = BlackJack()
 
-    for i in range(1_000):
+    for i in range(100):
         bj.play_game()
 
     # for the above loop, playing a million games takes about 2 minutes on the laptop.
