@@ -15,6 +15,17 @@ fn test_card_suites() {
 
     let mut suite: CardSuite = CardSuite::HEARTS;
     assert_eq!(suite.discriminant(), 1);
+    suite = CardSuite::DIAMONDS;
+    assert_eq!(suite.discriminant(), 2);
+    suite = CardSuite::SPADES;
+    assert_eq!(suite.discriminant(), 3);
+    suite = CardSuite::CLUBS;
+    assert_eq!(suite.discriminant(), 4);
+
+    for suite in CardSuite::iterator() {
+        let roundtrip_suite: CardSuite = CardSuite::transmute(suite.discriminant());
+        assert_eq!(suite, &roundtrip_suite);
+    }
 }
 
 #[test]
@@ -44,9 +55,9 @@ fn test_card_rank() {
     rank = CardRank::ACE;
     assert_eq!(rank.discriminant(), 1);
 
-    assert_eq!(CardRank::transmuate(2), CardRank::TWO);
+    assert_eq!(CardRank::transmute(2), CardRank::TWO);
     for rank in CardRank::iterator() {
-        let roundtrip_rank: CardRank = CardRank::transmuate(rank.discriminant());
+        let roundtrip_rank: CardRank = CardRank::transmute(rank.discriminant());
         assert_eq!(rank, &roundtrip_rank);
     }
 

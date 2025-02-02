@@ -33,7 +33,7 @@ impl CardSuite {
         // some may see "as" type casts as a red flag
         *self as u8
     }
-    pub fn transmuate(discrim: u8) -> CardSuite {
+    pub fn transmute(discrim: u8) -> CardSuite {
         // FAILS: rank = CardRank(2);
         // FAILS: rank = 2 as CardRank;
         // WORKS: rank = unsafe { transmute(2 as u8) };
@@ -56,6 +56,15 @@ impl fmt::Debug for CardSuite {
         return writeln!(f, "{}", self.to_string());
     }
 }
+
+/*
+var CardSuiteValue = map[CardSuite]string{
+	HEARTS:   "♥️", // aka U+2665 + U+fe0f
+	DIAMONDS: "♦️", // aka U+2666 + U+fe0f
+	SPADES:   "♠️", // aka U+2660 + U+fe0f
+	CLUBS:    "♣️", // aka U+2663 + U+fe0f
+}
+*/
 
 // https://rust-lang-nursery.github.io/rust-cookbook/mem/global_static.html
 // https://stackoverflow.com/questions/19605132/is-it-possible-to-use-global-variables-in-rust
@@ -151,7 +160,7 @@ impl CardRank {
         // *self as u8
         unsafe { *<*const _>::from(self).cast::<u8>() }
     }
-    pub fn transmuate(discrim: u8) -> CardRank {
+    pub fn transmute(discrim: u8) -> CardRank {
         unsafe { transmute(discrim as u8) }
     }
     pub fn to_string(&self) -> String {
@@ -201,7 +210,7 @@ impl fmt::Debug for CardRank {
 }
 
 #[derive(Copy, Clone, Debug)]
-struct Card {
+pub struct Card {
     suite: CardSuite,
     rank: CardRank,
 }
@@ -216,6 +225,8 @@ impl Card {
 }
 
 pub fn create_unshuffle_deck() -> Vec<Card> {
+    // should have been: static deck ...
+    // but static declard variables can not have run time allocations
     let deck: Vec<Card> = vec![
         // HEARTS
         Card {
@@ -435,7 +446,7 @@ pub fn create_unshuffle_deck() -> Vec<Card> {
 
 pub fn create_shoe(decks_in_shoe: usize /*= 6*/) -> Vec<Card> {
     let mut shoe = vec![];
-    for i in 0..decks_in_shoe {
+    for _i in 0..decks_in_shoe {
         let unshuffle_deck: Vec<Card> = create_unshuffle_deck();
         for card in unshuffle_deck.iter() {
             // card: &Card
@@ -445,13 +456,6 @@ pub fn create_shoe(decks_in_shoe: usize /*= 6*/) -> Vec<Card> {
     }
     return shoe;
 }
-
-/*
-type Card struct {
-    Suite CardSuite
-    Rank  CardRank
-}
-*/
 
 #[cfg(test)]
 mod tests;
