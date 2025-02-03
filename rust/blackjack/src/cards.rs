@@ -466,10 +466,37 @@ pub fn create_shoe(decks_in_shoe: usize /*= 6*/) -> Vec<Card> {
     return shoe;
 }
 
+/*
+Note to future self:
+
+Given (Vec<Card> is allocated on the heap, not the stack)
+pub fn shuffle_shoe(cards: Vec<Card>) {...}
+and the call
+    let mut shoe : Vec<Card> = create_shoe(6);
+    shuffle_shoe(shoe);
+the variable "shoe" has its ownership transfered to fn paramater "cards", for the call.
+the parameter "cards" goes out of scope at the end of the fn and its heap is dropped/freed.
+shuffle_shoe() could return the "cards" paramter to the caller, but this does not scale.
+
+what we want to do is send a reference to "shoes" to the fn.  the fn will then "borrow" the
+value for its duration and will not drop the value at the end of scope,
+since it does not have ownership.
+this looks like:
+pub fn shuffle_shoe(cards: &Vec<Card>) {...}
+and
+    shuffle_shoe(&shoe);
+
+by default, borrowing does not allow mutation (like "let").  we need mutation for the fn.
+
+to allow the value to be borrowe and mutated, we need the following:
+pub fn shuffle_shoe(cards: &mut Vec<Card>) {...}
+and
+    shuffle_shoe(&mut shoe);
+the "mut" is associated with the reference "&" (like "let").
+rust only allows one mutible reference per value a time, to prevent race condition.
+*/
+
 pub fn shuffle_shoe(cards: &mut Vec<Card>, rng: &mut ChaCha8Rng) {
-    // by default, parameter ... cards: &Vec<Card> ... is an immutable reference
-    // like "let", mutable has to be expressly granted.  The fn caller has to
-    // follow the same rules ... shuffle_shoe(&mut shoe, &mut rng)
     cards.shuffle(rng);
 }
 
