@@ -4,6 +4,9 @@
 
 use lazy_static::lazy_static;
 
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
+
 use std::collections::HashMap;
 use std::fmt;
 use std::mem::transmute;
@@ -59,10 +62,10 @@ impl fmt::Debug for CardSuite {
 
 /*
 var CardSuiteValue = map[CardSuite]string{
-	HEARTS:   "♥️", // aka U+2665 + U+fe0f
-	DIAMONDS: "♦️", // aka U+2666 + U+fe0f
-	SPADES:   "♠️", // aka U+2660 + U+fe0f
-	CLUBS:    "♣️", // aka U+2663 + U+fe0f
+    HEARTS:   "♥️", // aka U+2665 + U+fe0f
+    DIAMONDS: "♦️", // aka U+2666 + U+fe0f
+    SPADES:   "♠️", // aka U+2660 + U+fe0f
+    CLUBS:    "♣️", // aka U+2663 + U+fe0f
 }
 */
 
@@ -88,10 +91,10 @@ lazy_static! {
 
     pub static ref CardSuiteValue: HashMap<CardSuite, &'static str> = {
         let map = HashMap::from([
-            (CardSuite::HEARTS,   "♥️"), // aka U+2665 + U+fe0f
-            (CardSuite::DIAMONDS, "♦️"), // aka U+2666 + U+fe0f
-            (CardSuite::SPADES,   "♠️"), // aka U+2660 + U+fe0f
-            (CardSuite::CLUBS,    "♣️"), // aka U+2663 + U+fe0f
+            (CardSuite::HEARTS,   "♥️"), // aka "\u{2665}\u{fe0f}" ('\u{fe0f' is the combining mark char)
+            (CardSuite::DIAMONDS, "♦️"), // aka "\u{2666}\u{fe0f}"
+            (CardSuite::SPADES,   "♠️"), // aka "\u{2660}\u{fe0f}"
+            (CardSuite::CLUBS,    "♣️"), // aka "\u{2663}\u{fe0f}"
         ]);
         map
     };
@@ -209,7 +212,7 @@ impl fmt::Debug for CardRank {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct Card {
     suite: CardSuite,
     rank: CardRank,
@@ -221,6 +224,12 @@ impl Card {
         let rank_str: String = self.rank.to_string();
         let card_str = format!("{suite_str} {rank_str}");
         return card_str;
+    }
+}
+
+impl fmt::Debug for Card {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        return writeln!(f, "{}", self.to_string());
     }
 }
 
@@ -446,8 +455,8 @@ pub fn create_unshuffle_deck() -> Vec<Card> {
 
 pub fn create_shoe(decks_in_shoe: usize /*= 6*/) -> Vec<Card> {
     let mut shoe = vec![];
+    let unshuffle_deck: Vec<Card> = create_unshuffle_deck();
     for _i in 0..decks_in_shoe {
-        let unshuffle_deck: Vec<Card> = create_unshuffle_deck();
         for card in unshuffle_deck.iter() {
             // card: &Card
             // *card deferences and copies it.
@@ -455,6 +464,20 @@ pub fn create_shoe(decks_in_shoe: usize /*= 6*/) -> Vec<Card> {
         }
     }
     return shoe;
+}
+
+pub fn shuffle_shoe(cards: &mut Vec<Card>, rng: &mut ChaCha8Rng) {
+    // by default, parameter ... cards: &Vec<Card> ... is an immutable reference
+    // like "let", mutable has to be expressly granted.  The fn caller has to
+    // follow the same rules ... shuffle_shoe(&mut shoe, &mut rng)
+    cards.shuffle(rng);
+}
+
+fn _test_stuff() {
+    // let hearts: char = '♥️';
+    let heart: char = '\u{2665}';
+    let hearts = "\u{2665}\u{fe0f}";
+    println!("heart: {heart}, hearts: {hearts}")
 }
 
 #[cfg(test)]

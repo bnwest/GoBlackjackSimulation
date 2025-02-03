@@ -94,3 +94,124 @@ fn test_card() {
     assert_eq!(card.suite, CardSuite::SPADES);
     assert_eq!(card2.suite, CardSuite::HEARTS);
 }
+
+#[test]
+fn test_create_unshuffle_deck() {
+    let mut deck: Vec<Card> = create_unshuffle_deck();
+
+    for card in deck.iter() {
+        println!("{}", card.to_string());
+        println!("{:#?}", card);
+    }
+
+    for suite in CardSuite::iterator() {
+        let mut card_in_suite_count: u32 = 0;
+        for card in deck.iter() {
+            if card.suite == *suite {
+                card_in_suite_count += 1;
+            }
+        }
+        // are there 13 hearts in one deck?
+        assert_eq!(card_in_suite_count, 13);
+    }
+
+    for rank in CardRank::iterator() {
+        let mut num_cards = 0;
+        for card in deck.iter() {
+            if card.rank == *rank {
+                num_cards += 1;
+            }
+        }
+        // are there 4 aces in one deck?
+        assert_eq!(num_cards, 4);
+    }
+
+    let card1 = deck[42];
+    let card2 = deck[21];
+    assert_eq!(card1, deck[42]);
+    assert_eq!(card2, deck[21]);
+
+    deck[42] = card2;
+    deck[21] = card1;
+    assert_eq!(card2, deck[42]);
+    assert_eq!(card1, deck[21]);
+}
+
+#[test]
+fn test_create_shoe() {
+    let num_decks_in_shoe: usize = 6;
+    let shoe: Vec<Card> = create_shoe(num_decks_in_shoe);
+
+    for suite in CardSuite::iterator() {
+        let mut card_in_suite_count: usize = 0;
+        for card in shoe.iter() {
+            if card.suite == *suite {
+                card_in_suite_count += 1;
+            }
+        }
+        // are there 13 hearts in each deck in the shoe?
+        assert_eq!(card_in_suite_count, 13 * num_decks_in_shoe);
+    }
+
+    for rank in CardRank::iterator() {
+        let mut num_cards: usize = 0;
+        for card in shoe.iter() {
+            if card.rank == *rank {
+                num_cards += 1;
+            }
+        }
+        // are there 4 aces in each deck in the shoe?
+        assert_eq!(num_cards, 4 * num_decks_in_shoe);
+    }
+}
+
+#[test]
+fn test_shuffle_shoe() {
+    let num_decks_in_shoe: usize = 6;
+    let mut rng: ChaCha8Rng = ChaCha8Rng::seed_from_u64(42);
+    let mut shoe: Vec<Card> = create_shoe(num_decks_in_shoe);
+
+    let mut card1: Card = shoe[41];
+    let mut card2: Card = shoe[42];
+    assert_eq!(card1, shoe[41]);
+    assert_eq!(card2, shoe[42]);
+
+    shoe[41] = card2;
+    shoe[42] = card1;
+    assert_eq!(card1, shoe[42]);
+    assert_eq!(card2, shoe[41]);
+
+    shuffle_shoe(&mut shoe, &mut rng);
+
+    card1 = shoe[41];
+    card2 = shoe[42];
+    assert_eq!(card1, shoe[41]);
+    assert_eq!(card2, shoe[42]);
+
+    shoe[41] = card2;
+    shoe[42] = card1;
+    assert_eq!(card1, shoe[42]);
+    assert_eq!(card2, shoe[41]);
+
+    for suite in CardSuite::iterator() {
+        let mut card_in_suite_count: usize = 0;
+        for card in shoe.iter() {
+            if card.suite == *suite {
+                card_in_suite_count += 1;
+            }
+        }
+        // are there 13 hearts in each deck in the shoe?
+        assert_eq!(card_in_suite_count, 13 * num_decks_in_shoe);
+    }
+
+    for rank in CardRank::iterator() {
+        let mut num_cards: usize = 0;
+        for card in shoe.iter() {
+            if card.rank == *rank {
+                num_cards += 1;
+            }
+        }
+        // are there 4 aces in each deck in the shoe?
+        assert_eq!(num_cards, 4 * num_decks_in_shoe);
+    }
+}
