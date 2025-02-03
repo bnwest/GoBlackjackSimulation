@@ -1,6 +1,10 @@
+// file src/cards.rs defines project module "cards".
+
 // Had to add the following to Cargo.toml
 //    [dependencies]
 //    lazy_static = "1.5.0"
+//    rand = "0.9.0"
+//    rand_chacha = "0.9.0"
 
 use lazy_static::lazy_static;
 
@@ -61,12 +65,15 @@ impl fmt::Debug for CardSuite {
 }
 
 /*
+wanting:
 var CardSuiteValue = map[CardSuite]string{
     HEARTS:   "♥️", // aka U+2665 + U+fe0f
     DIAMONDS: "♦️", // aka U+2666 + U+fe0f
     SPADES:   "♠️", // aka U+2660 + U+fe0f
     CLUBS:    "♣️", // aka U+2663 + U+fe0f
 }
+
+a cautionary tale or hilarity ensues ...
 */
 
 // https://rust-lang-nursery.github.io/rust-cookbook/mem/global_static.html
@@ -503,8 +510,10 @@ pub fn shuffle_shoe(cards: &mut Vec<Card>, rng: &mut ChaCha8Rng) {
 fn _test_stuff() {
     // let hearts: char = '♥️';
     let heart: char = '\u{2665}';
-    let hearts = "\u{2665}\u{fe0f}";
-    println!("heart: {heart}, hearts: {hearts}")
+    let hearts: &str = "\u{2665}\u{fe0f}";
+    let hearts_string: String = hearts.to_string();
+    println!("heart: {heart}, hearts: {hearts}");
+    println!("hearts string: {hearts_string}");
 }
 
 #[cfg(test)]

@@ -1,3 +1,5 @@
+// file src/cards/tests.rs defines project module "cards::tests".
+
 use super::*;
 
 #[test]
@@ -25,6 +27,9 @@ fn test_card_suites() {
     for suite in CardSuite::iterator() {
         let roundtrip_suite: CardSuite = CardSuite::transmute(suite.discriminant());
         assert_eq!(suite, &roundtrip_suite);
+        println!("{}", suite.to_string());
+        println!("{:#?}", suite);
+        println!("{suite:#?}");
     }
 }
 
@@ -36,6 +41,7 @@ fn test_card_suite_value() {
     assert_eq!(CardSuiteValue[&CardSuite::CLUBS], "♣️");
 
     println!("cards: CardSuiteValue: {:#?}", CardSuiteValue);
+    println!("cards: CardSuiteValue: {CardSuiteValue:#?}");
 }
 
 #[test]
@@ -64,6 +70,7 @@ fn test_card_rank() {
     for rank in CardRank::iterator() {
         println!("{}", rank.to_string());
         println!("{:#?}", rank);
+        println!("{rank:#?}");
     }
 
     for rank in CardRank::iterator() {
@@ -84,6 +91,7 @@ fn test_card() {
         rank: CardRank::ACE,
     };
     println!("{:#?}", card);
+    println!("{card:#?}");
 
     let card_str = card.to_string();
     println!("{}", card.to_string());
@@ -102,6 +110,7 @@ fn test_create_unshuffle_deck() {
     for card in deck.iter() {
         println!("{}", card.to_string());
         println!("{:#?}", card);
+        println!("{card:#?}");
     }
 
     for suite in CardSuite::iterator() {
