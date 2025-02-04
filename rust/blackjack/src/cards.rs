@@ -503,16 +503,23 @@ the "mut" is associated with the reference "&" (like "let").
 rust only allows one mutible reference per value a time, to prevent race condition.
 */
 
-pub fn shuffle_shoe(cards: &mut Vec<Card>, rng: &mut ChaCha8Rng) {
-    cards.shuffle(rng);
+pub fn shuffle_shoe(shoe: &mut Vec<Card>, rng: &mut ChaCha8Rng) {
+    shoe.shuffle(rng);
+}
+
+pub fn display_shoe(shoe: &Vec<Card>) {
+    for card in shoe.iter() {
+        // card: &Card
+        println!("{card:#?}");
+    }
 }
 
 fn _test_stuff() {
     // let hearts: char = '♥️';
-    let heart: char = '\u{2665}';
-    let hearts: &str = "\u{2665}\u{fe0f}";
-    let hearts_string: String = hearts.to_string();
-    println!("heart: {heart}, hearts: {hearts}");
+    const HEART: char = '\u{2665}';
+    static HEARTS: &str = "\u{2665}\u{fe0f}";
+    let hearts_string: String = HEARTS.to_string();
+    println!("HEART: {HEART}, HEARTS: {HEARTS}");
     println!("hearts string: {hearts_string}");
 }
 

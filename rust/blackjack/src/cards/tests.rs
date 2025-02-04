@@ -172,6 +172,8 @@ fn test_create_shoe() {
         // are there 4 aces in each deck in the shoe?
         assert_eq!(num_cards, 4 * num_decks_in_shoe);
     }
+
+    display_shoe(&shoe);
 }
 
 #[test]
