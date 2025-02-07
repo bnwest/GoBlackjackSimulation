@@ -48,11 +48,11 @@ impl CardSuite {
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 5] = [
-            "bad dog", // this is not a valid CardRank
-            "♥️",      // CardSuite::HEARTS
-            "♦️",      // CardSuite::DIAMONDS
-            "♠️",      // CardSuite::SPADES
-            "♣️",      // CardSuite::CLUBS
+            "¯\\_(ツ)_/¯", // this is not a valid CardRank
+            "♥️",          // CardSuite::HEARTS
+            "♦️",          // CardSuite::DIAMONDS
+            "♠️",          // CardSuite::SPADES
+            "♣️",          // CardSuite::CLUBS
         ];
         STRINGS[self.discriminant() as usize].to_string()
     }

@@ -108,9 +108,17 @@ fn test_create_unshuffle_deck() {
     let mut deck: Vec<Card> = create_unshuffle_deck();
 
     for card in deck.iter() {
+        // card: &Card
         println!("{}", card.to_string());
         println!("{:#?}", card);
+        println!("{:#?}", *card);
         println!("{card:#?}");
+
+        let card_copy: Card = *card;
+        println!("{}", card_copy.to_string());
+        println!("{:#?}", card_copy);
+        println!("{:#?}", &card_copy);
+        println!("{card_copy:#?}");
     }
 
     for suite in CardSuite::iterator() {
