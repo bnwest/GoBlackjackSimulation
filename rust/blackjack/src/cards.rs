@@ -44,7 +44,7 @@ impl CardSuite {
         // FAILS: rank = CardRank(2);
         // FAILS: rank = 2 as CardRank;
         // WORKS: rank = unsafe { transmute(2 as u8) };
-        unsafe { transmute(discrim as u8) }
+        unsafe { transmute(discrim) }
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 5] = [
