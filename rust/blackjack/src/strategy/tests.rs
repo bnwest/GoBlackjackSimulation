@@ -104,3 +104,26 @@ fn test_soft_total_decisions() {
         }
     }
 }
+
+// use crate::strategy::pairs;
+use super::pairs;
+
+#[test]
+fn test_pair_decisions() {
+    for hand_pair_rank in cards::CardRank::iterator() {
+        // hand_pair: &cards::CardRank
+        let hand_pair: cards::Card = cards::Card {
+            suite: cards::CardSuite::SPADES,
+            rank: *hand_pair_rank,
+        };
+        for rank in cards::CardRank::iterator() {
+            // rank: &cards::CardRank
+            let dealer_top_card: cards::Card = cards::Card {
+                suite: cards::CardSuite::SPADES,
+                rank: *rank,
+            };
+            let decision: Decision = pairs::get_pair_decision(&hand_pair, &dealer_top_card);
+            println!("soft total decision for hand pair rank ({hand_pair_rank:#?}) and top card ({rank:#?}) is {decision:#?}).");
+        }
+    }
+}

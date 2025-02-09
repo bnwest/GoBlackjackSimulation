@@ -18,7 +18,7 @@ var pairsDecisions = [14][14]Decision{
 	// player pair card: 3  x  dealer top card
 	{NO,  H, SP, SP, SP, SP, SP, SP,  H,  H,  H,  H,  H,  H},
 	// player pair card: 4  x  dealer top card
-	{NO,  H,  H,  H,  H, SP, SP,  H,  H,  H,  H,   H,  H,  H},
+	{NO,  H,  H,  H,  H, SP, SP,  H,  H,  H,  H,  H,  H,  H},
 	// player pair card: 5  x  dealer top card
 	{NO,  H, Dh, Dh, Dh, Dh, Dh, Dh, Dh, Dh,  H,  H,  H,  H},
 	// player pair card: 6 x  dealer top card

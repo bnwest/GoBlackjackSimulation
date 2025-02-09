@@ -110,6 +110,7 @@ impl PlayerDecision {
 
 mod hard;
 mod soft;
+mod pairs;
 
 #[cfg(test)]
 mod tests;
