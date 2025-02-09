@@ -1,8 +1,9 @@
 // file src/strategy/tests.rs defines project module "strategy::tests".
 
-use super::*;
 use crate::cards;
-use hard;
+
+use super::Decision;
+use super::PlayerDecision;
 
 #[test]
 fn test_decisions() {
@@ -68,6 +69,9 @@ fn test_player_decisions() {
     }
 }
 
+// use crate::strategy::hard;
+use super::hard;
+
 #[test]
 fn test_hard_total_decisions() {
     for hand_total in 0..22 {
@@ -78,6 +82,25 @@ fn test_hard_total_decisions() {
                 rank: *rank,
             };
             let decision: Decision = hard::get_hard_total_decision(hand_total, &dealer_top_card);
+            println!("hard total decision for hand total ({hand_total}) and top card ({rank:#?}) is {decision:#?}).");
+        }
+    }
+}
+
+// use crate::strategy::soft;
+use super::soft;
+
+#[test]
+fn test_soft_total_decisions() {
+    for hand_total in 0..22 {
+        for rank in cards::CardRank::iterator() {
+            // rank: &cards::CardRank
+            let dealer_top_card: cards::Card = cards::Card {
+                suite: cards::CardSuite::SPADES,
+                rank: *rank,
+            };
+            let decision: Decision = soft::get_soft_total_decision(hand_total, &dealer_top_card);
+            println!("soft total decision for hand total ({hand_total}) and top card ({rank:#?}) is {decision:#?}).");
         }
     }
 }
