@@ -78,8 +78,8 @@ fn test_card_rank() {
     }
 
     for rank in CardRank::iterator() {
-        let value: u8 = rank.value();
-        let discrim: u8 = rank.discriminant();
+        let value: usize = rank.value();
+        let discrim: usize = rank.discriminant();
         if 1 <= discrim && discrim <= 10 {
             assert_eq!(value, discrim);
         } else {

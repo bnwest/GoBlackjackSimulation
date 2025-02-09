@@ -62,7 +62,7 @@ func createHardTotalDecisions() [22]map[cards.CardRank]Decision {
 	// }
 	decisions := [22]map[cards.CardRank]Decision{}
 
-	// initialize iner map
+	// initialize inner map
 	for i := 0; i < 22; i++ {
 		decisions[i] = make(map[cards.CardRank]Decision)
 	}

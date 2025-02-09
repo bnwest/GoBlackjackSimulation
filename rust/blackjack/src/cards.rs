@@ -124,8 +124,8 @@ impl fmt::Debug for CardSuiteValue {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
-#[repr(u8)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[repr(usize)]
 pub enum CardRank {
     ACE = 1,
     TWO = 2,
@@ -164,14 +164,14 @@ impl CardRank {
     // https://doc.rust-lang.org/reference/items/enumerations.html
     // Each enum instance has a discriminant: an integer logically associated to it
     // that is used to determine which variant it holds.
-    pub fn discriminant(&self) -> u8 {
+    pub fn discriminant(&self) -> usize {
         // https://doc.rust-lang.org/std/mem/fn.discriminant.html
         // fn returns the integer discriminat for the enum
         // *self as u8
-        unsafe { *<*const _>::from(self).cast::<u8>() }
+        unsafe { *<*const _>::from(self).cast::<usize>() }
     }
-    pub fn transmute(discrim: u8) -> CardRank {
-        unsafe { transmute(discrim as u8) }
+    pub fn transmute(discrim: usize) -> CardRank {
+        unsafe { transmute(discrim) }
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 14] = [
@@ -192,8 +192,8 @@ impl CardRank {
         ];
         STRINGS[self.discriminant() as usize].to_string()
     }
-    pub fn value(&self) -> u8 {
-        static VALUES: [u8; 14] = [
+    pub fn value(&self) -> usize {
+        static VALUES: [usize; 14] = [
             0,  // this is not a valid CardRank
             1,  // CardRank::ACE
             2,  // CardRank::TWO
@@ -209,7 +209,7 @@ impl CardRank {
             10, // CardRank::QUEEN
             10, // CardRank::KING
         ];
-        VALUES[self.discriminant() as usize]
+        VALUES[self.discriminant()]
     }
 }
 
@@ -221,8 +221,8 @@ impl fmt::Debug for CardRank {
 
 #[derive(Copy, Clone, PartialEq)]
 pub struct Card {
-    suite: CardSuite,
-    rank: CardRank,
+    pub suite: CardSuite,
+    pub rank: CardRank,
 }
 
 impl Card {

@@ -1,6 +1,8 @@
 // file src/strategy/tests.rs defines project module "strategy::tests".
 
 use super::*;
+use crate::cards;
+use hard;
 
 #[test]
 fn test_decisions() {
@@ -63,5 +65,19 @@ fn test_player_decisions() {
         // println!("{decision}");
         println!("{decision:?}");
         println!("{decision:#?}");
+    }
+}
+
+#[test]
+fn test_hard_total_decisions() {
+    for hand_total in 0..22 {
+        for rank in cards::CardRank::iterator() {
+            // rank: &cards::CardRank
+            let dealer_top_card: cards::Card = cards::Card {
+                suite: cards::CardSuite::SPADES,
+                rank: *rank,
+            };
+            let decision: Decision = hard::get_hard_total_decision(hand_total, &dealer_top_card);
+        }
     }
 }
