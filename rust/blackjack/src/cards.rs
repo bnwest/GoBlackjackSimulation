@@ -45,6 +45,7 @@ impl CardSuite {
         // FAILS: rank = 2 as CardRank;
         // WORKS: rank = unsafe { transmute(2 as u8) };
         unsafe { transmute(discrim) }
+        // why is this not recursive?
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 5] = [
