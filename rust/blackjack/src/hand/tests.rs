@@ -1,4 +1,4 @@
-// file srchandcards/tests.rs defines project module "hand::tests".
+// file src/hand/tests.rs defines project module "hand::tests".
 
 use super::HandOutcome;
 
