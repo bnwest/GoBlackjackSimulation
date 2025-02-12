@@ -469,7 +469,6 @@ fn test_player_player_master_hand_split() {
         rank: cards::CardRank::ACE,
     };
     player_master_hand.hands[0].add_card(&deal_card);
-    println!("deal card: {deal_card:#?}");
 
     deal_card = cards::Card {
         suite: cards::CardSuite::HEARTS,
@@ -534,5 +533,21 @@ fn test_player_player_master_hand_split() {
     assert_eq!(player_master_hand.num_hands(), 4);
 
     player_master_hand.log_hands("POST-SPLIT");
-    // assert!(false);
+    /*
+    assert!(false);
+
+    POST-SPLIT: MasterHand
+        Hand 1
+            Card 1: ♠️ A
+            Card 2: ♠️ 10
+        Hand 2
+            Card 1: ♥️ A
+            Card 2: ♥️ 10
+        Hand 3
+            Card 1: ♦️ A
+            Card 2: ♦️ 10
+        Hand 4
+            Card 1: ♣️ A
+            Card 2: ♣️ 10
+    */
 }

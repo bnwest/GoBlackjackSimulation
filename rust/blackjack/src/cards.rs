@@ -61,7 +61,7 @@ impl CardSuite {
 
 impl fmt::Debug for CardSuite {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return writeln!(f, "{}", self.to_string());
+        return write!(f, "{}", self.to_string());
     }
 }
 
@@ -114,7 +114,7 @@ lazy_static! {
 
 impl fmt::Debug for CardSuiteValue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return writeln!(
+        return write!(
             f,
             "{{ HEARTS: {}, DIAMONDS: {}, SPADES: {}, CLUBS: {} }}",
             CardSuiteValue[&CardSuite::HEARTS],
@@ -218,7 +218,7 @@ impl CardRank {
 // this is no bueno. fmt::Result aint what you think?
 impl fmt::Debug for CardRank {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return writeln!(f, "{}", self.to_string());
+        return write!(f, "{}", self.to_string());
     }
 }
 
@@ -239,7 +239,7 @@ impl Card {
 
 impl fmt::Debug for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return writeln!(f, "{}", self.to_string());
+        return write!(f, "{}", self.to_string());
     }
 }
 

@@ -325,7 +325,7 @@ impl PlayerMasterHand {
             println!("    Hand {}", i + 1);
             for j in 0..player_hand.num_cards() {
                 let card: &cards::Card = &player_hand.cards[j];
-                println!("        Card {}: {:#?}", j + 1, card,);
+                println!("        Card {}: {:#?}", j + 1, card);
             }
         }
     }
