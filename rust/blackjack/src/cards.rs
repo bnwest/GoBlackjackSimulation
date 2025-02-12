@@ -191,9 +191,10 @@ impl CardRank {
             "Q",       // CardRank::QUEEN
             "K",       // CardRank::KING
         ];
-        STRINGS[self.discriminant() as usize].to_string()
+        STRINGS[self.discriminant()].to_string()
     }
     pub fn value(&self) -> usize {
+        // for counting purposes, the value of the card.
         static VALUES: [usize; 14] = [
             0,  // this is not a valid CardRank
             1,  // CardRank::ACE
@@ -214,6 +215,7 @@ impl CardRank {
     }
 }
 
+// this is no bueno. fmt::Result aint what you think?
 impl fmt::Debug for CardRank {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         return writeln!(f, "{}", self.to_string());
