@@ -238,7 +238,12 @@ impl BlackJack {
             for p in 0..self.num_players() {
                 BlackJack::log(format!("player {} - {}", p + 1, self.players[p].name));
                 for mh in 0..self.players[p].num_master_hands() {
-                    for h in 0..self.players[p].master_hands[mh].num_hands() {
+                    // need the traditional for loop
+                    // for h in 0..self.players[p].master_hands[mh].num_hands() {
+                    //    fails since the loop range is only calculated once and not
+                    //    evertime through the loop
+                    let mut h: usize = 0;
+                    while h < self.players[p].master_hands[mh].num_hands() {
                         BlackJack::log(format!("    hand {}.{}", mh + 1, h + 1));
 
                         for c in 0..self.players[p].master_hands[mh].hands[h].num_cards() {
@@ -251,6 +256,8 @@ impl BlackJack {
                             < self.players[p].master_hands[mh].HANDS_LIMIT;
 
                         loop {
+                            // deal cards to hand until we stand, bust or surrender
+
                             if self.players[p].master_hands[mh].hands[h].outcome
                                 == HandOutcome::STAND
                             {
@@ -337,7 +344,7 @@ impl BlackJack {
                                     .split_hand(hand_index, [card1, card2]);
                                 BlackJack::log(format!(
                                     "        split, new hand index {}, adding cards {:#?}, {:#?}",
-                                    new_hand_index, card1, card2
+                                    new_hand_index + 1, card1, card2
                                 ));
                                 BlackJack::log(format!(
                                     "        card 1: {:#?}",
@@ -380,8 +387,9 @@ impl BlackJack {
                                     HandOutcome::STAND;
                                 break;
                             }
-                            // break;
                         }
+
+                        h += 1;
                     }
                 }
             }
@@ -464,12 +472,7 @@ impl BlackJack {
             for p in 0..self.num_players() {
                 BlackJack::log(format!("player {} - {}", p + 1, self.players[p].name));
                 for mh in 0..self.players[p].num_master_hands() {
-                    // need the traditional for loop
-                    // for h in 0..self.players[p].master_hands[mh].num_hands() {
-                    //    fails since the loop range is only calculated once and not
-                    //    evertime through the loop
-                    let mut h: usize = 0;
-                    while h < self.players[p].master_hands[mh].num_hands() {
+                    for h in 0..self.players[p].master_hands[mh].num_hands() {
                         if self.players[p].master_hands[mh].hands[h].is_bust() {
                             self.add_result(
                                 p,
@@ -575,8 +578,6 @@ impl BlackJack {
                                 }
                             }
                         }
-
-                        h += 1;
                     }
                 }
             }
