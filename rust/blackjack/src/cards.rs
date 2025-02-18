@@ -518,14 +518,5 @@ pub fn display_shoe(shoe: &Vec<Card>) {
     }
 }
 
-fn _test_stuff() {
-    // let hearts: char = '♥️';
-    const HEART: char = '\u{2665}';
-    static HEARTS: &str = "\u{2665}\u{fe0f}";
-    let hearts_string: String = HEARTS.to_string();
-    println!("HEART: {HEART}, HEARTS: {HEARTS}");
-    println!("hearts string: {hearts_string}");
-}
-
 #[cfg(test)]
 mod tests;

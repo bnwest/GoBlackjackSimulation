@@ -122,7 +122,7 @@ fn test_pair_decisions() {
                 suite: cards::CardSuite::SPADES,
                 rank: *rank,
             };
-            let decision: Decision = pairs::get_pair_decision(&hand_pair, &dealer_top_card);
+            let decision: Decision = pairs::get_pair_decision(hand_pair.rank, dealer_top_card.rank);
             println!("soft total decision for hand pair rank ({hand_pair_rank:#?}) and top card ({rank:#?}) is {decision:#?}).");
         }
     }

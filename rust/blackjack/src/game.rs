@@ -344,7 +344,9 @@ impl BlackJack {
                                     .split_hand(hand_index, [card1, card2]);
                                 BlackJack::log(format!(
                                     "        split, new hand index {}, adding cards {:#?}, {:#?}",
-                                    new_hand_index + 1, card1, card2
+                                    new_hand_index + 1,
+                                    card1,
+                                    card2
                                 ));
                                 BlackJack::log(format!(
                                     "        card 1: {:#?}",
@@ -504,14 +506,11 @@ impl BlackJack {
                         } else {
                             // player has a non-bust, non-surrender hand
                             if self.players[p].master_hands[mh].hands[h].is_natural() {
-                                let payout: i32 = ((self.players[p].master_hands[mh].hands[h].bet as f32) * rules::NATURAL_BLACKJACK_PAYOUT) as i32;
-                                self.add_result(
-                                    p,
-                                    mh,
-                                    h,
-                                    initial_bet,
-                                    payout,
-                                );
+                                let payout: i32 = ((self.players[p].master_hands[mh].hands[h].bet
+                                    as f32)
+                                    * rules::NATURAL_BLACKJACK_PAYOUT)
+                                    as i32;
+                                self.add_result(p, mh, h, initial_bet, payout);
                                 BlackJack::log(format!(
                                     "    hand {}.{}: natural: won {}",
                                     mh + 1,
@@ -531,10 +530,12 @@ impl BlackJack {
                                     mh + 1,
                                     h + 1,
                                     self.players[p].master_hands[mh].hands[h].bet
-                                ));    
+                                ));
                             } else {
                                 // determine who wins by solely checking the hand totals
-                                if self.players[p].master_hands[mh].hands[h].count() < dealer.hand.count() {
+                                if self.players[p].master_hands[mh].hands[h].count()
+                                    < dealer.hand.count()
+                                {
                                     self.add_result(
                                         p,
                                         mh,
@@ -547,8 +548,10 @@ impl BlackJack {
                                         mh + 1,
                                         h + 1,
                                         self.players[p].master_hands[mh].hands[h].bet
-                                    ));        
-                                } else if self.players[p].master_hands[mh].hands[h].count() > dealer.hand.count() {
+                                    ));
+                                } else if self.players[p].master_hands[mh].hands[h].count()
+                                    > dealer.hand.count()
+                                {
                                     self.add_result(
                                         p,
                                         mh,
@@ -561,20 +564,10 @@ impl BlackJack {
                                         mh + 1,
                                         h + 1,
                                         self.players[p].master_hands[mh].hands[h].bet
-                                    ));        
+                                    ));
                                 } else {
-                                    self.add_result(
-                                        p,
-                                        mh,
-                                        h,
-                                        initial_bet,
-                                        0_i32,
-                                    );
-                                    BlackJack::log(format!(
-                                        "    hand {}.{}: push",
-                                        mh + 1,
-                                        h + 1,
-                                    ));        
+                                    self.add_result(p, mh, h, initial_bet, 0_i32);
+                                    BlackJack::log(format!("    hand {}.{}: push", mh + 1, h + 1,));
                                 }
                             }
                         }
@@ -584,3 +577,6 @@ impl BlackJack {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

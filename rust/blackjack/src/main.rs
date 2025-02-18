@@ -31,7 +31,7 @@ mod rules;
 mod strategy;
 
 fn main() {
-    println!("Hello, world!");
+    // println!("Hello, world!");
 
     let mut blackjack = game::BlackJack::create();
     for _i in 0..5 {
