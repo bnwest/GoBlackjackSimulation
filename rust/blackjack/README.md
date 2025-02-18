@@ -1,5 +1,5 @@
 ## Introduction
-Simulates a handful blackjack games.
+Simulates a handful of blackjack games.
 
 ## Getting Started
 Need rust.
