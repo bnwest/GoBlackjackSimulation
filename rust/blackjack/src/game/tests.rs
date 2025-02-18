@@ -41,3 +41,10 @@ fn test_blackjack_set_game_bets() {
     assert_eq!(blackjack.players[0].num_master_hands(), 1);
     assert_eq!(blackjack.players[1].num_master_hands(), 2);
 }
+
+#[test]
+fn test_blackjack_play_game() {
+    let mut blackjack: BlackJack = BlackJack::create();
+
+    blackjack.play_game();
+}
