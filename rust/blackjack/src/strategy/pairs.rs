@@ -72,11 +72,9 @@ lazy_static! {
 }
 
 pub fn get_pair_decision(
-    player_hand_pair: &cards::Card,
-    dealer_top_card: &cards::Card,
+    player_hand_pair_rank: cards::CardRank,
+    dealer_top_card_rank: cards::CardRank,
 ) -> Decision {
-    let player_hand_pair_rank: cards::CardRank = player_hand_pair.rank;
-    let dealer_top_card_rank: cards::CardRank = dealer_top_card.rank;
     let decision: Decision = PAIR_DECISIONS[&player_hand_pair_rank][&dealer_top_card_rank];
     return decision;
 }

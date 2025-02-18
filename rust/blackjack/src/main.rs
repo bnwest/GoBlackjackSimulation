@@ -1,6 +1,6 @@
 // Lessons learned:
 //
-// 1. Coing rust is an ongoing stryggle.
+// 1. Coding rust is an ongoing struggle.
 // 2. Ownership via moving and borrowing happens implicily.  This is almost a deal breaker.
 // 2a. Variables are located either or the stack or on the heap.
 // 2b. Gentle coder will need to understand where variable get located on their own.
@@ -15,11 +15,15 @@
 // 5. to get a working integer enum, you need a lot of code.
 // 6. Global variables are nontrivial to initialize at run time (easy at compile time).
 // 6a. Had to use the "lazy_static!" macro, which appears to thread safe.
+// 7. "consider introducing a named lifetime parameter"
+// 8. "cannot apply unary operator `-`" to a u32
+// 9. No traditional for loop: for i=0; i<N; i++ {}
 
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
 mod cards;
+mod game;
 mod hand;
 mod player;
 mod rules;
@@ -31,7 +35,13 @@ fn main() {
     println!("cards: CardSuiteValue: {:#?}", cards::CardSuiteValue);
 
     let mut rng: ChaCha8Rng = ChaCha8Rng::seed_from_u64(42_u64);
+
     let mut shoe: Vec<cards::Card> = cards::create_shoe(rules::DECKS_IN_SHOE);
     cards::shuffle_shoe(&mut shoe, &mut rng);
     // cards::display_shoe(&shoe);
+
+    let mut blackjack = game::BlackJack::create();
+    for _i in 0..5 {
+        blackjack.play_game();
+    }
 }

@@ -136,6 +136,10 @@ impl PlayerHand {
     pub fn is_bust(&self) -> bool {
         return self.soft_count() > 21;
     }
+    pub fn is_surrender(&self) -> bool {
+        // need outcome to be finalized ...
+        return self.outcome == HandOutcome::SURRENDER;
+    }
     pub fn is_natural(&self) -> bool {
         if !self.from_split {
             if self.num_cards() == 2 {

@@ -8,6 +8,7 @@
 
 use lazy_static::lazy_static;
 
+// two peas in a pod
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
