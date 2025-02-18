@@ -17,7 +17,8 @@
 // 6a. Had to use the "lazy_static!" macro, which appears to thread safe.
 // 7. "consider introducing a named lifetime parameter"
 // 8. "cannot apply unary operator `-`" to a u32
-// 9. No traditional for loop: for i=0; i<N; i++ {}
+// 9. No traditional ANSI C for loop: for i=0; i<N; i++ {}
+// 10. for nested structs, ownership is the transitive closure
 
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
@@ -31,14 +32,6 @@ mod strategy;
 
 fn main() {
     println!("Hello, world!");
-
-    println!("cards: CardSuiteValue: {:#?}", cards::CardSuiteValue);
-
-    let mut rng: ChaCha8Rng = ChaCha8Rng::seed_from_u64(42_u64);
-
-    let mut shoe: Vec<cards::Card> = cards::create_shoe(rules::DECKS_IN_SHOE);
-    cards::shuffle_shoe(&mut shoe, &mut rng);
-    // cards::display_shoe(&shoe);
 
     let mut blackjack = game::BlackJack::create();
     for _i in 0..5 {
