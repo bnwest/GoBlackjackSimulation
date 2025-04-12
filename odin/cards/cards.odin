@@ -1,6 +1,7 @@
 package cards
 
 import "core:strings"
+import "core:math/rand"
 
 CardSuite :: enum {
     HEARTS,    // == 0
@@ -162,14 +163,26 @@ UNSHUFFLED_DECK :: []Card {
 
 DECKS_IN_SHOE: u32 = 6
 
+RNG_SEED: u64 = 314159
+
 create_shoe :: proc (num_shoes: u32 = DECKS_IN_SHOE) -> [dynamic]Card {
+    // updates context.random_generator
+    rand.reset(RNG_SEED)
+
     shoe: [dynamic]Card
     for i in 0..<num_shoes {
         for card in UNSHUFFLED_DECK {
             append(&shoe, card)
         }
     }
+
+    shuffle_shoe(shoe)
+
     return shoe
+}
+
+shuffle_shoe :: proc(shoe: [dynamic]Card) {
+    rand.shuffle(shoe[:])
 }
 
 //
