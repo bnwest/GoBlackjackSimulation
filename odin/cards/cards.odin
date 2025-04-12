@@ -17,17 +17,15 @@ CardSuiteValue := map[CardSuite]string{
 }
 */
 
-to_string :: proc(suite: CardSuite) -> (value: string, ok: bool) {
-    switch suite {
-    case CardSuite.HEARTS:
-        return "♥️", true // aka U+2665 + U+fe0f
-    case CardSuite.DIAMONDS:
-        return "♦️", true // aka U+2666 + U+fe0f
-    case CardSuite.SPADES:
-        return "♠️", true // aka U+2660 + U+fe0f
-    case CardSuite.CLUBS:
-        return "♣️", true // aka U+2663 + U+fe0f
-    }
-    // Error: Missing return statement at the end of the procedure 'to_string'
-    return "dead code: the odin compiler has been fooled!!!", false
+card_suite_value := [CardSuite]string {
+    .HEARTS   = "♥️", // aka U+2665 + U+fe0f
+	.DIAMONDS = "♦️", // aka U+2666 + U+fe0f
+	.SPADES   = "♠️", // aka U+2660 + U+fe0f
+	.CLUBS    = "♣️", // aka U+2663 + U+fe0f
+}
+
+to_string :: proc(
+    suite: CardSuite
+) -> string {
+    return card_suite_value[suite]
 }
