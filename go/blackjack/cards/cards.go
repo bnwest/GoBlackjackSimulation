@@ -8,7 +8,7 @@ import (
 	house_rules "github.com/bnwest/GoBlackjackSimulation/go/blackjack/rules"
 )
 
-// enums are not first calss citizens in Go.
+// enums are not first class citizens in Go.
 
 type CardSuite int
 
