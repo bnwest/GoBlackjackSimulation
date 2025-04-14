@@ -6,12 +6,12 @@ import "core:unicode/utf16"
 import "cards"
 
 main :: proc() {
-	fmt.println("Hellope!")
+    r := "🚀"
+    fmt.printfln("runes in {0} is {1}", "🚀", utf8.rune_count_in_string("🚀"))
 
     heart: cards.CardSuite
     heart = cards.CardSuite.HEARTS
 
-    r := "🚀"
     heart_rune: rune
     // heart_rune = cards.CardSuite.HEARTS[0]
     // heart_rune = '♥️' // aka U+2665 + U+fe0f
@@ -26,11 +26,6 @@ main :: proc() {
     fmt.printfln("heart rune is: {0}, is valid? {1}", heart_rune, utf8.valid_rune(heart_rune))
 
     fmt.printfln("runes in {0} is {1}", "♥️", utf8.rune_count_in_string("♥️"))
-
-    heart_string: string
-    heart_string = cards.to_string(heart)
-
-    fmt.printfln("suite: {0}", heart_string)
 
     ace_of_spades: cards.Card
     ace_of_spades = cards.Card{

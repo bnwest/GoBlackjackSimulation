@@ -34,19 +34,19 @@ suite_to_string :: proc(
 }
 
 CardRank :: enum {
-	ACE   = 1,
-	TWO   = 2,
-	THREE = 3,
-	FOUR  = 4,
-	FIVE  = 5,
-	SIX   = 6,
-	SEVEN = 7,
-	EIGHT = 8,
-	NINE  = 9,
-	TEN   = 10,
-	JACK  = 11,
-	QUEEN = 12,
-	KING  = 13,
+	ACE,   // == 0
+	TWO,   // == 1
+	THREE, // == 2
+	FOUR,  // == 3
+	FIVE,  // == 4
+	SIX,   // == 5
+	SEVEN, // == 6
+	EIGHT, // == 7
+	NINE,  // == 8
+	TEN,   // == 9
+	JACK,  // == 10
+	QUEEN, // == 11
+	KING,  // == 12
 }
 
 card_rank_string := [CardRank]string {
@@ -166,7 +166,7 @@ DECKS_IN_SHOE: u32 = 6
 RNG_SEED: u64 = 314159
 
 create_shoe :: proc (num_shoes: u32 = DECKS_IN_SHOE) -> [dynamic]Card {
-    // updates context.random_generator
+    // updates context.random_generator with a RNG seed
     rand.reset(RNG_SEED)
 
     shoe: [dynamic]Card
@@ -187,6 +187,9 @@ shuffle_shoe :: proc(shoe: [dynamic]Card) {
 
 //
 // Explicit Procedure Overloading
+// really just aliasing a set of existing functions to the same name,
+// the existing functions can live within the C ABI, while the code gets
+// to act like that there is function overloading.
 //
 
 to_string :: proc {
