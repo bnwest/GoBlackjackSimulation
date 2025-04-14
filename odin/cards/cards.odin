@@ -30,7 +30,7 @@ card_suite_string := [CardSuite]string {
 suite_to_string :: proc(
     suite: CardSuite
 ) -> string {
-    return card_suite_string[suite]
+    return strings.concatenate({card_suite_string[suite], " "})
 }
 
 CardRank :: enum {
@@ -99,7 +99,7 @@ Card :: struct {
 }
 
 card_to_string :: proc(card: Card) -> string {
-    return strings.concatenate({to_string(card.suite), " ", to_string(card.rank)})
+    return strings.concatenate({to_string(card.rank), to_string(card.suite)})
 }
 
 UNSHUFFLED_DECK :: []Card {

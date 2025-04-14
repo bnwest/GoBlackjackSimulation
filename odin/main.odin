@@ -25,7 +25,7 @@ main :: proc() {
     heart_rune = '\ufe0f'
     fmt.printfln("heart rune is: {0}, is valid? {1}", heart_rune, utf8.valid_rune(heart_rune))
 
-    fmt.printfln("runes in {0} is {1}", "♥️", utf8.rune_count_in_string("♥️"))
+    fmt.printfln("runes in {0} is {1}", cards.to_string(heart), utf8.rune_count_in_string("♥️"))
 
     ace_of_spades: cards.Card
     ace_of_spades = cards.Card{
