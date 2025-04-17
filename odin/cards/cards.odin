@@ -1,5 +1,7 @@
 package cards
 
+import house_rules "../rules"
+
 import "core:strings"
 import "core:math/rand"
 
@@ -161,11 +163,11 @@ UNSHUFFLED_DECK :: []Card {
     Card{suite=CardSuite.CLUBS, rank=CardRank.KING},
 }
 
-DECKS_IN_SHOE: u32 = 6
+RNG_SEED :: 314159
 
-RNG_SEED: u64 = 314159
-
-create_shoe :: proc (num_shoes: u32 = DECKS_IN_SHOE) -> [dynamic]Card {
+create_shoe :: proc (
+    num_shoes: u32 = house_rules.DECKS_IN_SHOE
+) -> [dynamic]Card {
     // updates context.random_generator with a RNG seed
     rand.reset(RNG_SEED)
 

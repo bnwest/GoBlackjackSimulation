@@ -1,3 +1,8 @@
+// LESSONS LEARNED:
+// 1. Global constants at the file level must not have expressions,
+// must have value known at compile time, and should look like: 
+//     RNG_SEED :: 314159
+
 package main
 
 import "core:fmt"
