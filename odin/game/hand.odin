@@ -50,18 +50,18 @@ create_player_hand :: proc(
     return player_hand
 }
 
-add_card :: proc(self: ^PlayerHand, card: cards.Card) {
+player_add_card :: proc(self: ^PlayerHand, card: cards.Card) {
     append(&self.cards, card)
 }
 
-free_cards :: proc(self: ^PlayerHand) {
+player_free_cards :: proc(self: ^PlayerHand) {
     delete(self.cards)
     // self.cards now has a pointer to free memory
     // since we collectively learn no lessons over time
     self.cards = [dynamic]cards.Card{}
 }
 
-num_cards :: proc(self: ^PlayerHand) -> uint {
+player_num_cards :: proc(self: ^PlayerHand) -> uint {
     return len(self.cards)
 }
 
@@ -73,7 +73,7 @@ get_card :: proc(self: ^PlayerHand, card_index: uint) -> cards.Card {
     return self.cards[card_index]
 }
 
-aces_count :: proc(self: ^PlayerHand) -> uint {
+player_aces_count :: proc(self: ^PlayerHand) -> uint {
     count: uint = 0
     for card in self.cards {
         if card.rank == cards.CardRank.ACE {
@@ -83,7 +83,7 @@ aces_count :: proc(self: ^PlayerHand) -> uint {
     return count
 }
 
-hard_count :: proc(self: ^PlayerHand) -> uint {
+player_hard_count :: proc(self: ^PlayerHand) -> uint {
     count: uint = 0
     for card in self.cards {
         count += cards.to_int(card.rank)
@@ -91,7 +91,7 @@ hard_count :: proc(self: ^PlayerHand) -> uint {
     return count
 }
 
-soft_count :: proc(self: ^PlayerHand) -> uint {
+player_soft_count :: proc(self: ^PlayerHand) -> uint {
 	// if the soft count is a bust, we convert the Ace values
 	// back to the value of 1, one at a time, until the soft count
 	// is no longer a bust or until there are no more Aces
@@ -117,13 +117,13 @@ soft_count :: proc(self: ^PlayerHand) -> uint {
     return count
 }
 
-count :: proc(self: ^PlayerHand) -> uint {
+player_count :: proc(self: ^PlayerHand) -> uint {
 	// return the highest count for hand,
 	// which is always the soft count.
     return soft_count(self)
 }
 
-is_natural :: proc(self: ^PlayerHand) -> bool {
+player_is_natural :: proc(self: ^PlayerHand) -> bool {
     if !self.from_split {
         if num_cards(self) == 2 {
             if soft_count(self) == 21 {
@@ -134,7 +134,7 @@ is_natural :: proc(self: ^PlayerHand) -> bool {
     return false
 }
 
-is_bust :: proc(self: ^PlayerHand) -> bool {
+player_is_bust :: proc(self: ^PlayerHand) -> bool {
     return count(self) > 21
 }
 
@@ -159,7 +159,7 @@ can_split :: proc(self: ^PlayerHand) -> bool {
     return false
 }
 
-is_hand_over :: proc(self: ^PlayerHand) -> bool {
+player_is_hand_over :: proc(self: ^PlayerHand) -> bool {
     switch self.outcome {
         case .STAND:
             return true
@@ -172,8 +172,126 @@ is_hand_over :: proc(self: ^PlayerHand) -> bool {
         case .IN_PLAY:
             return false
         case: 
-            // aka default when case hs no expression
-            // compiler not smart enough to now this was not needed
+            // aka default when case has no expression
+            // compiler not smart enough to know this was not needed
+            return false
+    }
+}
+
+//
+// DealerHand
+//
+
+DealerHand :: struct {
+    cards: [dynamic]cards.Card, // dynamic => stored on the heap
+    outcome: HandOutcome,
+}
+
+// factory
+create_dealer_hand :: proc() -> DealerHand {
+    dealer_hand := DealerHand{
+        cards=[dynamic]cards.Card{},  // heap pointer
+        outcome=HandOutcome.IN_PLAY,
+    }
+    // create a copy of the stack variable hand
+    // and return the copy
+    return dealer_hand
+}
+
+dealer_add_card :: proc(self: ^DealerHand, card: cards.Card) {
+    append(&self.cards, card)
+}
+
+
+dealer_free_cards :: proc(self: ^DealerHand) {
+    delete(self.cards)
+    // self.cards now has a pointer to free memory
+    // since we collectively learn no lessons over time
+    self.cards = [dynamic]cards.Card{}
+}
+
+dealer_num_cards :: proc(self: ^DealerHand) -> uint {
+    return len(self.cards)
+}
+
+dealer_aces_count :: proc(self: ^DealerHand) -> uint {
+    count: uint = 0
+    for card in self.cards {
+        if card.rank == cards.CardRank.ACE {
+            count += 1
+        }
+    }
+    return count
+}
+
+dealer_hard_count :: proc(self: ^DealerHand) -> uint {
+    count: uint = 0
+    for card in self.cards {
+        count += cards.to_int(card.rank)
+    }
+    return count
+}
+
+dealer_soft_count :: proc(self: ^DealerHand) -> uint {
+	// if the soft count is a bust, we convert the Ace values
+	// back to the value of 1, one at a time, until the soft count
+	// is no longer a bust or until there are no more Aces
+	// and the soft count has become the hard count.
+    count: uint = 0
+    aces_count: uint = 0
+    for card in self.cards {
+        if card.rank == cards.CardRank.ACE {
+            count += 11
+            aces_count += 1
+        } else {
+            count += cards.to_int(card.rank)
+        }
+    }
+    if count > 21 {
+        for i: uint = 0; i < aces_count; i += 1 {
+            count -= 10
+            if count <= 21 {
+                break
+            }
+        }
+    }
+    return count
+}
+
+dealer_count :: proc(self: ^DealerHand) -> uint {
+	// return the highest count for hand,
+	// which is always the soft count.
+    return soft_count(self)
+}
+
+dealer_is_natural :: proc(self: ^DealerHand) -> bool {
+    if num_cards(self) == 2 {
+        if soft_count(self) == 21 {
+            return true
+        }
+    }
+    return false
+}
+
+dealer_is_bust :: proc(self: ^DealerHand) -> bool {
+    return count(self) > 21
+}
+
+dealer_is_hand_over :: proc(self: ^DealerHand) -> bool {
+    switch self.outcome {
+        case .STAND:
+            return true
+        case .BUST:
+            return true
+        case .SURRENDER:
+            return true
+        case .DEALER_BLACKJACK:
+            return true
+        case .IN_PLAY:
+            return false
+        case: 
+            // aka default when case has no expression
+            // compiler not smart enough to know this was not needed
             return false
     }
 }
@@ -184,4 +302,55 @@ is_hand_over :: proc(self: ^PlayerHand) -> bool {
 
 to_string :: proc {
     to_hand_outcome_string,
+}
+
+add_card :: proc {
+    dealer_add_card,
+    player_add_card,
+}
+
+free_cards :: proc {
+    dealer_free_cards,
+    player_free_cards,
+}
+
+num_cards :: proc {
+    dealer_num_cards,
+    player_num_cards,
+}
+
+aces_count :: proc {
+    dealer_aces_count,
+    player_aces_count,
+}
+
+hard_count :: proc {
+    dealer_hard_count,
+    player_hard_count,
+}
+
+soft_count :: proc {
+    dealer_soft_count,
+    player_soft_count,
+}
+
+count :: proc {
+    dealer_count,
+    player_count,
+}
+
+is_natural :: proc {
+    dealer_is_natural,
+    player_is_natural,
+}
+
+is_bust :: proc {
+    dealer_is_bust,
+    player_is_bust,
+}
+
+is_hand_over :: proc {
+    dealer_is_hand_over,
+    player_is_hand_over,
+
 }
