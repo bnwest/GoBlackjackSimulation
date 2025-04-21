@@ -2,6 +2,10 @@
 // 1. Global constants at the file level must not have expressions,
 // must have value known at compile time, and should look like: 
 //     RNG_SEED :: 314159
+// 2. Structs can not have methods, which is a big name space problem.
+// struct "method" names have to be unique across all structs in package.
+// I ended up prefixing all method names.  Alternatively I could have put
+// one struct per package which seems a bit extreme.
 
 package main
 
@@ -43,4 +47,10 @@ main :: proc() {
     shoe := cards.create_shoe()
     fmt.printfln("dealer shoe has {0} cards.", len(shoe))
     fmt.printfln("dealer shoe top card is {0}.", cards.to_string(shoe[0]))
+
+    master_hand := game.create_player_master_hand()
+    game.add_start_hand(&master_hand, bet=100)
+    game.add_card(&master_hand.hands[0], shoe[0])
+    game.add_card(&master_hand.hands[0], shoe[1])
+    game.log_hands(&master_hand, "initial hand")
 }

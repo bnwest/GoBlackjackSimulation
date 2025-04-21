@@ -1,5 +1,7 @@
 package game
 
+import "core:fmt"
+
 import "../cards"
 import house_rules "../rules"
 
@@ -293,6 +295,58 @@ dealer_is_hand_over :: proc(self: ^DealerHand) -> bool {
             // aka default when case has no expression
             // compiler not smart enough to know this was not needed
             return false
+    }
+}
+
+//
+// PlayerMasterHand
+//
+
+PlayerMasterHand :: struct {
+    HANDS_LIMIT: uint,
+    hands: [dynamic]PlayerHand,
+}
+
+// factory
+create_player_master_hand :: proc() -> PlayerMasterHand {
+    master_hand := PlayerMasterHand{
+        HANDS_LIMIT=house_rules.SPLITS_PER_HAND + 1,
+        hands=[dynamic]PlayerHand{},
+    }
+    return master_hand
+}
+
+num_hands :: proc(self: ^PlayerMasterHand) -> uint {
+    return len(self.hands)
+}
+
+add_start_hand :: proc(self: ^PlayerMasterHand, bet: uint) {
+    from_split : bool : false
+
+    player_hand: PlayerHand
+    player_hand = create_player_hand(
+        from_split=from_split, bet=bet
+    )
+
+    append(&self.hands, player_hand)
+}
+
+free_hands :: proc(self: ^PlayerMasterHand) {
+    delete(self.hands)
+    // self.cards now has a pointer to free memory
+    // since we collectively learn no lessons over time
+    self.hands = [dynamic]PlayerHand{}
+}
+
+log_hands :: proc(self: ^PlayerMasterHand, preface: string) {
+    fmt.printfln("{0}: MasterHand", preface)
+    for hand, i in self.hands {
+        fmt.printfln("    Hand {0}", i+1)
+        for card, j in hand.cards {
+            card_string := cards.to_string(card)
+            fmt.printfln("        Card {0}: {1}", j+1, card_string)
+            delete(card_string)
+        }
     }
 }
 

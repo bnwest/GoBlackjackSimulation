@@ -101,7 +101,12 @@ Card :: struct {
 }
 
 card_to_string :: proc(card: Card) -> string {
-    return strings.concatenate({to_string(card.rank), to_string(card.suite)})
+    rank_string := to_string(card.rank)
+
+    suite_string := to_string(card.suite)
+    defer delete(suite_string)
+
+    return strings.concatenate({rank_string, suite_string})
 }
 
 UNSHUFFLED_DECK :: []Card {

@@ -5,6 +5,7 @@ import "core:fmt"
 
 import "../game"
 import "../cards"
+import house_rules "../rules"
 
 @(test)
 test_hand_outcome :: proc(t: ^testing.T) {
@@ -677,4 +678,52 @@ test_dealer_is_bust:: proc(t: ^testing.T) {
         game.is_bust(&hand),
         "is_bust() returns true for 10 + 10 + A + A"
     )
+}
+
+//
+// PlayerMasterHand
+//
+
+@(test)
+test_create_player_master_hand:: proc(t: ^testing.T) {
+    master_hand := game.create_player_master_hand()
+    testing.expect(
+        t,
+        len(master_hand.hands) == 0,
+        "create_player_master_hand() returns empty master hand"
+    )
+    testing.expect(
+        t,
+        master_hand.HANDS_LIMIT == house_rules.SPLITS_PER_HAND + 1,
+        "create_player_master_hand() returns master hand with correct hands limit"
+    )
+    game.log_hands(&master_hand, "testing 1 2 3")
+}
+
+@(test)
+test_player_master_hand_add_start_hand:: proc(t: ^testing.T) {
+    master_hand := game.create_player_master_hand()
+
+    game.add_start_hand(&master_hand, bet=100)
+    defer game.free_hands(&master_hand)
+    testing.expect(
+        t,
+        game.num_hands(&master_hand) == 1,
+        "add_start_hand() returns master hand with one hand"
+    )
+
+    card: cards.Card
+    card = cards.Card{
+        rank=cards.CardRank.TEN,
+        suite=cards.CardSuite.SPADES,
+    }
+    game.add_card(&master_hand.hands[0], card)
+    card = cards.Card{
+        rank=cards.CardRank.TEN,
+        suite=cards.CardSuite.DIAMONDS,
+    }
+    game.add_card(&master_hand.hands[0], card)
+    defer game.free_cards(&master_hand.hands[0])
+
+    game.log_hands(&master_hand, "testing 1 2 3")
 }
