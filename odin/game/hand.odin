@@ -42,7 +42,7 @@ create_player_hand :: proc(
     bet: uint,
 ) -> PlayerHand {
     player_hand := PlayerHand{
-        cards=[dynamic]cards.Card{},  // heap pointer
+        cards=[dynamic]cards.Card{},  // NO heap pointer, just zero-ed memory
         from_split=from_split,
         bet=bet,
         outcome=HandOutcome.IN_PLAY,
@@ -67,6 +67,7 @@ player_free_cards :: proc(self: ^PlayerHand) {
     // self.cards now has a pointer to freed memory aka a dangling pointer
     // since we collectively learn no lessons over time
     self.cards = [dynamic]cards.Card{}
+    // self.cards is now zero-ed memory
 }
 
 player_num_cards :: proc(self: ^PlayerHand) -> uint {
@@ -221,6 +222,7 @@ dealer_free_cards :: proc(self: ^DealerHand) {
     // self.cards now has a pointer to freed memory aka a dangling pointer
     // since we collectively learn no lessons over time
     self.cards = [dynamic]cards.Card{}
+    // self.cards is now zero-ed memory
 }
 
 dealer_num_cards :: proc(self: ^DealerHand) -> uint {
@@ -344,23 +346,30 @@ add_start_hand :: proc(self: ^PlayerMasterHand, bet: uint) {
 
 reset_hands :: proc(self: ^PlayerMasterHand) {
     for &hand in self.hands {
-        reset_cards(&hand)  // clear as mud
+        // when we append to self.hands the next time,
+        // self.hands[i].cards will be overrwritten and 
+        // the old heap pointer will be potentially leaked,
+        // so self.hands[i].cards will be set free
+        free_cards(&hand)
     }
     clear(&self.hands)
 }
 
 free_hands :: proc(self: ^PlayerMasterHand) {
-    // for &hand in self.hands {} => hand is modifiable
-    for hand, hand_index in self.hands {
-        free_cards(&self.hands[hand_index])
+    // for hand, hand_index in self.hands {
+    //     free_cards(&self.hands[hand_index])
+    // }
+    for &hand in self.hands {
+        free_cards(&hand)
     }
     delete(self.hands)
-    // self.cards now has a pointer to free memory
+    // self.hands now has a pointer to free memory
     // since we collectively learn no lessons over time
     self.hands = [dynamic]PlayerHand{}
 }
 
 log_hands :: proc(self: ^PlayerMasterHand, preface: string) {
+    // log to stderr => using eprintfln()
     fmt.eprintfln("{0}: MasterHand", preface)
     for hand, i in self.hands {
         fmt.eprintfln("    Hand {0}", i+1)

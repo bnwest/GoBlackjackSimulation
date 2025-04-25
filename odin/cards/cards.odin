@@ -102,6 +102,7 @@ Card :: struct {
 
 card_to_string :: proc(card: Card) -> string {
     rank_string := to_string(card.rank)
+    // rank string is a string literal which does not need to be freed
 
     suite_string := to_string(card.suite)
     defer delete(suite_string)
