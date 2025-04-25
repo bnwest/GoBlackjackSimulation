@@ -506,7 +506,7 @@ func TestPlayerMasterHandSplitHand(t *testing.T) {
 		assert.Equal(t, false, masterHand.CanSplit(3), "Hand should not be split-able")
 
 		//
-		// Verify that thee four hand in the master hands have the expected cards.
+		// Verify that the four hand in the master hands have the expected cards.
 		//
 
 		// masterHand.Hands[0]  [A♥️, A♣️]

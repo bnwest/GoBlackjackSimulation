@@ -129,7 +129,7 @@ test_player_free_cards :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_player_hard_count:: proc(t: ^testing.T) {
+test_player_hard_count :: proc(t: ^testing.T) {
     hand: game.PlayerHand
     hand = game.create_player_hand(
         from_split=false,
@@ -181,7 +181,7 @@ test_player_hard_count:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_soft_count:: proc(t: ^testing.T) {
+test_soft_count :: proc(t: ^testing.T) {
     hand: game.PlayerHand
     hand = game.create_player_hand(
         from_split=false,
@@ -233,7 +233,7 @@ test_soft_count:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_player_count:: proc(t: ^testing.T) {
+test_player_count :: proc(t: ^testing.T) {
     hand: game.PlayerHand
     hand = game.create_player_hand(
         from_split=false,
@@ -285,7 +285,7 @@ test_player_count:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_player_is_natural:: proc(t: ^testing.T) {
+test_player_is_natural :: proc(t: ^testing.T) {
     hand: game.PlayerHand
     hand = game.create_player_hand(
         from_split=false,
@@ -330,7 +330,7 @@ test_player_is_natural:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_player_is_bust:: proc(t: ^testing.T) {
+test_player_is_bust :: proc(t: ^testing.T) {
     hand: game.PlayerHand
     hand = game.create_player_hand(
         from_split=false,
@@ -373,7 +373,7 @@ test_player_is_bust:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_can_split:: proc(t: ^testing.T) {
+test_can_split :: proc(t: ^testing.T) {
     hand: game.PlayerHand
     hand = game.create_player_hand(
         from_split=false,
@@ -501,7 +501,7 @@ test_dealer_free_cards :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_hard_count:: proc(t: ^testing.T) {
+test_dealer_hard_count :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -550,7 +550,7 @@ test_dealer_hard_count:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_count:: proc(t: ^testing.T) {
+test_dealer_count :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -599,7 +599,7 @@ test_dealer_count:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealerer_is_natural:: proc(t: ^testing.T) {
+test_dealerer_is_natural :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -641,7 +641,7 @@ test_dealerer_is_natural:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_is_bust:: proc(t: ^testing.T) {
+test_dealer_is_bust :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -685,7 +685,7 @@ test_dealer_is_bust:: proc(t: ^testing.T) {
 //
 
 @(test)
-test_create_player_master_hand:: proc(t: ^testing.T) {
+test_create_player_master_hand :: proc(t: ^testing.T) {
     master_hand := game.create_player_master_hand()
     testing.expect(
         t,
@@ -701,7 +701,7 @@ test_create_player_master_hand:: proc(t: ^testing.T) {
 }
 
 @(test)
-test_player_master_hand_add_start_hand:: proc(t: ^testing.T) {
+test_player_master_hand_add_start_hand :: proc(t: ^testing.T) {
     master_hand := game.create_player_master_hand()
 
     game.add_start_hand(&master_hand, bet=100)
@@ -726,4 +726,326 @@ test_player_master_hand_add_start_hand:: proc(t: ^testing.T) {
     defer game.free_cards(&master_hand.hands[0])
 
     game.log_hands(&master_hand, "testing 1 2 3")
+}
+
+@(test)
+test_player_master_hand_can_split :: proc(t: ^testing.T) {
+    master_hand := game.create_player_master_hand()
+
+    game.add_start_hand(&master_hand, bet=100)
+    defer game.free_hands(&master_hand)
+
+    card: cards.Card
+
+    card = cards.Card{
+        rank=cards.CardRank.TEN,
+        suite=cards.CardSuite.SPADES,
+    }
+    game.add_card(&master_hand.hands[0], card)
+    card = cards.Card{
+        rank=cards.CardRank.TEN,
+        suite=cards.CardSuite.DIAMONDS,
+    }
+    game.add_card(&master_hand.hands[0], card)
+    defer game.free_cards(&master_hand.hands[0])
+
+    hand_index: uint
+
+    hand_index = 0
+    testing.expect(
+        t,
+        game.can_split(&master_hand, hand_index),
+        "can_split() returns true as expected"
+    )
+
+    master_hand.hands[0].cards[0].rank = cards.CardRank.NINE
+    hand_index = 0
+    testing.expect(
+        t,
+        game.can_split(&master_hand, hand_index) == false,
+        "can_split() returns false as expected"
+    )
+}
+
+@(test)
+test_player_master_hand_split_hand :: proc(t: ^testing.T) {
+    master_hand: game.PlayerMasterHand
+    master_hand = game.create_player_master_hand()
+
+    bet: uint = 2
+
+    card1: cards.Card
+    card2: cards.Card
+    new_card1: cards.Card
+    new_card2: cards.Card
+    cards_to_add: [2]cards.Card
+    hand_index: uint
+    new_hand_index: uint
+
+    for rank in cards.CardRank {
+		// reset master hand back to have no hands
+        game.reset_hands(&master_hand)
+
+        // add pair to start hand in the master hand
+        game.add_start_hand(&master_hand, bet)
+        defer game.free_hands(&master_hand)
+
+        card1 = cards.Card{suite=cards.CardSuite.HEARTS, rank=rank}
+        card2 = cards.Card{suite=cards.CardSuite.SPADES, rank=rank}
+
+		// have a card pair to split to the first hand
+        append(&master_hand.hands[0].cards, card1, card2)
+
+		//
+		// SPLIT #1:
+		// hand[0] [A♥️, A♠️]
+		// splits into
+		// hand[0] [A♥️, A♦️] and hand[1] [A♠️, A♣️]
+		//
+
+		// create two new cards to add second to each split hand
+        new_card1 = cards.Card{suite=cards.CardSuite.DIAMONDS, rank=rank}
+        new_card2 = cards.Card{suite=cards.CardSuite.CLUBS, rank=rank}
+        cards_to_add = [2]cards.Card{new_card1, new_card2}
+
+        hand_index = 0
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index),
+            "Hand should be split-able"
+        )
+
+        new_hand_index = game.split_hand(&master_hand, hand_index, cards_to_add)
+        testing.expect(
+            t,
+            game.num_hands(&master_hand) == 2,
+            "Master Hand should now have 2 hands"
+        )
+        testing.expect(
+            t,
+            new_hand_index == 1,
+            "New split hand got added as expected"
+        )
+
+		//
+		// SPLIT #2:
+		// hand[0] [A♥️, A♦️]
+		// splits into
+		// hand[0] [A♥️, A♣️] and hand[2] [A♦️, A♠️]
+		//
+
+		// create two new cards to add second to each split hand
+        new_card1 = cards.Card{suite=cards.CardSuite.CLUBS, rank=rank}
+        new_card2 = cards.Card{suite=cards.CardSuite.SPADES, rank=rank}
+        cards_to_add = [2]cards.Card{new_card1, new_card2}
+
+        // game.log_hands(&master_hand, "after first split")
+        hand_index = 0
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index),
+            "Hand should be split-able"
+        )
+
+        new_hand_index = game.split_hand(&master_hand, hand_index, cards_to_add)
+        testing.expect(
+            t,
+            game.num_hands(&master_hand) == 3,
+            "Master Hand should now have 2 hands"
+        )
+        testing.expect(
+            t,
+            new_hand_index == 2,
+            "New split hand got added as expected"
+        )
+
+		//
+		// SPLIT #3:
+		// hand[1] [A♠️, A♣️]
+		// splits into
+		// hand[1] [A♠️, A♦️] and hand[3] [A♣️, A♥️]
+		//
+
+		// create two new cards to add second to each split hand
+        new_card1 = cards.Card{suite=cards.CardSuite.DIAMONDS, rank=rank}
+        new_card2 = cards.Card{suite=cards.CardSuite.HEARTS, rank=rank}
+        cards_to_add = [2]cards.Card{new_card1, new_card2}
+
+        hand_index = 1
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index),
+            "Hand should be split-able"
+        )
+
+        new_hand_index = game.split_hand(&master_hand, hand_index, cards_to_add)
+        testing.expect(
+            t,
+            game.num_hands(&master_hand) == 4,
+            "Master Hand should now have 2 hands"
+        )
+        testing.expect(
+            t,
+            new_hand_index == 3,
+            "New split hand got added as expected"
+        )
+
+		//
+		// A master should only be able to be split 3 times
+		// => a single master hand can turn into no more than four hands
+		//
+
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index=0) == false,
+            "Hand should not be split-able"
+        )
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index=1) == false,
+            "Hand should not be split-able"
+        )
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index=2) == false,
+            "Hand should not be split-able"
+        )
+        testing.expect(
+            t,
+            game.can_split(&master_hand, hand_index=3) == false,
+            "Hand should not be split-able"
+        )
+
+		//
+		// Verify that thee four hand in the master hands have the expected cards.
+		//
+
+		// masterHand.Hands[0]  [A♥️, A♣️]
+        {
+            expected_card1 := cards.Card{cards.CardSuite.HEARTS, rank}
+            expected_card2 := cards.Card{cards.CardSuite.CLUBS, rank}
+            expected_card1_str := cards.to_string(expected_card1)
+            expected_card2_str := cards.to_string(expected_card2)
+            got_card1_str := cards.to_string(master_hand.hands[0].cards[0])
+            got_card2_str := cards.to_string(master_hand.hands[0].cards[1])
+            testing.expectf(
+                t,
+                master_hand.hands[0].cards[0] == expected_card1,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            testing.expectf(
+                t,
+                master_hand.hands[0].cards[1] == expected_card2,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            delete(expected_card1_str)
+            delete(expected_card2_str)
+            delete(got_card1_str)
+            delete(got_card2_str)
+        }
+
+        // masterHand.Hands[1]  [A♠️, A♦️]
+        {
+            expected_card1 := cards.Card{cards.CardSuite.SPADES, rank}
+            expected_card2 := cards.Card{cards.CardSuite.DIAMONDS, rank}
+            expected_card1_str := cards.to_string(expected_card1)
+            expected_card2_str := cards.to_string(expected_card2)
+            got_card1_str := cards.to_string(master_hand.hands[1].cards[0])
+            got_card2_str := cards.to_string(master_hand.hands[1].cards[1])
+            testing.expectf(
+                t,
+                master_hand.hands[1].cards[0] == expected_card1,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            testing.expectf(
+                t,
+                master_hand.hands[1].cards[1] == expected_card2,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            delete(expected_card1_str)
+            delete(expected_card2_str)
+            delete(got_card1_str)
+            delete(got_card2_str)
+        }
+
+        // masterHand.Hands[2]  [A♦️, A♠️]
+        {
+            expected_card1 := cards.Card{cards.CardSuite.DIAMONDS, rank}
+            expected_card2 := cards.Card{cards.CardSuite.SPADES, rank}
+            expected_card1_str := cards.to_string(expected_card1)
+            expected_card2_str := cards.to_string(expected_card2)
+            got_card1_str := cards.to_string(master_hand.hands[2].cards[0])
+            got_card2_str := cards.to_string(master_hand.hands[2].cards[1])
+            testing.expectf(
+                t,
+                master_hand.hands[2].cards[0] == expected_card1,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            testing.expectf(
+                t,
+                master_hand.hands[2].cards[1] == expected_card2,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            delete(expected_card1_str)
+            delete(expected_card2_str)
+            delete(got_card1_str)
+            delete(got_card2_str)
+        }
+
+        // masterHand.Hands[3]  [A♣️, A♥️]
+        {
+            expected_card1 := cards.Card{cards.CardSuite.CLUBS, rank}
+            expected_card2 := cards.Card{cards.CardSuite.HEARTS, rank}
+            expected_card1_str := cards.to_string(expected_card1)
+            expected_card2_str := cards.to_string(expected_card2)
+            got_card1_str := cards.to_string(master_hand.hands[3].cards[0])
+            got_card2_str := cards.to_string(master_hand.hands[3].cards[1])
+            testing.expectf(
+                t,
+                master_hand.hands[3].cards[0] == expected_card1,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            testing.expectf(
+                t,
+                master_hand.hands[3].cards[1] == expected_card2,
+                "Hand[0] expected [ {0}, {1} ] got [ {2}, {3} ].",
+                expected_card1_str,
+                expected_card2_str,
+                got_card1_str,
+                got_card2_str,
+            )
+            delete(expected_card1_str)
+            delete(expected_card2_str)
+            delete(got_card1_str)
+            delete(got_card2_str)
+        }
+    }
 }

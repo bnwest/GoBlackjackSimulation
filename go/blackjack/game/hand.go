@@ -322,7 +322,7 @@ func (self *PlayerMasterHand) SplitHand(
 	// fmt.Printf("SplitHand: cards to add: %v  %v", cardsToAdd[0].Str(), cardsToAdd[1].Str())
 	// self.logHands("before")
 
-	// there are two in the hand of the same value
+	// there are two cards in the hand of the same value
 	// or rank depending of the house rules.
 	var card1 cards.Card = self.Hands[handIndex].Cards[0]
 	var card2 cards.Card = self.Hands[handIndex].Cards[1]

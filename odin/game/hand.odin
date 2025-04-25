@@ -56,9 +56,15 @@ player_add_card :: proc(self: ^PlayerHand, card: cards.Card) {
     append(&self.cards, card)
 }
 
+player_reset_cards :: proc(self: ^PlayerHand) {
+    clear(&self.cards)
+    // self.cards still points to the same heap location 
+    // with the same capacity, but the length has been reset to 0
+}
+
 player_free_cards :: proc(self: ^PlayerHand) {
     delete(self.cards)
-    // self.cards now has a pointer to free memory
+    // self.cards now has a pointer to freed memory aka a dangling pointer
     // since we collectively learn no lessons over time
     self.cards = [dynamic]cards.Card{}
 }
@@ -140,7 +146,7 @@ player_is_bust :: proc(self: ^PlayerHand) -> bool {
     return count(self) > 21
 }
 
-can_split :: proc(self: ^PlayerHand) -> bool {
+player_can_split :: proc(self: ^PlayerHand) -> bool {
 	// there are other split house rules that will be applied
 	// at a higher abstraction level ... like splitting aces
 	// after a split ...like limiting the number of splits
@@ -204,10 +210,15 @@ dealer_add_card :: proc(self: ^DealerHand, card: cards.Card) {
     append(&self.cards, card)
 }
 
+dealer_reset_cards :: proc(self: ^DealerHand) {
+    clear(&self.cards)
+    // self.cards still points to the same heap location 
+    // with the same capacity, but the length has been reset to 0
+}
 
 dealer_free_cards :: proc(self: ^DealerHand) {
     delete(self.cards)
-    // self.cards now has a pointer to free memory
+    // self.cards now has a pointer to freed memory aka a dangling pointer
     // since we collectively learn no lessons over time
     self.cards = [dynamic]cards.Card{}
 }
@@ -331,7 +342,18 @@ add_start_hand :: proc(self: ^PlayerMasterHand, bet: uint) {
     append(&self.hands, player_hand)
 }
 
+reset_hands :: proc(self: ^PlayerMasterHand) {
+    for &hand in self.hands {
+        reset_cards(&hand)  // clear as mud
+    }
+    clear(&self.hands)
+}
+
 free_hands :: proc(self: ^PlayerMasterHand) {
+    // for &hand in self.hands {} => hand is modifiable
+    for hand, hand_index in self.hands {
+        free_cards(&self.hands[hand_index])
+    }
     delete(self.hands)
     // self.cards now has a pointer to free memory
     // since we collectively learn no lessons over time
@@ -339,15 +361,58 @@ free_hands :: proc(self: ^PlayerMasterHand) {
 }
 
 log_hands :: proc(self: ^PlayerMasterHand, preface: string) {
-    fmt.printfln("{0}: MasterHand", preface)
+    fmt.eprintfln("{0}: MasterHand", preface)
     for hand, i in self.hands {
-        fmt.printfln("    Hand {0}", i+1)
+        fmt.eprintfln("    Hand {0}", i+1)
         for card, j in hand.cards {
             card_string := cards.to_string(card)
-            fmt.printfln("        Card {0}: {1}", j+1, card_string)
+            fmt.eprintfln("        Card {0}: {1}", j+1, card_string)
             delete(card_string)
         }
     }
+}
+
+master_can_split :: proc(self: ^PlayerMasterHand, hand_index: uint) -> bool {
+    if num_hands(self) < self.HANDS_LIMIT {
+        // master hand allows
+        hand := self.hands[hand_index]
+        if can_split(&hand) {
+            // individual hand allows
+            return true
+        }
+    }
+    return false
+}
+
+split_hand :: proc(
+    self: ^PlayerMasterHand, 
+    hand_index: uint,
+    cards_to_add: [2]cards.Card,
+) -> uint {
+	// there are two cards in the hand of the same value
+	// or rank depending of the house rules.
+	card1: cards.Card = self.hands[hand_index].cards[0]
+	card2: cards.Card = self.hands[hand_index].cards[1]
+
+    old_player_hand: ^PlayerHand
+    old_player_hand = &self.hands[hand_index]
+    delete(old_player_hand.cards)
+    old_player_hand.cards = [dynamic]cards.Card{}
+    append(&old_player_hand.cards, card1, cards_to_add[0])
+    old_player_hand.from_split = true
+    old_player_hand.outcome = HandOutcome.IN_PLAY
+
+    new_player_hand: PlayerHand
+    new_player_hand = create_player_hand(from_split=true, bet=old_player_hand.bet)
+    delete(new_player_hand.cards)
+    new_player_hand.cards = [dynamic]cards.Card{}
+    append(&new_player_hand.cards, card2, cards_to_add[1])
+    new_player_hand.outcome = HandOutcome.IN_PLAY
+
+    new_hand_index := num_hands(self)
+    append(&self.hands, new_player_hand)
+
+    return new_hand_index
 }
 
 //
@@ -361,6 +426,11 @@ to_string :: proc {
 add_card :: proc {
     dealer_add_card,
     player_add_card,
+}
+
+reset_cards :: proc {
+    dealer_reset_cards,
+    player_reset_cards,
 }
 
 free_cards :: proc {
@@ -407,4 +477,9 @@ is_hand_over :: proc {
     dealer_is_hand_over,
     player_is_hand_over,
 
+}
+
+can_split :: proc {
+    player_can_split,
+    master_can_split,
 }
