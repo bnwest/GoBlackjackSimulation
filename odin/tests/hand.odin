@@ -22,7 +22,7 @@ test_hand_outcome :: proc(t: ^testing.T) {
     testing.expect(
         t,
         game.to_string(game.HandOutcome.STAND) == game.hand_outcome_string[game.HandOutcome.STAND],
-        "HandOutcome to_strin()) maps to hand_outcome_string[]"
+        "HandOutcome to_string()) maps to hand_outcome_string[]"
     )
 }
 

@@ -16,17 +16,17 @@ CardSuite :: enum {
 // Error: Compound literals of dynamic types are disabled by default
 CardSuiteValue := map[CardSuite]string{
     .HEARTS   = "♥️", // aka U+2665 + U+fe0f
-	.DIAMONDS = "♦️", // aka U+2666 + U+fe0f
-	.SPADES   = "♠️", // aka U+2660 + U+fe0f
-	.CLUBS    = "♣️", // aka U+2663 + U+fe0f
+    .DIAMONDS = "♦️", // aka U+2666 + U+fe0f
+    .SPADES   = "♠️", // aka U+2660 + U+fe0f
+    .CLUBS    = "♣️", // aka U+2663 + U+fe0f
 }
 */
 
 card_suite_string := [CardSuite]string {
     .HEARTS   = "♥️", // aka U+2665 + U+fe0f, 2 odin runes
-	.DIAMONDS = "♦️", // aka U+2666 + U+fe0f, 2 odin runes
-	.SPADES   = "♠️", // aka U+2660 + U+fe0f, 2 odin runes
-	.CLUBS    = "♣️", // aka U+2663 + U+fe0f, 2 odin runes
+    .DIAMONDS = "♦️", // aka U+2666 + U+fe0f, 2 odin runes
+    .SPADES   = "♠️", // aka U+2660 + U+fe0f, 2 odin runes
+    .CLUBS    = "♣️", // aka U+2663 + U+fe0f, 2 odin runes
 }
 
 suite_to_string :: proc(
@@ -36,35 +36,35 @@ suite_to_string :: proc(
 }
 
 CardRank :: enum {
-	ACE,   // == 0
-	TWO,   // == 1
-	THREE, // == 2
-	FOUR,  // == 3
-	FIVE,  // == 4
-	SIX,   // == 5
-	SEVEN, // == 6
-	EIGHT, // == 7
-	NINE,  // == 8
-	TEN,   // == 9
-	JACK,  // == 10
-	QUEEN, // == 11
-	KING,  // == 12
+    ACE,   // == 0
+    TWO,   // == 1
+    THREE, // == 2
+    FOUR,  // == 3
+    FIVE,  // == 4
+    SIX,   // == 5
+    SEVEN, // == 6
+    EIGHT, // == 7
+    NINE,  // == 8
+    TEN,   // == 9
+    JACK,  // == 10
+    QUEEN, // == 11
+    KING,  // == 12
 }
 
 card_rank_string := [CardRank]string {
-	.ACE   = "A",
-	.TWO   = "2",
-	.THREE = "3",
-	.FOUR  = "4",
-	.FIVE  = "5",
-	.SIX   = "6",
-	.SEVEN = "7",
-	.EIGHT = "8",
-	.NINE  = "9",
-	.TEN   = "10",
-	.JACK  = "J",
-	.QUEEN = "Q",
-	.KING  = "K",
+    .ACE   = "A",
+    .TWO   = "2",
+    .THREE = "3",
+    .FOUR  = "4",
+    .FIVE  = "5",
+    .SIX   = "6",
+    .SEVEN = "7",
+    .EIGHT = "8",
+    .NINE  = "9",
+    .TEN   = "10",
+    .JACK  = "J",
+    .QUEEN = "Q",
+    .KING  = "K",
 }
 
 rank_to_string :: proc(
@@ -74,19 +74,19 @@ rank_to_string :: proc(
 }
 
 card_rank_integer := [CardRank]uint {
-	.ACE   = 1,
-	.TWO   = 2,
-	.THREE = 3,
-	.FOUR  = 4,
-	.FIVE  = 5,
-	.SIX   = 6,
-	.SEVEN = 7,
-	.EIGHT = 8,
-	.NINE  = 9,
-	.TEN   = 10,
-	.JACK  = 10,
-	.QUEEN = 10,
-	.KING  = 10,
+    .ACE   = 1,
+    .TWO   = 2,
+    .THREE = 3,
+    .FOUR  = 4,
+    .FIVE  = 5,
+    .SIX   = 6,
+    .SEVEN = 7,
+    .EIGHT = 8,
+    .NINE  = 9,
+    .TEN   = 10,
+    .JACK  = 10,
+    .QUEEN = 10,
+    .KING  = 10,
 }
 
 rank_to_int :: proc(

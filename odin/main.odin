@@ -1,11 +1,15 @@
 // LESSONS LEARNED:
-// 1. Global constants at the file level must not have expressions,
+// 1. odin (like Go) compiler had a strong opinion on newlines in
+//     if conf { stmt } else if { cond } else { stmt }
+// 2. Global constants at the file level must not have expressions,
 // must have value known at compile time, and should look like: 
 //     RNG_SEED :: 314159
-// 2. Structs can not have methods, which is a big name space problem.
+// 3. Structs can not have methods, which is a big name space problem.
 // struct "method" names have to be unique across all structs in package.
 // I ended up prefixing all method names.  Alternatively I could have put
 // one struct per package which seems a bit extreme.
+// 4. no i++
+// 5. odin variable name is pythkn (snake case) and not camel case (JavaScript, Java)
 
 package main
 
@@ -14,6 +18,7 @@ import "core:unicode/utf8"
 import "core:unicode/utf16"
 import "cards"
 import "game"
+import "strategy"
 
 main :: proc() {
     r := "🚀"
