@@ -438,7 +438,7 @@ test_create_dealer_hand :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_add_card :: proc(t: ^testing.T) {
+test_dealer_hand_add_card :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -471,7 +471,7 @@ test_dealer_add_card :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_free_cards :: proc(t: ^testing.T) {
+test_dealer_hand_free_cards :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -501,7 +501,7 @@ test_dealer_free_cards :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_hard_count :: proc(t: ^testing.T) {
+test_dealer_hand_hard_count :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -550,7 +550,7 @@ test_dealer_hard_count :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_count :: proc(t: ^testing.T) {
+test_dealer_hand_count :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -599,7 +599,7 @@ test_dealer_count :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealerer_is_natural :: proc(t: ^testing.T) {
+test_dealer_hand_is_natural :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)
@@ -641,7 +641,7 @@ test_dealerer_is_natural :: proc(t: ^testing.T) {
 }
 
 @(test)
-test_dealer_is_bust :: proc(t: ^testing.T) {
+test_dealer_hand_is_bust :: proc(t: ^testing.T) {
     hand: game.DealerHand
     hand = game.create_dealer_hand()
     defer game.free_cards(&hand)

@@ -42,7 +42,7 @@ create_player_hand :: proc(
     bet: uint,
 ) -> PlayerHand {
     player_hand := PlayerHand{
-        cards=[dynamic]cards.Card{},  // NO heap pointer, just zero-ed memory
+        cards=[dynamic]cards.Card{},  // NO heap pointer yet, just zero-ed memory
         from_split=from_split,
         bet=bet,
         outcome=HandOutcome.IN_PLAY,
@@ -199,7 +199,7 @@ DealerHand :: struct {
 // factory
 create_dealer_hand :: proc() -> DealerHand {
     dealer_hand := DealerHand{
-        cards=[dynamic]cards.Card{},  // heap pointer
+        cards=[dynamic]cards.Card{},  // NO heap pointer yet, just zero-ed memory
         outcome=HandOutcome.IN_PLAY,
     }
     // create a copy of the stack variable hand
