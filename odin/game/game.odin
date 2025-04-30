@@ -201,9 +201,6 @@ play_game :: proc(self: ^BlackJack) {
     log(
         fmt.tprintf("dealer top  card: {}", cards.to_string(dealer_top_card))
     )
-    log(
-        fmt.tprintf("dealer hole card: {}", cards.to_string(dealer_hole_card))
-    )
 
     //
 	// PLAY HANDS
@@ -326,6 +323,40 @@ play_game :: proc(self: ^BlackJack) {
         //
 		// DEALER HAND
 		//
+
+        log("DEALER HAND")
+        log(
+            fmt.tprintf("dealer top  card: {}", cards.to_string(dealer_top_card))
+        )
+        log(
+            fmt.tprintf("dealer hole card: {}", cards.to_string(dealer_hole_card))
+        )
+
+        dealer_done: bool = false
+        for !dealer_done {
+            hard_count := hard_count(&dealer.dealer_hand)
+            soft_count := soft_count(&dealer.dealer_hand)
+            use_soft_count: bool = hard_count < soft_count && soft_count <= 21
+            if use_soft_count && soft_count < house_rules.DEALER_HITS_SOFT_ON {
+                card = get_card_from_shoe(self)
+                add_card(&dealer.dealer_hand, card)
+                log(fmt.tprintf("    add: {}", cards.to_string(card)))
+            } else if !use_soft_count && hard_count < house_rules.DEALER_HITS_HARD_ON {
+                card = get_card_from_shoe(self)
+                add_card(&dealer.dealer_hand, card)
+                log(fmt.tprintf("    add: {}", cards.to_string(card)))
+            } else {
+                dealer.dealer_hand.outcome = HandOutcome.STAND
+                dealer_done = true
+                log(fmt.tprintf("   stand total H{} S{}", hard_count, soft_count))
+            }
+
+            if  count(&dealer.dealer_hand) > 21 {
+                dealer.dealer_hand.outcome = HandOutcome.BUST
+                dealer_done = true
+                log(fmt.tprintf("    bust"))
+            }
+        }
     }
 
     //
