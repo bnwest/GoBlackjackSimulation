@@ -1,42 +1,42 @@
-package strategy
+package game
 
 import "../cards"
-import "../game"
+import "../strategy"
 import house_rules "../rules"
 
 convert_to_player_decision :: proc(
-    decision: Decision,
-    player_hand: ^game.PlayerHand,
-) -> PlayerDecision {
+    decision: strategy.Decision,
+    player_hand: ^PlayerHand,
+) -> strategy.PlayerDecision {
 	// Decision sometimes return Xy, which translates to do X if allowed else do y.
 	// Determine the X or the y here.
 
-    is_first_decision: bool = game.num_cards(player_hand) == 2
+    is_first_decision: bool = num_cards(player_hand) == 2
     is_first_post_split_decision: bool = (
-        is_first_decision && game.is_from_split(player_hand)
+        is_first_decision && is_from_split(player_hand)
     )
 
-    player_decision: PlayerDecision
+    player_decision: strategy.PlayerDecision
 
-    hard_count := game.hard_count(player_hand)
-    soft_count := game.soft_count(player_hand)
+    hard_count := hard_count(player_hand)
+    soft_count := soft_count(player_hand)
 
-    if decision == Decision.S {
-        player_decision = PlayerDecision.STAND
+    if decision == strategy.Decision.S {
+        player_decision = strategy.PlayerDecision.STAND
 
-    } else if decision == Decision.H {
-        player_decision = PlayerDecision.HIT
+    } else if decision == strategy.Decision.H {
+        player_decision = strategy.PlayerDecision.HIT
 
-    } else if decision == Decision.Dh || decision == Decision.Ds {
+    } else if decision == strategy.Decision.Dh || decision == strategy.Decision.Ds {
 		// may be only allow to down on hand totals [9, 10, 11] or some such
 		// basic stratgey wants to double down on
 		//     hand hard totals [9, 10, 11]
 		//     hand soft totals [12, 13,14, 15, 16, 17, 18, 19]
-		nondouble_down_decision: PlayerDecision
+		nondouble_down_decision: strategy.PlayerDecision
         nondouble_down_decision = (
-            decision == Decision.Ds 
-                ? PlayerDecision.STAND 
-                : PlayerDecision.HIT
+            decision == strategy.Decision.Ds 
+                ? strategy.PlayerDecision.STAND 
+                : strategy.PlayerDecision.HIT
         )
 
         can_double_down: bool
@@ -62,7 +62,7 @@ convert_to_player_decision :: proc(
                 double_down = false
             }
             if double_down {
-                player_decision = PlayerDecision.DOUBLE
+                player_decision = strategy.PlayerDecision.DOUBLE
             } else {
                 player_decision = nondouble_down_decision
             }
@@ -70,19 +70,19 @@ convert_to_player_decision :: proc(
             player_decision = nondouble_down_decision
         }
 
-    } else if decision == Decision.SP {
-        player_decision = PlayerDecision.SPLIT
+    } else if decision == strategy.Decision.SP {
+        player_decision = strategy.PlayerDecision.SPLIT
 
-    } else if decision == Decision.Uh || decision == Decision.Us || decision == Decision.Usp {
+    } else if decision == strategy.Decision.Uh || decision == strategy.Decision.Us || decision == strategy.Decision.Usp {
 		// surrent decision must be allowed in the House Rules and
 		// must be a first decision (before splitting)
-		nonsurrender_decision: PlayerDecision
+		nonsurrender_decision: strategy.PlayerDecision
         nonsurrender_decision = (
-            decision == Decision.Uh
-                ? PlayerDecision.HIT
-                : decision == Decision.Us
-                    ? PlayerDecision.STAND
-                    : PlayerDecision.SPLIT
+            decision == strategy.Decision.Uh
+                ? strategy.PlayerDecision.HIT
+                : decision == strategy.Decision.Us
+                    ? strategy.PlayerDecision.STAND
+                    : strategy.PlayerDecision.SPLIT
         )
 
         surrender_can_be_played: bool
@@ -94,7 +94,7 @@ convert_to_player_decision :: proc(
 
         player_decision = (
             surrender_can_be_played 
-                ? PlayerDecision.SURRENDER 
+                ? strategy.PlayerDecision.SURRENDER 
                 : nonsurrender_decision
         )
     }
@@ -104,16 +104,16 @@ convert_to_player_decision :: proc(
 
 determine_basic_strategy_play :: proc(
     dealer_top_card: cards.Card,
-    player_hand: ^game.PlayerHand,
+    player_hand: ^PlayerHand,
     hand_allows_more_splits: bool,
-) -> PlayerDecision {
-    is_first_decision: bool = game.num_cards(player_hand) == 2
+) -> strategy.PlayerDecision {
+    is_first_decision: bool = num_cards(player_hand) == 2
 
-    player_card1: cards.Card = game.get_card(player_hand, card_index=0)
-    player_card2: cards.Card = game.get_card(player_hand, card_index=1)
+    player_card1: cards.Card = get_card(player_hand, card_index=0)
+    player_card2: cards.Card = get_card(player_hand, card_index=1)
 
-    decision: Decision
-    player_decision: PlayerDecision
+    decision: strategy.Decision
+    player_decision: strategy.PlayerDecision
 
     got_pairs: bool
     if is_first_decision {
@@ -139,22 +139,22 @@ determine_basic_strategy_play :: proc(
             pair_rank = player_card1.rank
         }
 
-        decision = get_pairs_split_decision(pair_rank, dealer_top_card.rank)
+        decision = strategy.get_pairs_split_decision(pair_rank, dealer_top_card.rank)
         player_decision = convert_to_player_decision(decision, player_hand)
-        if player_decision == PlayerDecision.SPLIT {
-            return PlayerDecision.SPLIT
+        if player_decision == strategy.PlayerDecision.SPLIT {
+            return strategy.PlayerDecision.SPLIT
         }
     }
 
-    hard_count := game.hard_count(player_hand)
-    soft_count := game.soft_count(player_hand)
+    hard_count := hard_count(player_hand)
+    soft_count := soft_count(player_hand)
 
     use_soft_count: bool = hard_count < soft_count && soft_count <= 21
     if use_soft_count {
-        decision = get_soft_total_decision(soft_count, dealer_top_card.rank)
+        decision = strategy.get_soft_total_decision(soft_count, dealer_top_card.rank)
         player_decision = convert_to_player_decision(decision, player_hand)
     } else {
-        decision = get_hard_total_decision(hard_count, dealer_top_card.rank)
+        decision = strategy.get_hard_total_decision(hard_count, dealer_top_card.rank)
         player_decision = convert_to_player_decision(decision, player_hand)
     }
 

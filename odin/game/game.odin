@@ -4,6 +4,7 @@ import "core:fmt"
 
 import "../cards"
 import house_rules "../rules"
+import "../strategy"
 
 BlackJackPlayerResults :: struct {
     hands_played: uint,
@@ -255,7 +256,7 @@ play_game :: proc(self: ^BlackJack) {
                         }
 
                         decision: strategy.PlayerDecision
-                        decision = strategy.determine_basic_strategy_play(
+                        decision = determine_basic_strategy_play(
                             dealer_top_card, &hand, is_split_possible
                         )
                         break
