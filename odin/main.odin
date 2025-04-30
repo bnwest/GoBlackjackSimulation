@@ -10,6 +10,9 @@
 // one struct per package which seems a bit extreme.
 // 4. no i++
 // 5. odin variable name is pythkn (snake case) and not camel case (JavaScript, Java)
+// 6. "not in" for key in map check is "not_in"
+// 7. "Cannot assign to struct field in map". work around is
+// to create a struct copy, modify copy and reassign back into map
 
 package main
 
@@ -58,4 +61,11 @@ main :: proc() {
     game.add_card(&master_hand.hands[0], shoe[0])
     game.add_card(&master_hand.hands[0], shoe[1])
     game.log_hands(&master_hand, "initial hand")
+
+    //
+    // FOR REALS
+    //
+
+    blackjack := game.create_blackjack()
+    game.play_game(&blackjack)
 }

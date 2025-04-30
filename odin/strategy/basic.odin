@@ -127,7 +127,7 @@ determine_basic_strategy_play :: proc(
         got_pairs = false
     }
 
-    if got_pairs  && hand_allows_more_splits {
+    if got_pairs && hand_allows_more_splits {
 		// Determine if the pairs can be split.
 		// Note all of the non-split decisions that are ignored below
 		// will not contradict the hard/soft total decision.

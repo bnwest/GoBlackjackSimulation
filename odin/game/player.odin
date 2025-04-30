@@ -25,7 +25,8 @@ create_player :: proc(name: string) -> Player {
         name=name,
     }
     return player
-    // match with: defer free_player(&player)
+    // match with:
+    //     defer free_player(&player)
 }
 
 free_player :: proc(self: ^Player) {
@@ -76,7 +77,8 @@ create_dealer :: proc(name: string = "Riverboat Dealer") -> Dealer {
         name=name,
     }
     return dealer
-    // match with: defer free_dealer(&dealer)
+    // match with:
+    //     defer free_dealer(&dealer)
 }
 
 free_dealer :: proc(self: ^Dealer) {
