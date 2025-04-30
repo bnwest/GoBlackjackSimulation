@@ -259,7 +259,65 @@ play_game :: proc(self: ^BlackJack) {
                         decision = determine_basic_strategy_play(
                             dealer_top_card, &hand, is_split_possible
                         )
-                        break
+                        log(fmt.tprintf("        basic strategy: {}", strategy.to_string(decision)))
+
+                        if decision == strategy.PlayerDecision.STAND {
+                            hand.outcome = HandOutcome.STAND
+                            log(fmt.tprintf("        stand total H{} S{}", hard_count(&hand), soft_count(&hand)))
+                            break
+
+                        } else if decision == strategy.PlayerDecision.SURRENDER {
+                            hand.outcome = HandOutcome.STAND
+                            hand.bet /= 2
+                            break
+
+                        } else if decision == strategy.PlayerDecision.DOUBLE {
+                            card = get_card_from_shoe(self)
+                            add_card(&hand, card)
+                            hand.bet *= 2
+                            log(fmt.tprintf("        hit: {}, total H{} S{}", cards.to_string(card), hard_count(&hand), soft_count(&hand)))
+                            hand.outcome = HandOutcome.STAND
+                            log(fmt.tprintf("        stand total H{} S{}", hard_count(&hand), soft_count(&hand)))
+                            break
+
+                        } else if decision == strategy.PlayerDecision.HIT {
+                            card = get_card_from_shoe(self)
+                            add_card(&hand, card)
+                            hand_total := count(&hand)
+                            log(fmt.tprintf("        hit: {}, total H{} S{}", cards.to_string(card), hard_count(&hand), soft_count(&hand)))
+                            if hand_total > 21 {
+                                hand.outcome = HandOutcome.BUST
+                                log(fmt.tprintf("    {}", to_string(hand.outcome)))
+								break
+                            } else {
+                                hand.outcome = HandOutcome.IN_PLAY
+                            }
+
+                        } else if decision == strategy.PlayerDecision.SPLIT {
+                            card1: cards.Card = get_card_from_shoe(self)
+                            card2: cards.Card = get_card_from_shoe(self)
+                            split_cards := [2]cards.Card{card1, card2}
+                            hand_index: uint = uint(k)
+                            new_hand_index := split_hand(&master_hand, hand_index, split_cards)
+                            log(fmt.tprintf("        split, new hand index {}, adding cards {}, {}", new_hand_index+1, cards.to_string(split_cards[0]), cards.to_string(split_cards[1])))
+                            log(fmt.tprintf("        card 1: {}", cards.to_string(split_cards[0])))
+                            log(fmt.tprintf("        card 2: {}", cards.to_string(split_cards[1])))
+                            splitting_aces: bool = hand.cards[0].rank == cards.CardRank.ACE
+                            if splitting_aces && house_rules.NO_MORE_CARDS_AFTER_SPLITTING_ACES {
+                                hand.outcome = HandOutcome.STAND
+                                log(fmt.tprintf("        aces split: {}, total H{} S{}", to_string(hand.outcome), hard_count(&hand), soft_count(&hand)))
+                                master_hand.hands[new_hand_index].outcome = HandOutcome.STAND
+                                break
+                            }
+
+                        } else {
+                            log(fmt.tprintf("FTW"))
+                            log(fmt.tprintf("FTW: dealer_top_card: {}, is_split_possible: {}", cards.to_string(dealer_top_card), is_split_possible))
+                            log(fmt.tprintf("FTW: player hand count: H{}, S{}", hard_count(&hand), soft_count(&hand)))
+                            log(fmt.tprintf("FTW: decision: {}", strategy.to_string(decision)))
+                            hand.outcome = HandOutcome.STAND
+                            break
+                        }
                     }
                 }
             }
