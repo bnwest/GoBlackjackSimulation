@@ -269,7 +269,7 @@ play_game :: proc(self: ^BlackJack) {
             log(fmt.tprintf("player - {} - {}", i+1, player.name))
             for &master_hand, j in player.master_hands {
                 for &hand, k in master_hand.hands {
-					log(fmt.tprintf("    hand {}.{}:", j+1, k+1))
+                    log(fmt.tprintf("    hand {}.{}:", j+1, k+1))
                     for &card, l in hand.cards {
                         log(fmt.tprintf("        card {}: {}", l+1, cards.to_string(card)))
                     }
@@ -334,8 +334,8 @@ play_game :: proc(self: ^BlackJack) {
                             hand_index: uint = uint(k)
                             new_hand_index := split_hand(&master_hand, hand_index, split_cards)
                             log(fmt.tprintf("        split, new hand index {}, adding cards {}, {}", new_hand_index+1, cards.to_string(split_cards[0]), cards.to_string(split_cards[1])))
-                            log(fmt.tprintf("        card 1: {}", cards.to_string(split_cards[0])))
-                            log(fmt.tprintf("        card 2: {}", cards.to_string(split_cards[1])))
+                            log(fmt.tprintf("        card 1: {}", cards.to_string(hand.cards[0])))
+                            log(fmt.tprintf("        card 2: {}", cards.to_string(hand.cards[1])))
                             splitting_aces: bool = hand.cards[0].rank == cards.CardRank.ACE
                             if splitting_aces && house_rules.NO_MORE_CARDS_AFTER_SPLITTING_ACES {
                                 hand.outcome = HandOutcome.STAND
@@ -404,6 +404,7 @@ play_game :: proc(self: ^BlackJack) {
 
     if dealer.dealer_hand.outcome == HandOutcome.DEALER_BLACKJACK {
         for &player, i in self.players {
+            log(fmt.tprintf("player - {} - {}", i+1, player.name))
             for &master_hand, j in player.master_hands {
                 for &hand, k in master_hand.hands {
                     if is_natural(&hand) {
@@ -420,6 +421,7 @@ play_game :: proc(self: ^BlackJack) {
     } else {
 		// dealer does not have a natural
         for &player, i in self.players {
+            log(fmt.tprintf("player - {} - {}", i+1, player.name))
             for &master_hand, j in player.master_hands {
                 for &hand, k in master_hand.hands {
                     if hand.outcome == HandOutcome.BUST {
@@ -433,7 +435,7 @@ play_game :: proc(self: ^BlackJack) {
                         if is_natural(&hand) {
                             payout: int = int(f32(hand.bet) * house_rules.NATURAL_BLACKJACK_PAYOUT)
                             add_result(self, player, uint(k), &hand, initial_bet, payout)
-                            log(fmt.tprintf("    hand {}.{}: won ${}", j+1, k+1, hand.bet))
+                            log(fmt.tprintf("    hand {}.{}: won ${}", j+1, k+1, payout))
                         } else if dealer.dealer_hand.outcome == HandOutcome.BUST {
                             add_result(self, player, uint(k), &hand, initial_bet, int(hand.bet))
                             log(fmt.tprintf("    hand {}.{}: dealer bust: won ${}", j+1, k+1, hand.bet))

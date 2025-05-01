@@ -26,6 +26,7 @@ import "game"
 import "strategy"
 
 main :: proc() {
+    /*
     r := "🚀"
     fmt.printfln("runes in {0} is {1}", "🚀", utf8.rune_count_in_string("🚀"))
 
@@ -63,6 +64,7 @@ main :: proc() {
     game.add_card(&master_hand.hands[0], shoe[0])
     game.add_card(&master_hand.hands[0], shoe[1])
     game.log_hands(&master_hand, "initial hand")
+    */
 
     //
     // FOR REALS
