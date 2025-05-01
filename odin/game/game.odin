@@ -52,6 +52,8 @@ create_blackjack :: proc() -> BlackJack {
 free_blackjack :: proc(self: ^BlackJack) {
     delete(self.shoe)
     self.shoe = [dynamic]cards.Card{}
+    // players are external objects
+    // which are not owned/managed by BlackJack
     // for player in self.players {
     //     free_player(player)
     // }
@@ -67,6 +69,7 @@ num_players :: proc(self: ^BlackJack) -> uint {
 
 reshuffle_shoe :: proc(self: ^BlackJack) {
     cards.shuffle_shoe(self.shoe)
+    self.shoe_top = 0
 }
 
 get_card_from_shoe :: proc(self: ^BlackJack) -> cards.Card {
@@ -83,7 +86,8 @@ set_players_for_game :: proc(
     self: ^BlackJack, 
     players: [dynamic]^Player
 ) {
-    self.players =  [dynamic]^Player{}
+    reset_players(self)
+    self.players = [dynamic]^Player{}
     for player in players {
         append(&self.players, player)
         if player.name not_in self.results {
@@ -94,8 +98,16 @@ set_players_for_game :: proc(
     }
 }
 
+reset_players :: proc(self: ^BlackJack) {
+    // players space is not managed by BlackJack
+    // => do not free the player space
+    delete(self.players)
+    self.players = [dynamic]^Player{}
+    // self.players is now zeroed memory
+}
+
 abs :: proc(i: int) -> uint {
-    // math.abs(T) -> T
+    // math.abs(T) -> T which is so very wrong
     return i < 0 ? uint(-i) : uint(i)
 }
 
@@ -156,6 +168,11 @@ log :: proc(msg: string) {
 }
 
 play_game :: proc(self: ^BlackJack) {
+    fmt.printfln(
+        "play game: shoe top: {}, force reshuffle: {}", 
+        self.shoe_top, 
+        house_rules.FORCE_RESHUFFLE
+    )
     if self.shoe_top > house_rules.FORCE_RESHUFFLE {
         reshuffle_shoe(self)
     }

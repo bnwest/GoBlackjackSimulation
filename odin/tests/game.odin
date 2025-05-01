@@ -48,4 +48,5 @@ test_play_game :: proc(t: ^testing.T) {
     defer game.free_blackjack(&blackjack)
 
     game.play_game(&blackjack)
+    game.play_game(&blackjack)
 }

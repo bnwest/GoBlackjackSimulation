@@ -71,5 +71,10 @@ main :: proc() {
     blackjack := game.create_blackjack()
     defer game.free_blackjack(&blackjack)
 
-    game.play_game(&blackjack)
+    for i in 0..<10 {
+        game.play_game(&blackjack)
+    }
+
+    fmt.printfln("results: {}", blackjack.results)
+    fmt.printfln("stats: {}", blackjack.stats)
 }
