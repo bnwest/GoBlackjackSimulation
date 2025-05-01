@@ -449,10 +449,6 @@ test_dealer_add_card :: proc(t: ^testing.T) {
             expected_card2_str,
             got_hole_card_str,
         )
-        delete(expected_card1_str)
-        delete(expected_card2_str)
-        delete(got_top_card_str)
-        delete(got_hole_card_str)
     }
 
     game.game_reset(&dealer)

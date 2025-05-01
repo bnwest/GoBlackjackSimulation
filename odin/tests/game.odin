@@ -41,3 +41,11 @@ test_determine_basic_strategy_play :: proc(t: ^testing.T) {
         }
     }
 }
+
+@(test)
+test_play_game :: proc(t: ^testing.T) {
+    blackjack := game.create_blackjack()
+    defer game.free_blackjack(&blackjack)
+
+    game.play_game(&blackjack)
+}

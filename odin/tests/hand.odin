@@ -946,10 +946,6 @@ test_player_master_hand_split_hand :: proc(t: ^testing.T) {
                 got_card1_str,
                 got_card2_str,
             )
-            delete(expected_card1_str)
-            delete(expected_card2_str)
-            delete(got_card1_str)
-            delete(got_card2_str)
         }
 
         // masterHand.Hands[1]  [A♠️, A♦️]
@@ -978,10 +974,6 @@ test_player_master_hand_split_hand :: proc(t: ^testing.T) {
                 got_card1_str,
                 got_card2_str,
             )
-            delete(expected_card1_str)
-            delete(expected_card2_str)
-            delete(got_card1_str)
-            delete(got_card2_str)
         }
 
         // masterHand.Hands[2]  [A♦️, A♠️]
@@ -1010,10 +1002,6 @@ test_player_master_hand_split_hand :: proc(t: ^testing.T) {
                 got_card1_str,
                 got_card2_str,
             )
-            delete(expected_card1_str)
-            delete(expected_card2_str)
-            delete(got_card1_str)
-            delete(got_card2_str)
         }
 
         // masterHand.Hands[3]  [A♣️, A♥️]
@@ -1042,10 +1030,6 @@ test_player_master_hand_split_hand :: proc(t: ^testing.T) {
                 got_card1_str,
                 got_card2_str,
             )
-            delete(expected_card1_str)
-            delete(expected_card2_str)
-            delete(got_card1_str)
-            delete(got_card2_str)
         }
     }
 }

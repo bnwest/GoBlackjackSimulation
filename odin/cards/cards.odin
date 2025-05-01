@@ -100,14 +100,25 @@ Card :: struct {
     rank: CardRank,
 }
 
+cards_strings := [CardRank][CardSuite]string{
+    .ACE  ={.HEARTS="A♥️ ",  .DIAMONDS="A♦️ ",  .SPADES="A♠️ ",  .CLUBS="A♣️ "},
+    .TWO  ={.HEARTS="2♥️ ",  .DIAMONDS="2♦️ ",  .SPADES="2♠️ ",  .CLUBS="2♣️ "},
+    .THREE={.HEARTS="3♥️ ",  .DIAMONDS="3♦️ ",  .SPADES="3♠️ ",  .CLUBS="3♣️ "},
+    .FOUR ={.HEARTS="4♥️ ",  .DIAMONDS="4♦️ ",  .SPADES="4♠️ ",  .CLUBS="4♣️ "},
+    .FIVE ={.HEARTS="5♥️ ",  .DIAMONDS="5♦️ ",  .SPADES="5♠️ ",  .CLUBS="5♣️ "},
+    .SIX  ={.HEARTS="6♥️ ",  .DIAMONDS="6♦️ ",  .SPADES="6♠️ ",  .CLUBS="6♣️ "},
+    .SEVEN={.HEARTS="7♥️ ",  .DIAMONDS="7♦️ ",  .SPADES="7♠️ ",  .CLUBS="7♣️ "},
+    .EIGHT={.HEARTS="8♥️ ",  .DIAMONDS="8♦️ ",  .SPADES="8♠️ ",  .CLUBS="8♣️ "},
+    .NINE ={.HEARTS="9♥️ ",  .DIAMONDS="9♦️ ",  .SPADES="9♠️ ",  .CLUBS="9♣️ "},
+    .TEN  ={.HEARTS="10♥️ ", .DIAMONDS="10♦️ ", .SPADES="10♠️ ", .CLUBS="10♣️ "},
+    .JACK ={.HEARTS="J♥️ ",  .DIAMONDS="J♦️ ",  .SPADES="J♠️ ",  .CLUBS="J♣️ "},
+    .QUEEN={.HEARTS="Q♥️ ",  .DIAMONDS="Q♦️ ",  .SPADES="Q♠️ ",  .CLUBS="Q♣️ "},
+    .KING ={.HEARTS="K♥️ ",  .DIAMONDS="K♦️ ",  .SPADES="K♠️ ",  .CLUBS="K♣️ "},
+}
+
 card_to_string :: proc(card: Card) -> string {
-    rank_string := to_string(card.rank)
-    // rank string is a string literal which does not need to be freed
-
-    suite_string := to_string(card.suite)
-    defer delete(suite_string)
-
-    return strings.concatenate({rank_string, suite_string})
+    // really, really, really do not want to return a heap allocated string
+    return cards_strings[card.rank][card.suite]
 }
 
 UNSHUFFLED_DECK :: []Card {

@@ -30,12 +30,11 @@ create_player :: proc(name: string) -> Player {
 }
 
 free_player :: proc(self: ^Player) {
+    for &master_hand in self.master_hands {
+        free_hands(&master_hand)
+    }
     delete(self.master_hands)
     self.master_hands = [dynamic]PlayerMasterHand{}
-}
-
-num_master_hands :: proc(self: ^Player) -> uint {
-    return len(self.master_hands)
 }
 
 //
@@ -50,6 +49,10 @@ player_game_reset :: proc(self: ^Player) {
         free_hands(&master_hand)
     }
     clear(&self.master_hands)
+}
+
+num_master_hands :: proc(self: ^Player) -> uint {
+    return len(self.master_hands)
 }
 
 set_game_bets :: proc(self: ^Player, bets: [dynamic]uint) {

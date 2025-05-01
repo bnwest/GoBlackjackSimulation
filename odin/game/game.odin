@@ -49,6 +49,18 @@ create_blackjack :: proc() -> BlackJack {
     return blackjack
 }
 
+free_blackjack :: proc(self: ^BlackJack) {
+    delete(self.shoe)
+    self.shoe = [dynamic]cards.Card{}
+    // for player in self.players {
+    //     free_player(player)
+    // }
+    delete(self.players)
+    self.players = [dynamic]^Player{}
+    delete(self.results)
+    self.results = map[string]BlackJackPlayerResults{}
+}
+
 num_players :: proc(self: ^BlackJack) -> uint {
     return len(self.players)
 }
@@ -153,12 +165,20 @@ play_game :: proc(self: ^BlackJack) {
 
     dealer: Dealer = create_dealer()
     set_dealer(self, &dealer)
+    defer free_dealer(&dealer)
 
     player1: Player = create_player(name="Jack")
+    defer free_player(&player1)
+
     player2: Player = create_player(name="Jill")
+    defer free_player(&player2)
 
     players := [dynamic]^Player{}
     append(&players, &player1, &player2)
+    defer {
+        delete(players)
+        players := [dynamic]^Player{}
+    }
 
     set_players_for_game(self, players=players)
 
@@ -175,6 +195,11 @@ play_game :: proc(self: ^BlackJack) {
     append(&bets, initial_bet, initial_bet)
     set_game_bets(self.players[1], bets=bets)
 
+    defer {
+        delete(bets)
+        bets = [dynamic]uint{}
+    }
+ 
     //
 	// DEAL HANDS
 	//
@@ -351,7 +376,7 @@ play_game :: proc(self: ^BlackJack) {
                 log(fmt.tprintf("   stand total H{} S{}", hard_count, soft_count))
             }
 
-            if  count(&dealer.dealer_hand) > 21 {
+            if count(&dealer.dealer_hand) > 21 {
                 dealer.dealer_hand.outcome = HandOutcome.BUST
                 dealer_done = true
                 log(fmt.tprintf("    bust"))
@@ -364,6 +389,59 @@ play_game :: proc(self: ^BlackJack) {
 	//
 
 	log("SETTLE HAND")
+
+    if dealer.dealer_hand.outcome == HandOutcome.DEALER_BLACKJACK {
+        for &player, i in self.players {
+            for &master_hand, j in player.master_hands {
+                for &hand, k in master_hand.hands {
+                    if is_natural(&hand) {
+                        add_result(self, player, uint(k), &hand, initial_bet, 0)
+                        log(fmt.tprintf("    hand {}.{}: push both player and dealer had naturals", j+1, k+1))
+                    } else {
+                        add_result(self, player, uint(k), &hand, initial_bet, -int(hand.bet))
+                        log(fmt.tprintf("    hand {}.{}: dealer natural: lost ${}", j+1, k+1, hand.bet))
+                    }
+                }
+            }
+        }
+
+    } else {
+		// dealer does not have a natural
+        for &player, i in self.players {
+            for &master_hand, j in player.master_hands {
+                for &hand, k in master_hand.hands {
+                    if hand.outcome == HandOutcome.BUST {
+                        add_result(self, player, uint(k), &hand, initial_bet, -int(hand.bet))
+                        log(fmt.tprintf("    hand {}.{}: bust: lost ${}", j+1, k+1, hand.bet))
+                    } else if hand.outcome == HandOutcome.SURRENDER {
+                        add_result(self, player, uint(k), &hand, initial_bet, -int(hand.bet))
+                        log(fmt.tprintf("    hand {}.{}: surrender: lost ${}", j+1, k+1, hand.bet))
+                    } else {
+						// player has a non-bust, non-surrender hand
+                        if is_natural(&hand) {
+                            payout: int = int(f32(hand.bet) * house_rules.NATURAL_BLACKJACK_PAYOUT)
+                            add_result(self, player, uint(k), &hand, initial_bet, payout)
+                            log(fmt.tprintf("    hand {}.{}: won ${}", j+1, k+1, hand.bet))
+                        } else if dealer.dealer_hand.outcome == HandOutcome.BUST {
+                            add_result(self, player, uint(k), &hand, initial_bet, int(hand.bet))
+                            log(fmt.tprintf("    hand {}.{}: dealer bust: won ${}", j+1, k+1, hand.bet))
+                        } else {
+                            if count(&hand) < count(&dealer.dealer_hand) {
+                                add_result(self, player, uint(k), &hand, initial_bet, -int(hand.bet))
+                                log(fmt.tprintf("    hand {}.{}: lost ${}", j+1, k+1, hand.bet))
+                            } else if count(&hand) > count(&dealer.dealer_hand) {
+                                add_result(self, player, uint(k), &hand, initial_bet, int(hand.bet))
+                                log(fmt.tprintf("    hand {}.{}: won ${}", j+1, k+1, hand.bet))
+                            } else {
+                                add_result(self, player, uint(k), &hand, initial_bet, 0)
+                                log(fmt.tprintf("    hand {}.{}: push", j+1, k+1))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     //
     // CLEAN THIS MESS UP

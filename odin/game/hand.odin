@@ -356,9 +356,6 @@ reset_hands :: proc(self: ^PlayerMasterHand) {
 }
 
 free_hands :: proc(self: ^PlayerMasterHand) {
-    // for hand, hand_index in self.hands {
-    //     free_cards(&self.hands[hand_index])
-    // }
     for &hand in self.hands {
         free_cards(&hand)
     }
@@ -366,6 +363,7 @@ free_hands :: proc(self: ^PlayerMasterHand) {
     // self.hands now has a pointer to free memory
     // since we collectively learn no lessons over time
     self.hands = [dynamic]PlayerHand{}
+    // self.hands is now zero-ed memory
 }
 
 log_hands :: proc(self: ^PlayerMasterHand, preface: string) {
@@ -374,9 +372,7 @@ log_hands :: proc(self: ^PlayerMasterHand, preface: string) {
     for hand, i in self.hands {
         fmt.eprintfln("    Hand {0}", i+1)
         for card, j in hand.cards {
-            card_string := cards.to_string(card)
-            fmt.eprintfln("        Card {0}: {1}", j+1, card_string)
-            delete(card_string)
+            fmt.eprintfln("        Card {0}: {1}", j+1, cards.to_string(card))
         }
     }
 }

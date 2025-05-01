@@ -11,4 +11,16 @@ $ odin version
 odin version dev-2025-04:d9f990d42
 ```
 
+## Running the tests
+```
+$ odin test tests
+```
+or
+```
+$ odin test tests -define:ODIN_TEST_THREADS=1
+```
 
+## Running the program
+```
+$ odin run .
+```

@@ -9,10 +9,12 @@
 // I ended up prefixing all method names.  Alternatively I could have put
 // one struct per package which seems a bit extreme.
 // 4. no i++
-// 5. odin variable name is pythkn (snake case) and not camel case (JavaScript, Java)
+// 5. odin variable name convention is snake case (python) and not camel case (JavaScript, Java)
 // 6. "not in" for key in map check is "not_in"
 // 7. "Cannot assign to struct field in map". work around is
 // to create a struct copy, modify copy and reassign back into map
+// 8. tests are easy to write
+// 9. tests report memory leaks, which is amazingly useful
 
 package main
 
@@ -67,5 +69,7 @@ main :: proc() {
     //
 
     blackjack := game.create_blackjack()
+    defer game.free_blackjack(&blackjack)
+
     game.play_game(&blackjack)
 }
