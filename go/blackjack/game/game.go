@@ -262,7 +262,7 @@ func (self *BlackJack) PlayGame() {
 							self.log(fmt.Sprintf("        hit: %v, total H%v S%v", card.Str(), hand.HardCount(), hand.SoftCount()))
 							if handTotal > 21 {
 								hand.OutCome = HandOutcome(BUST)
-								self.log(fmt.Sprintf("    %v", hand.OutCome))
+								self.log(fmt.Sprintf("        %v", hand.OutCome))
 								break
 							} else {
 								hand.OutCome = HandOutcome(IN_PLAY)

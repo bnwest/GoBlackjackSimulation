@@ -168,11 +168,6 @@ log :: proc(msg: string) {
 }
 
 play_game :: proc(self: ^BlackJack) {
-    fmt.printfln(
-        "play game: shoe top: {}, force reshuffle: {}", 
-        self.shoe_top, 
-        house_rules.FORCE_RESHUFFLE
-    )
     if self.shoe_top > house_rules.FORCE_RESHUFFLE {
         reshuffle_shoe(self)
     }
@@ -306,7 +301,7 @@ play_game :: proc(self: ^BlackJack) {
                             break
 
                         } else if decision == strategy.PlayerDecision.SURRENDER {
-                            hand.outcome = HandOutcome.STAND
+                            hand.outcome = HandOutcome.SURRENDER
                             hand.bet /= 2
                             break
 
@@ -326,7 +321,7 @@ play_game :: proc(self: ^BlackJack) {
                             log(fmt.tprintf("        hit: {}, total H{} S{}", cards.to_string(card), hard_count(&hand), soft_count(&hand)))
                             if hand_total > 21 {
                                 hand.outcome = HandOutcome.BUST
-                                log(fmt.tprintf("    {}", to_string(hand.outcome)))
+                                log(fmt.tprintf("        {}", to_string(hand.outcome)))
 								break
                             } else {
                                 hand.outcome = HandOutcome.IN_PLAY
