@@ -15,6 +15,7 @@
 // to create a struct copy, modify copy and reassign back into map
 // 8. tests are easy to write
 // 9. tests report memory leaks, which is amazingly useful
+// 10. odin has same packge structure as go, a very good thing
 
 package main
 
