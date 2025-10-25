@@ -48,7 +48,7 @@ impl CardSuite {
         unsafe { transmute(discrim) }
         // why is this not recursive?
     }
-    pub fn to_string(&self) -> String {
+    pub fn _to_string(&self) -> String {
         static STRINGS: [&str; 5] = [
             "¯\\_(ツ)_/¯", // this is not a valid CardRank
             "♥️",          // CardSuite::HEARTS
@@ -62,7 +62,15 @@ impl CardSuite {
 
 impl fmt::Debug for CardSuite {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return write!(f, "{}", self.to_string());
+        return write!(f, "{}", self._to_string());
+    }
+}
+
+impl fmt::Display for CardSuite {
+    // Implementing this trait for a type will automatically implement the ToString trait 
+    // for the type, allowing the usage of the .to_string() method
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        return write!(f, "{}", self._to_string());
     }
 }
 
@@ -175,7 +183,7 @@ impl CardRank {
     pub fn transmute(discrim: usize) -> CardRank {
         unsafe { transmute(discrim) }
     }
-    pub fn to_string(&self) -> String {
+    pub fn _to_string(&self) -> String {
         static STRINGS: [&str; 14] = [
             "bad dog", // this is not a valid CardRank
             "A",       // CardRank::ACE
@@ -219,7 +227,13 @@ impl CardRank {
 // this is no bueno. fmt::Result aint what you think?
 impl fmt::Debug for CardRank {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return write!(f, "{}", self.to_string());
+        return write!(f, "{}", self._to_string());
+    }
+}
+
+impl fmt::Display for CardRank {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        return write!(f, "{}", self._to_string());
     }
 }
 
@@ -230,17 +244,24 @@ pub struct Card {
 }
 
 impl Card {
-    pub fn to_string(&self) -> String {
-        let suite_str: String = self.suite.to_string();
-        let rank_str: String = self.rank.to_string();
-        let card_str = format!("{suite_str} {rank_str}");
+    pub fn _to_string(&self) -> String {
+        // let card_str = format!("{self.suite} {self.rank}");
+        // error: invalid format string: field access isn't supported
+
+        let card_str = format!("{} {}", self.suite, self.rank);
         return card_str;
     }
 }
 
 impl fmt::Debug for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return write!(f, "{}", self.to_string());
+        return write!(f, "{}", self._to_string());
+    }
+}
+
+impl fmt::Display for Card {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        return write!(f, "{}", self._to_string());
     }
 }
 
