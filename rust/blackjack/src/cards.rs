@@ -48,7 +48,7 @@ impl CardSuite {
         unsafe { transmute(discrim) }
         // why is this not recursive?
     }
-    pub fn _to_string(&self) -> String {
+    pub fn _to_string(&self) -> &str {
         static STRINGS: [&str; 5] = [
             "¯\\_(ツ)_/¯", // this is not a valid CardRank
             "♥️",          // CardSuite::HEARTS
@@ -56,7 +56,7 @@ impl CardSuite {
             "♠️",          // CardSuite::SPADES
             "♣️",          // CardSuite::CLUBS
         ];
-        STRINGS[self.discriminant() as usize].to_string()
+        STRINGS[self.discriminant() as usize]
     }
 }
 
@@ -183,7 +183,7 @@ impl CardRank {
     pub fn transmute(discrim: usize) -> CardRank {
         unsafe { transmute(discrim) }
     }
-    pub fn _to_string(&self) -> String {
+    pub fn _to_string(&self) -> &str {
         static STRINGS: [&str; 14] = [
             "bad dog", // this is not a valid CardRank
             "A",       // CardRank::ACE
@@ -200,7 +200,7 @@ impl CardRank {
             "Q",       // CardRank::QUEEN
             "K",       // CardRank::KING
         ];
-        STRINGS[self.discriminant()].to_string()
+        STRINGS[self.discriminant()]
     }
     pub fn value(&self) -> usize {
         // for counting purposes, the value of the card.
@@ -245,11 +245,10 @@ pub struct Card {
 
 impl Card {
     pub fn _to_string(&self) -> String {
-        // let card_str = format!("{self.suite} {self.rank}");
+        // format!("{self.suite} {self.rank}");
         // error: invalid format string: field access isn't supported
-
-        let card_str = format!("{} {}", self.suite, self.rank);
-        return card_str;
+        format!("{} {}", self.suite, self.rank)
+        // creates and returns a new String allocated on the heap
     }
 }
 
