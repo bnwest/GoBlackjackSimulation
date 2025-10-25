@@ -244,11 +244,30 @@ pub struct Card {
 }
 
 impl Card {
-    pub fn _to_string(&self) -> String {
+    pub fn _to_string(&self) -> &str {
         // format!("{self.suite} {self.rank}");
         // error: invalid format string: field access isn't supported
-        format!("{} {}", self.suite, self.rank)
-        // creates and returns a new String allocated on the heap
+        // format!("{} {}", self.suite, self.rank)
+        // creates and returns a new String allocated on the heap, which is not optimal
+
+        // Const 2D array: [suite][rank] -> display string
+        // a compile-time constant with zero runtime overhead
+        const CARD_DISPLAY: [[&str; 13]; 4] = [
+            // HEARTS (suite index 0)
+            ["♥️ A", "♥️ 2", "♥️ 3", "♥️ 4", "♥️ 5", "♥️ 6", "♥️ 7", "♥️ 8", "♥️ 9", "♥️ 10", "♥️ J", "♥️ Q", "♥️ K"],
+            // DIAMONDS (suite index 1) 
+            ["♦️ A", "♦️ 2", "♦️ 3", "♦️ 4", "♦️ 5", "♦️ 6", "♦️ 7", "♦️ 8", "♦️ 9", "♦️ 10", "♦️ J", "♦️ Q", "♦️ K"],
+            // SPADES (suite index 2)
+            ["♠️ A", "♠️ 2", "♠️ 3", "♠️ 4", "♠️ 5", "♠️ 6", "♠️ 7", "♠️ 8", "♠️ 9", "♠️ 10", "♠️ J", "♠️ Q", "♠️ K"],
+            // CLUBS (suite index 3)
+            ["♣️ A", "♣️ 2", "♣️ 3", "♣️ 4", "♣️ 5", "♣️ 6", "♣️ 7", "♣️ 8", "♣️ 9", "♣️ 10", "♣️ J", "♣️ Q", "♣️ K"],
+        ];
+
+        let suite_idx = (self.suite.discriminant() - 1) as usize; // Convert 1-4 to 0-3
+        let rank_idx = (self.rank.discriminant() - 1) as usize;   // Convert 1-13 to 0-12
+
+        CARD_DISPLAY[suite_idx][rank_idx]
+        // returns a reference to the const string
     }
 }
 
