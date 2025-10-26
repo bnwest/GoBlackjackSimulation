@@ -1,7 +1,5 @@
 // file src/strategy/hard.rs defines project module "strategy::hard".
 
-use std::collections::HashMap;
-
 use super::Decision;
 use super::Decision::Dh;
 use super::Decision::Ds;
@@ -83,32 +81,12 @@ fn create_hard_total_decisions() -> Vec<HashMap<cards::CardRank, Decision>> {
 }
 */
 
-use lazy_static::lazy_static;
-
-lazy_static! {
-    static ref HARD_TOTAL_DECISIONS: Vec<HashMap<cards::CardRank, Decision>> = {
-        let mut hard_total_decisions: Vec<HashMap<cards::CardRank, Decision>> = vec![];
-        for i in 0..22 {
-            let mut decisions_row: HashMap<cards::CardRank, Decision> = HashMap::new();
-            for rank in cards::CardRank::iterator() {
-                // rank: cards::CardRank
-                let decision: Decision = _HARD_TOTAL_DECISIONS[i][rank.discriminant() as usize];
-                decisions_row.insert(rank, decision);
-                // the trait `Eq` is not implemented for `CardRank`, which is required by `HashMap<_, _, _>: Index<&_>`
-                // the trait `Hash` is not implemented for `CardRank`, which is required by `HashMap<_, _, _>: Index<&_>`
-            }
-            // hard_total_decisions[i] = decisions_row;
-            hard_total_decisions.push(decisions_row);
-        }
-        hard_total_decisions
-    };
-}
-
 pub fn get_hard_total_decision(
     player_hand_total: usize,
     dealer_top_card: &cards::Card,
 ) -> Decision {
-    let dealer_top_card_rank: cards::CardRank = dealer_top_card.rank;
-    let decision: Decision = HARD_TOTAL_DECISIONS[player_hand_total][&dealer_top_card_rank];
-    return decision;
+    let dealer_rank_index = dealer_top_card.rank.discriminant() as usize;
+
+    // Direct lookup from the 2D array
+    _HARD_TOTAL_DECISIONS[player_hand_total][dealer_rank_index]
 }
