@@ -1,5 +1,6 @@
 // file src/strategy.rs defines project module "strategy".
 
+use std::array;
 use std::mem::transmute;
 use std::slice::Iter;
 
@@ -19,8 +20,8 @@ pub enum Decision {
 }
 
 impl Decision {
-    pub fn iterator() -> Iter<'static, Decision> {
-        static DECISIONS: [Decision; 9] = [
+    pub fn iterator() -> array::IntoIter<Decision, 9> {
+        [
             Decision::S,
             Decision::H,
             Decision::Dh,
@@ -30,8 +31,7 @@ impl Decision {
             Decision::Us,
             Decision::Usp,
             Decision::NO,
-        ];
-        DECISIONS.iter()
+        ].into_iter()
     }
     pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum
@@ -84,15 +84,14 @@ pub enum PlayerDecision {
 }
 
 impl PlayerDecision {
-    pub fn iterator() -> Iter<'static, PlayerDecision> {
-        static PLAYER_DECISIONS: [PlayerDecision; 5] = [
+    pub fn iterator() -> array::IntoIter<PlayerDecision, 5> {
+        [
             PlayerDecision::STAND,
             PlayerDecision::HIT,
             PlayerDecision::DOUBLE,
             PlayerDecision::SPLIT,
             PlayerDecision::SURRENDER,
-        ];
-        PLAYER_DECISIONS.iter()
+        ].into_iter()
     }
     pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum

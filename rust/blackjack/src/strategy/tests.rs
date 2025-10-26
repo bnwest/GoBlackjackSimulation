@@ -79,7 +79,7 @@ fn test_hard_total_decisions() {
             // rank: &cards::CardRank
             let dealer_top_card: cards::Card = cards::Card {
                 suite: cards::CardSuite::SPADES,
-                rank: *rank,
+                rank: rank,
             };
             let decision: Decision = hard::get_hard_total_decision(hand_total, &dealer_top_card);
             println!("hard total decision for hand total ({hand_total}) and top card ({rank:#?}) is {decision:#?}).");
@@ -97,7 +97,7 @@ fn test_soft_total_decisions() {
             // rank: &cards::CardRank
             let dealer_top_card: cards::Card = cards::Card {
                 suite: cards::CardSuite::SPADES,
-                rank: *rank,
+                rank: rank,
             };
             let decision: Decision = soft::get_soft_total_decision(hand_total, &dealer_top_card);
             println!("soft total decision for hand total ({hand_total}) and top card ({rank:#?}) is {decision:#?}).");
@@ -120,7 +120,7 @@ fn test_pair_decisions() {
             // rank: &cards::CardRank
             let dealer_top_card: cards::Card = cards::Card {
                 suite: cards::CardSuite::SPADES,
-                rank: *rank,
+                rank: rank,
             };
             let decision: Decision = pairs::get_pair_decision(hand_pair.rank, dealer_top_card.rank);
             println!("soft total decision for hand pair rank ({hand_pair_rank:#?}) and top card ({rank:#?}) is {decision:#?}).");

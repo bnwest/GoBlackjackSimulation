@@ -55,17 +55,17 @@ lazy_static! {
     static ref PAIR_DECISIONS: HashMap<cards::CardRank, HashMap<cards::CardRank, Decision>> = {
         let mut pair_decisions: HashMap<cards::CardRank, HashMap<cards::CardRank, Decision>> = HashMap::new();
         for split_rank in cards::CardRank::iterator() {
-            // split_rank: &cards::CardRank
+            // split_rank: cards::CardRank
             let mut decisions_row: HashMap<cards::CardRank, Decision> = HashMap::new();
             for rank in cards::CardRank::iterator() {
-                // rank: &cards::CardRank
+                // rank: cards::CardRank
                 let decision: Decision = _PAIR_DECISIONS[split_rank.discriminant() as usize][rank.discriminant() as usize];
-                decisions_row.insert(*rank, decision);
+                decisions_row.insert(rank, decision);
                 // the trait `Eq` is not implemented for `CardRank`, which is required by `HashMap<_, _, _>: Index<&_>`
                 // the trait `Hash` is not implemented for `CardRank`, which is required by `HashMap<_, _, _>: Index<&_>`
             }
             // hard_total_decisions[i] = decisions_row;
-            pair_decisions.insert(*split_rank, decisions_row);
+            pair_decisions.insert(split_rank, decisions_row);
         }
         pair_decisions
     };

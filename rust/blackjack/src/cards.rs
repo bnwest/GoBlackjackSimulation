@@ -12,6 +12,7 @@ use lazy_static::lazy_static;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
+use std::array;
 use std::collections::HashMap;
 use std::fmt;
 use std::mem::transmute;
@@ -27,14 +28,13 @@ pub enum CardSuite {
 }
 
 impl CardSuite {
-    pub fn iterator() -> Iter<'static, CardSuite> {
-        static SUITES: [CardSuite; 4] = [
+    pub fn iterator() -> array::IntoIter<CardSuite, 4> {
+        [
             CardSuite::HEARTS,
             CardSuite::DIAMONDS,
             CardSuite::SPADES,
             CardSuite::CLUBS,
-        ];
-        SUITES.iter()
+        ].into_iter()
     }
     pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum
@@ -160,8 +160,8 @@ pub enum CardRank {
 }
 
 impl CardRank {
-    pub fn iterator() -> Iter<'static, CardRank> {
-        static SUITES: [CardRank; 13] = [
+    pub fn iterator() -> array::IntoIter<CardRank, 13> {
+        [
             CardRank::ACE,
             CardRank::TWO,
             CardRank::THREE,
@@ -175,8 +175,7 @@ impl CardRank {
             CardRank::JACK,
             CardRank::QUEEN,
             CardRank::KING,
-        ];
-        SUITES.iter()
+        ].into_iter()
     }
     // https://doc.rust-lang.org/reference/items/enumerations.html
     // Each enum instance has a discriminant: an integer logically associated to it

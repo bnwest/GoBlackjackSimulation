@@ -6,6 +6,7 @@ use std::slice::Iter;
 // use cards::Card;
 use crate::cards;
 use crate::rules;
+use std::array;
 
 // #[derive(Eq, PartialEq, Hash, Copy, Clone)]
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -19,15 +20,14 @@ pub enum HandOutcome {
 }
 
 impl HandOutcome {
-    pub fn iterator() -> Iter<'static, HandOutcome> {
-        static SUITES: [HandOutcome; 5] = [
+    pub fn iterator() -> array::IntoIter<HandOutcome, 5> {
+        [
             HandOutcome::STAND,
             HandOutcome::BUST,
             HandOutcome::SURRENDER,
             HandOutcome::DEALER_BLACKJACK,
             HandOutcome::IN_PLAY,
-        ];
-        SUITES.iter()
+        ].into_iter()
     }
     pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum
