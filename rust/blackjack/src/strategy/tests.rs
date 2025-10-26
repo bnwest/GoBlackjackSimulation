@@ -18,7 +18,7 @@ fn test_decisions() {
         // decision: &Decision
         let discrim = decision.discriminant();
         let decision_roundtrip: Decision = Decision::transmute(discrim);
-        assert_eq!(*decision, decision_roundtrip);
+        assert_eq!(decision, decision_roundtrip);
         // binary operation `==` cannot be applied to type `strategy::Decision`
         // need: #[derive(PartialEq)]
         // `strategy::Decision` cannot be formatted using `{:?}`
@@ -54,7 +54,7 @@ fn test_player_decisions() {
         // decision: &PlayerDecision
         let discrim = decision.discriminant();
         let decision_roundtrip: PlayerDecision = PlayerDecision::transmute(discrim);
-        assert_eq!(*decision, decision_roundtrip);
+        assert_eq!(decision, decision_roundtrip);
     }
 
     for decision in PlayerDecision::iterator() {
@@ -114,7 +114,7 @@ fn test_pair_decisions() {
         // hand_pair: &cards::CardRank
         let hand_pair: cards::Card = cards::Card {
             suite: cards::CardSuite::SPADES,
-            rank: *hand_pair_rank,
+            rank: hand_pair_rank,
         };
         for rank in cards::CardRank::iterator() {
             // rank: &cards::CardRank

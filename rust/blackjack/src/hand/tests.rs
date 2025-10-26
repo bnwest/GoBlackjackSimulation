@@ -31,7 +31,7 @@ fn test_hand_outcomes() {
         // hand_outcome: &HandOutcome
         let roundtrip_hand_outcome: HandOutcome =
             HandOutcome::transmute(hand_outcome.discriminant());
-        assert_eq!(hand_outcome, &roundtrip_hand_outcome);
+        assert_eq!(hand_outcome, roundtrip_hand_outcome);
 
         println!("{}", hand_outcome.to_string());
         println!("{:?}", hand_outcome);
@@ -308,11 +308,11 @@ fn test_player_can_split() {
         let mut player_hand: PlayerHand = PlayerHand::create(from_split, bet);
         let card1: cards::Card = cards::Card {
             suite: cards::CardSuite::SPADES,
-            rank: *rank,
+            rank: rank,
         };
         let card2: cards::Card = cards::Card {
             suite: cards::CardSuite::HEARTS,
-            rank: *rank,
+            rank: rank,
         };
         player_hand.add_card(&card1);
         player_hand.add_card(&card2);
@@ -324,25 +324,25 @@ fn test_player_can_split() {
 
     for rank1 in cards::CardRank::iterator() {
         // rank1: &cards::CardRank
-        if *rank1 == cards::CardRank::JACK {
+        if rank1 == cards::CardRank::JACK {
             break;
         }
         for rank2 in cards::CardRank::iterator() {
             // rank2: &cards::CardRank
-            if *rank2 == cards::CardRank::JACK {
+            if rank2 == cards::CardRank::JACK {
                 break;
             }
-            if *rank1 == *rank2 {
+            if rank1 == rank2 {
                 continue;
             }
             let mut player_hand: PlayerHand = PlayerHand::create(from_split, bet);
             let card1: cards::Card = cards::Card {
                 suite: cards::CardSuite::SPADES,
-                rank: *rank1,
+                rank: rank1,
             };
             let card2: cards::Card = cards::Card {
                 suite: cards::CardSuite::HEARTS,
-                rank: *rank2,
+                rank: rank2,
             };
             player_hand.add_card(&card1);
             player_hand.add_card(&card2);

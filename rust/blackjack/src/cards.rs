@@ -303,231 +303,75 @@ impl fmt::Display for Card {
     }
 }
 
+// Global const deck - HEARTS, DIAMONDS, SPADES, CLUBS order
+pub const UNSHUFFLED_DECK: [Card; 52] = [
+    // HEARTS (suite index 0)
+    Card { suite: CardSuite::HEARTS, rank: CardRank::ACE },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::TWO },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::THREE },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::FOUR },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::FIVE },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::SIX },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::SEVEN },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::EIGHT },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::NINE },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::TEN },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::JACK },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::QUEEN },
+    Card { suite: CardSuite::HEARTS, rank: CardRank::KING },
+    // DIAMONDS (suite index 1)
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::ACE },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::TWO },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::THREE },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::FOUR },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::FIVE },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::SIX },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::SEVEN },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::EIGHT },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::NINE },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::TEN },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::JACK },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::QUEEN },
+    Card { suite: CardSuite::DIAMONDS, rank: CardRank::KING },
+    // SPADES (suite index 2)
+    Card { suite: CardSuite::SPADES, rank: CardRank::ACE },
+    Card { suite: CardSuite::SPADES, rank: CardRank::TWO },
+    Card { suite: CardSuite::SPADES, rank: CardRank::THREE },
+    Card { suite: CardSuite::SPADES, rank: CardRank::FOUR },
+    Card { suite: CardSuite::SPADES, rank: CardRank::FIVE },
+    Card { suite: CardSuite::SPADES, rank: CardRank::SIX },
+    Card { suite: CardSuite::SPADES, rank: CardRank::SEVEN },
+    Card { suite: CardSuite::SPADES, rank: CardRank::EIGHT },
+    Card { suite: CardSuite::SPADES, rank: CardRank::NINE },
+    Card { suite: CardSuite::SPADES, rank: CardRank::TEN },
+    Card { suite: CardSuite::SPADES, rank: CardRank::JACK },
+    Card { suite: CardSuite::SPADES, rank: CardRank::QUEEN },
+    Card { suite: CardSuite::SPADES, rank: CardRank::KING },
+    // CLUBS (suite index 3)
+    Card { suite: CardSuite::CLUBS, rank: CardRank::ACE },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::TWO },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::THREE },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::FOUR },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::FIVE },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::SIX },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::SEVEN },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::EIGHT },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::NINE },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::TEN },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::JACK },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::QUEEN },
+    Card { suite: CardSuite::CLUBS, rank: CardRank::KING },
+];
+
 pub fn create_unshuffle_deck() -> Vec<Card> {
-    // should have been: static deck ...
-    // but static declard variables can not have run time allocations
-    let deck: Vec<Card> = vec![
-        // HEARTS
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::ACE,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::TWO,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::THREE,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::FOUR,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::FIVE,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::SIX,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::SEVEN,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::EIGHT,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::NINE,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::TEN,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::JACK,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::QUEEN,
-        },
-        Card {
-            suite: CardSuite::HEARTS,
-            rank: CardRank::KING,
-        },
-        // DIAMONDS
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::ACE,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::TWO,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::THREE,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::FOUR,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::FIVE,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::SIX,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::SEVEN,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::EIGHT,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::NINE,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::TEN,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::JACK,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::QUEEN,
-        },
-        Card {
-            suite: CardSuite::DIAMONDS,
-            rank: CardRank::KING,
-        },
-        // SPADES
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::ACE,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::TWO,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::THREE,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::FOUR,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::FIVE,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::SIX,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::SEVEN,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::EIGHT,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::NINE,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::TEN,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::JACK,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::QUEEN,
-        },
-        Card {
-            suite: CardSuite::SPADES,
-            rank: CardRank::KING,
-        },
-        // CLUBS
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::ACE,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::TWO,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::THREE,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::FOUR,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::FIVE,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::SIX,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::SEVEN,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::EIGHT,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::NINE,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::TEN,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::JACK,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::QUEEN,
-        },
-        Card {
-            suite: CardSuite::CLUBS,
-            rank: CardRank::KING,
-        },
-    ];
-    return deck;
+    // Convert const array to Vec for compatibility with existing code
+    UNSHUFFLED_DECK.to_vec()
 }
 
 pub fn create_shoe(decks_in_shoe: usize /*= 6*/) -> Vec<Card> {
-    let mut shoe = vec![];
-    let unshuffle_deck: Vec<Card> = create_unshuffle_deck();
+    let mut shoe = Vec::with_capacity(52 * decks_in_shoe);
     for _i in 0..decks_in_shoe {
-        for card in unshuffle_deck.iter() {
+        for card in UNSHUFFLED_DECK.iter() {
             // card: &Card
             // *card deferences and copies it.
             shoe.push(*card);

@@ -26,7 +26,7 @@ fn test_card_suites() {
 
     for suite in CardSuite::iterator() {
         let roundtrip_suite: CardSuite = CardSuite::transmute(suite.discriminant());
-        assert_eq!(suite, &roundtrip_suite);
+        assert_eq!(suite, roundtrip_suite);
         println!("{}", suite.to_string());
         println!("{:?}", suite);
         println!("{:#?}", suite);
@@ -66,7 +66,7 @@ fn test_card_rank() {
     assert_eq!(CardRank::transmute(2), CardRank::TWO);
     for rank in CardRank::iterator() {
         let roundtrip_rank: CardRank = CardRank::transmute(rank.discriminant());
-        assert_eq!(rank, &roundtrip_rank);
+        assert_eq!(rank, roundtrip_rank);
     }
 
     for rank in CardRank::iterator() {
@@ -128,7 +128,7 @@ fn test_create_unshuffle_deck() {
     for suite in CardSuite::iterator() {
         let mut card_in_suite_count: u32 = 0;
         for card in deck.iter() {
-            if card.suite == *suite {
+            if card.suite == suite {
                 card_in_suite_count += 1;
             }
         }
@@ -139,7 +139,7 @@ fn test_create_unshuffle_deck() {
     for rank in CardRank::iterator() {
         let mut num_cards = 0;
         for card in deck.iter() {
-            if card.rank == *rank {
+            if card.rank == rank {
                 num_cards += 1;
             }
         }
@@ -166,7 +166,7 @@ fn test_create_shoe() {
     for suite in CardSuite::iterator() {
         let mut card_in_suite_count: usize = 0;
         for card in shoe.iter() {
-            if card.suite == *suite {
+            if card.suite == suite {
                 card_in_suite_count += 1;
             }
         }
@@ -177,7 +177,7 @@ fn test_create_shoe() {
     for rank in CardRank::iterator() {
         let mut num_cards: usize = 0;
         for card in shoe.iter() {
-            if card.rank == *rank {
+            if card.rank == rank {
                 num_cards += 1;
             }
         }
@@ -219,7 +219,7 @@ fn test_shuffle_shoe() {
     for suite in CardSuite::iterator() {
         let mut card_in_suite_count: usize = 0;
         for card in shoe.iter() {
-            if card.suite == *suite {
+            if card.suite == suite {
                 card_in_suite_count += 1;
             }
         }
@@ -230,7 +230,7 @@ fn test_shuffle_shoe() {
     for rank in CardRank::iterator() {
         let mut num_cards: usize = 0;
         for card in shoe.iter() {
-            if card.rank == *rank {
+            if card.rank == rank {
                 num_cards += 1;
             }
         }
