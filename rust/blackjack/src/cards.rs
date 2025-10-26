@@ -44,9 +44,16 @@ impl CardSuite {
     pub fn transmute(discrim: u8) -> CardSuite {
         // FAILS: rank = CardRank(2);
         // FAILS: rank = 2 as CardRank;
-        // WORKS: rank = unsafe { transmute(2 as u8) };
-        unsafe { transmute(discrim) }
-        // why is this not recursive?
+        // WORKS POORLY: rank = unsafe { transmute(2 as u8) };
+        // discrim as CardSuite
+        // error[E0605]: non-primitive cast: `u8` as `CardSuite`
+        match discrim {
+            1 => CardSuite::HEARTS,
+            2 => CardSuite::DIAMONDS,
+            3 => CardSuite::SPADES,
+            4 => CardSuite::CLUBS,
+            _ => CardSuite::HEARTS, // Default fallback
+        }
     }
     pub fn _to_string(&self) -> &str {
         static STRINGS: [&str; 5] = [
@@ -177,11 +184,25 @@ impl CardRank {
     pub fn discriminant(&self) -> u8 {
         // https://doc.rust-lang.org/std/mem/fn.discriminant.html
         // fn returns the integer discriminat for the enum
-        // *self as u8
-        unsafe { *<*const _>::from(self).cast::<u8>() }
+        *self as u8
     }
     pub fn transmute(discrim: u8) -> CardRank {
-        unsafe { transmute(discrim) }
+        match discrim {
+            1 => CardRank::ACE,
+            2 => CardRank::TWO,
+            3 => CardRank::THREE,
+            4 => CardRank::FOUR,
+            5 => CardRank::FIVE,
+            6 => CardRank::SIX,
+            7 => CardRank::SEVEN,
+            8 => CardRank::EIGHT,
+            9 => CardRank::NINE,
+            10 => CardRank::TEN,
+            11 => CardRank::JACK,
+            12 => CardRank::QUEEN,
+            13 => CardRank::KING,
+            _ => CardRank::ACE, // Default fallback
+        }
     }
     pub fn _to_string(&self) -> &str {
         static STRINGS: [&str; 14] = [

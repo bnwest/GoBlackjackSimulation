@@ -4,18 +4,18 @@ use std::mem::transmute;
 use std::slice::Iter;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
-#[repr(usize)]
+#[repr(u8)]
 pub enum Decision {
-    S,
-    H,
-    Dh,
-    Ds,
-    SP,
+    S = 0,
+    H = 1,
+    Dh = 2,
+    Ds = 3,
+    SP = 4,
     // U => Surrender, in a world of too many S words
-    Uh,
-    Us,
-    Usp,
-    NO,
+    Uh = 5,
+    Us = 6,
+    Usp = 7,
+    NO = 8,
 }
 
 impl Decision {
@@ -33,20 +33,29 @@ impl Decision {
         ];
         DECISIONS.iter()
     }
-    pub fn discriminant(&self) -> usize {
+    pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum
         // some may see "as" type casts as a red flag
-        *self as usize
+        *self as u8
         // ^^^^^ move occurs because `*self` has type `Decision`,
         // which does not implement the `Copy` trait
     }
-    pub fn transmute(discrim: usize) -> Decision {
+    pub fn transmute(discrim: u8) -> Decision {
         // FAILS: rank = Decision(2);
         // FAILS: rank = 2 as Decision;
-        // WORKS: rank = unsafe { transmute(2 as usize) };
-        unsafe { transmute(discrim) }
-        //    = note: source type: `usize` (64 bits)     << usize
-        //    = note: target type: `Decision` (8 bits)   << default enum size
+        // WORKS POORLY: rank = unsafe { transmute(2 as usize) };
+        match discrim {
+            0 => Decision::S,
+            1 => Decision::H,
+            2 => Decision::Dh,
+            3 => Decision::Ds,
+            4 => Decision::SP,
+            5 => Decision::Uh,
+            6 => Decision::Us,
+            7 => Decision::Usp,
+            8 => Decision::NO,
+            _ => Decision::S, // Default fallback
+        }
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 9] = [
@@ -65,13 +74,13 @@ impl Decision {
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
-#[repr(usize)]
+#[repr(u8)]
 pub enum PlayerDecision {
-    STAND,
-    HIT,
-    DOUBLE,
-    SPLIT,
-    SURRENDER,
+    STAND = 0,
+    HIT = 1,
+    DOUBLE = 2,
+    SPLIT = 3,
+    SURRENDER = 4,
 }
 
 impl PlayerDecision {
@@ -85,16 +94,23 @@ impl PlayerDecision {
         ];
         PLAYER_DECISIONS.iter()
     }
-    pub fn discriminant(&self) -> usize {
+    pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum
         // some may see "as" type casts as a red flag
-        *self as usize
+        *self as u8
     }
-    pub fn transmute(discrim: usize) -> PlayerDecision {
+    pub fn transmute(discrim: u8) -> PlayerDecision {
         // FAILS: rank = Decision(2);
         // FAILS: rank = 2 as Decision;
-        // WORKS: rank = unsafe { transmute(2 as usize) };
-        unsafe { transmute(discrim) }
+        // WORKS POORLY: rank = unsafe { transmute(2 as usize) };
+        match discrim {
+            0 => PlayerDecision::STAND,
+            1 => PlayerDecision::HIT,
+            2 => PlayerDecision::DOUBLE,
+            3 => PlayerDecision::SPLIT,
+            4 => PlayerDecision::SURRENDER,
+            _ => PlayerDecision::STAND, // Default fallback
+        }
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 5] = [

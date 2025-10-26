@@ -9,13 +9,13 @@ use crate::rules;
 
 // #[derive(Eq, PartialEq, Hash, Copy, Clone)]
 #[derive(Copy, Clone, PartialEq, Debug)]
-#[repr(usize)]
+#[repr(u8)]
 pub enum HandOutcome {
-    STAND,
-    BUST,
-    SURRENDER,
-    DEALER_BLACKJACK,
-    IN_PLAY,
+    STAND = 0,
+    BUST = 1,
+    SURRENDER = 2,
+    DEALER_BLACKJACK = 3,
+    IN_PLAY = 4,
 }
 
 impl HandOutcome {
@@ -29,16 +29,23 @@ impl HandOutcome {
         ];
         SUITES.iter()
     }
-    pub fn discriminant(&self) -> usize {
+    pub fn discriminant(&self) -> u8 {
         // fn returns the integer discriminat for the enum
         // some may see "as" type casts as a red flag
-        *self as usize
+        *self as u8
     }
-    pub fn transmute(discrim: usize) -> HandOutcome {
+    pub fn transmute(discrim: u8) -> HandOutcome {
         // FAILS: rank = CardRank(2);
         // FAILS: rank = 2 as CardRank;
-        // WORKS: rank = unsafe { transmute(2 as u8) };
-        unsafe { transmute(discrim) }
+        // WORKS POORLY: rank = unsafe { transmute(2 as u8) };
+        match discrim {
+            0 => HandOutcome::STAND,
+            1 => HandOutcome::BUST,
+            2 => HandOutcome::SURRENDER,
+            3 => HandOutcome::DEALER_BLACKJACK,
+            4 => HandOutcome::IN_PLAY,
+            _ => HandOutcome::STAND, // Default fallback
+        }
     }
     pub fn to_string(&self) -> String {
         static STRINGS: [&str; 5] = [
@@ -48,7 +55,7 @@ impl HandOutcome {
             "dealer-blackjack", // HandOutcome::DEALER_BLACKJACK
             "in-play",          // HandOutcome::IN_PLAY
         ];
-        STRINGS[self.discriminant()].to_string()
+        STRINGS[self.discriminant() as usize].to_string()
     }
 }
 
