@@ -1,5 +1,6 @@
 // file src/hand.rs defines project module "hand".
 
+use std::fmt;
 use std::mem::transmute;
 use std::slice::Iter;
 
@@ -9,7 +10,7 @@ use crate::rules;
 use std::array;
 
 // #[derive(Eq, PartialEq, Hash, Copy, Clone)]
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq)]
 #[repr(u8)]
 pub enum HandOutcome {
     STAND = 0,
@@ -47,7 +48,7 @@ impl HandOutcome {
             _ => HandOutcome::STAND, // Default fallback
         }
     }
-    pub fn to_string(&self) -> String {
+    pub fn _to_string(&self) -> &str {
         static STRINGS: [&str; 5] = [
             "stand",            // HandOutcome::STAND
             "bust",             // HandOutcome::BUST
@@ -55,7 +56,19 @@ impl HandOutcome {
             "dealer-blackjack", // HandOutcome::DEALER_BLACKJACK
             "in-play",          // HandOutcome::IN_PLAY
         ];
-        STRINGS[self.discriminant() as usize].to_string()
+        STRINGS[self.discriminant() as usize]
+    }
+}
+
+impl fmt::Debug for HandOutcome {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        return write!(f, "{}", self._to_string());
+    }
+}
+
+impl fmt::Display for HandOutcome {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        return write!(f, "{}", self._to_string());
     }
 }
 
@@ -311,13 +324,13 @@ impl PlayerMasterHand {
     pub fn split_hand(&mut self, hand_index: usize, cards_to_add: [cards::Card; 2]) -> usize {
         let hand = &mut self.hands[hand_index];
         let [card1, card2] = [hand.cards[0], hand.cards[1]];
-        
+
         // Update existing hand
         hand.cards.clear();
         hand.cards.extend([card1, cards_to_add[0]]);
         hand.from_split = true;
         hand.outcome = HandOutcome::IN_PLAY;
-        
+
         // Create new hand using functional style
         let new_hand = PlayerHand {
             cards: [card2, cards_to_add[1]].into(),
@@ -325,7 +338,7 @@ impl PlayerMasterHand {
             bet: hand.bet,
             outcome: HandOutcome::IN_PLAY,
         };
-        
+
         let new_hand_index = self.num_hands();
         self.hands.push(new_hand);
         new_hand_index
