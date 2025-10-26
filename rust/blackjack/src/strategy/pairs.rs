@@ -59,7 +59,7 @@ lazy_static! {
             let mut decisions_row: HashMap<cards::CardRank, Decision> = HashMap::new();
             for rank in cards::CardRank::iterator() {
                 // rank: &cards::CardRank
-                let decision: Decision = _PAIR_DECISIONS[split_rank.discriminant()][rank.discriminant()];
+                let decision: Decision = _PAIR_DECISIONS[split_rank.discriminant() as usize][rank.discriminant() as usize];
                 decisions_row.insert(*rank, decision);
                 // the trait `Eq` is not implemented for `CardRank`, which is required by `HashMap<_, _, _>: Index<&_>`
                 // the trait `Hash` is not implemented for `CardRank`, which is required by `HashMap<_, _, _>: Index<&_>`

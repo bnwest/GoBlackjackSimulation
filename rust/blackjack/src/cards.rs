@@ -135,7 +135,7 @@ impl fmt::Debug for CardSuiteValue {
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
-#[repr(usize)]
+#[repr(u8)]
 pub enum CardRank {
     ACE = 1,
     TWO = 2,
@@ -174,13 +174,13 @@ impl CardRank {
     // https://doc.rust-lang.org/reference/items/enumerations.html
     // Each enum instance has a discriminant: an integer logically associated to it
     // that is used to determine which variant it holds.
-    pub fn discriminant(&self) -> usize {
+    pub fn discriminant(&self) -> u8 {
         // https://doc.rust-lang.org/std/mem/fn.discriminant.html
         // fn returns the integer discriminat for the enum
         // *self as u8
-        unsafe { *<*const _>::from(self).cast::<usize>() }
+        unsafe { *<*const _>::from(self).cast::<u8>() }
     }
-    pub fn transmute(discrim: usize) -> CardRank {
+    pub fn transmute(discrim: u8) -> CardRank {
         unsafe { transmute(discrim) }
     }
     pub fn _to_string(&self) -> &str {
@@ -200,7 +200,7 @@ impl CardRank {
             "Q",       // CardRank::QUEEN
             "K",       // CardRank::KING
         ];
-        STRINGS[self.discriminant()]
+        STRINGS[self.discriminant() as usize]
     }
     pub fn value(&self) -> usize {
         // for counting purposes, the value of the card.
@@ -220,7 +220,7 @@ impl CardRank {
             10, // CardRank::QUEEN
             10, // CardRank::KING
         ];
-        VALUES[self.discriminant()]
+        VALUES[self.discriminant() as usize]
     }
 }
 
