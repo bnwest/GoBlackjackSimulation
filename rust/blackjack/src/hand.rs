@@ -309,25 +309,26 @@ impl PlayerMasterHand {
         return false;
     }
     pub fn split_hand(&mut self, hand_index: usize, cards_to_add: [cards::Card; 2]) -> usize {
-        let card1: cards::Card = self.hands[hand_index].cards[0]; // .clone();
-        let card2: cards::Card = self.hands[hand_index].cards[1].clone();
-
-        let old_player_hand: &mut PlayerHand = &mut self.hands[hand_index];
-        old_player_hand.cards = vec![];
-        old_player_hand.cards.push(card1);
-        old_player_hand.cards.push(cards_to_add[0]);
-        old_player_hand.from_split = true;
-        old_player_hand.outcome = HandOutcome::IN_PLAY;
-
-        let mut new_player_hand = PlayerHand::create(true, old_player_hand.bet);
-        new_player_hand.cards.push(card2);
-        new_player_hand.cards.push(cards_to_add[1]);
-        new_player_hand.outcome = HandOutcome::IN_PLAY;
-
-        let new_hand_index: usize = self.num_hands();
-        self.hands.push(new_player_hand);
-
-        return new_hand_index;
+        let hand = &mut self.hands[hand_index];
+        let [card1, card2] = [hand.cards[0], hand.cards[1]];
+        
+        // Update existing hand
+        hand.cards.clear();
+        hand.cards.extend([card1, cards_to_add[0]]);
+        hand.from_split = true;
+        hand.outcome = HandOutcome::IN_PLAY;
+        
+        // Create new hand using functional style
+        let new_hand = PlayerHand {
+            cards: [card2, cards_to_add[1]].into(),
+            from_split: true,
+            bet: hand.bet,
+            outcome: HandOutcome::IN_PLAY,
+        };
+        
+        let new_hand_index = self.num_hands();
+        self.hands.push(new_hand);
+        new_hand_index
     }
     pub fn log_hands(&self, preface: &str) {
         println!("{preface}: MasterHand");
